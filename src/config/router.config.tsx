@@ -1,5 +1,4 @@
-import {Home} from "@screen/Home";
-import {Dashboard} from "@screen/Dashboard";
+import { Home } from "@screen/Home";
 
 export interface IRouteConfig {
   name: string;
@@ -12,14 +11,7 @@ export const routes: Array<IRouteConfig> = [
     name: "home",
     path: "/",
     component: (
-        <Home />
-    ),
-  },
-  {
-    name: "dashboard",
-    path: "/dashboard",
-    component: (
-        <Dashboard />
+      <Home />
     ),
   },
 ];

@@ -1,13 +1,16 @@
-import {Button} from "antd";
-import {useNavigate} from "react-router-dom";
-import {trans} from "@language/index.ts";
+import { Btn } from "@component/DesignSystem/Btn";
 
 export const Home = () => {
-    const navigate = useNavigate();
+
   return (
     <div>
-      <h1>Home</h1>
-        <Button type={"primary"} onClick={() => navigate('/dashboard')}>{trans('button.go_to_dashboard')}</Button>
+      <h1>1. Button</h1>
+      <h2>Normal</h2>
+      <Btn>SPIN</Btn>
+      <h2>Block</h2>
+      <Btn block>SPIN</Btn>
+      <h2>Vertical</h2>
+      <Btn vertical>HIGHER or EQUAL <br /> 15.38%</Btn>
     </div>
   );
 }
