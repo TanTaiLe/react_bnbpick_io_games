@@ -29,4 +29,17 @@
   &-vertical {
    display: block;
   }
+  
+  &-text {
+    color: #03a9f4;
+    background: transparent;
+    padding: 6px;
+    min-width: auto;
+    min-height: auto;
+    &:hover, &:active {
+      color: #03a9f4 !important;
+      background: transparent !important;
+      box-shadow: none;
+    }
+  }
 }

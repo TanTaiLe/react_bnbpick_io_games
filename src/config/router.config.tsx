@@ -1,4 +1,5 @@
 import { Home } from "@screen/Home";
+import { UltimateDice } from "@screen/Games/UltimateDice";
 
 export interface IRouteConfig {
   name: string;
@@ -12,6 +13,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/",
     component: (
       <Home />
+    ),
+  },
+  {
+    name: "ultimate dice",
+    path: "/ultimate-dice",
+    component: (
+      <UltimateDice />
     ),
   },
 ];

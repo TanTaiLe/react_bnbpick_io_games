@@ -4,26 +4,25 @@ import { FC, ReactNode } from 'react';
 interface Props {
   children?: ReactNode
   block?: boolean
-  size?: string
   style?: object
-  htmlType?: any
+  type?: any
+  htmlType?: any,
   vertical?: boolean
-  iconOnly?: boolean
   onClick?: React.MouseEventHandler<HTMLButtonElement>
   // any props that come into the component
 }
 
-export const Btn: FC<Props> = ({ children, block, size, style, htmlType, vertical, iconOnly, onClick }) => {
+export const Btn: FC<Props> = ({ children, block, style, type, htmlType, vertical, onClick }) => {
   return (
     <Button
       className={`
       btn
       ${vertical && 'btn-vertical'}
-      ${size && `btn--${size}`}
-      ${iconOnly && 'btn-icon'}
+      ${type == 'text' && 'btn-text'}
     `}
       style={style}
       block={block}
+      type={type}
       htmlType={htmlType}
       onClick={onClick}
     >
