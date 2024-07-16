@@ -1,0 +1,5 @@
+,en
+button.back_home,Back Home
+button.go_to_dashboard,Go to Dashboard
+error.notfound,"Sorry, the page you visited does not exist."
+error.not_authorized,"Sorry, you are not authorized to access this page."

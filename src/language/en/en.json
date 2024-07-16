@@ -1,0 +1,10 @@
+{
+    "button": {
+        "back_home": "Back Home",
+        "go_to_dashboard": "Go to Dashboard"
+    },
+    "error": {
+        "notfound": "Sorry, the page you visited does not exist.",
+        "not_authorized": "Sorry, you are not authorized to access this page."
+    }
+}
