@@ -1,6 +1,7 @@
 import { FC } from "react"
 import { MaterialSymbol } from "react-material-symbols"
 import { SymbolCodepoints } from "../../../node_modules/react-material-symbols/dist/types"
+import 'react-material-symbols/rounded';
 
 interface Props {
   icon?: SymbolCodepoints | any,
@@ -14,6 +15,7 @@ export const Icon: FC<Props> = ({ icon, size, color, fill }) =>
     icon={icon}
     size={size}
     fill={fill}
-    weight={200}
+    weight={300}
+    grade={200}
     color={color}
   />

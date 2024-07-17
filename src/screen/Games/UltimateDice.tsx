@@ -1,7 +1,9 @@
 import { Btn } from "@component/DesignSystem/Btn";
+import { Icon } from "@component/DesignSystem/Icon";
+import { Img } from "@component/DesignSystem/Img";
 import { Layout } from "@component/DesignSystem/Layout"
-import type { FormProps } from 'antd';
-import { Card, Checkbox, Col, Flex, Form, Input, Row, Switch } from "antd"
+import type { FormProps, CheckboxProps } from 'antd';
+import { Card, Checkbox, Col, Flex, Form, Input, Row, Slider, Space, Switch } from "antd"
 
 type FieldType = {
   betAmount?: number
@@ -26,11 +28,15 @@ const onChange = (checked: boolean) => {
   console.log(`switch to ${checked}`);
 };
 
+const onCheckboxCheck: CheckboxProps['onChange'] = (e) => {
+  console.log(`checked = ${e.target.checked}`);
+};
+
 export const UltimateDice = () => {
   return (
     <Layout title="Ultimate dice">
-      <Row style={{ width: '100%' }}>
-        <Col span={12} offset={6}>
+      <Row style={{ width: '100%' }} justify='center'>
+        <Col span={12}>
           <Card className="card form">
             <Form
               name="ultimateDice"
@@ -40,75 +46,100 @@ export const UltimateDice = () => {
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
-              <div className="form-group">
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item<FieldType>
-                      label="Bet Amount"
-                      name="betAmount"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item<FieldType>
-                      label="Profit On Win"
-                      name="profitOnWin"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </div>
+              <Space size="middle" direction="vertical" style={{ width: '100%' }}>
+                <div className="form-group">
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item<FieldType>
+                        label="Bet Amount"
+                        name="betAmount"
+                      >
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                          />
+                          <div className="btn-group">
+                            <Btn>2X</Btn>
+                            <Btn>1/2</Btn>
+                          </div>
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item<FieldType>
+                        label="Profit On Win"
+                        name="profitOnWin"
+                      >
+                        <Input
+                          prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
 
-              <div className="form-group">
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item<FieldType>
-                      label="Multiplier"
-                      name="multiplier"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item<FieldType>
-                      label="Win Chance"
-                      name="winChance"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </div>
+                <div className="form-group">
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item<FieldType>
+                        label="Multiplier"
+                        name="multiplier"
+                      >
+                        <Input
+                          suffix={<Icon icon="close" size={20} color="#4caf50" />}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item<FieldType>
+                        label="Win Chance"
+                        name="winChance"
+                      >
+                        <Input
+                          suffix={<Icon icon="percent" size={20} color="#4caf50" />}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
 
-              <div className="form-group">
-                <Row gutter={16}>
-                  <Col span={10}>
-                    <Form.Item<FieldType>
-                      label="Low"
-                      name="low"
-                    >
-                      <Input />
-                    </Form.Item>
+                <div className="form-group">
+                  <Row align="bottom" gutter={16}>
+                    <Col span={10}>
+                      <Form.Item<FieldType>
+                        label="Low"
+                        name="low"
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                      <Flex vertical align="center">
+                        <Switch defaultChecked onChange={onChange} />
+                        <span>Inside</span>
+                      </Flex>
+                    </Col>
+                    <Col span={10}>
+                      <Form.Item<FieldType>
+                        label="High"
+                        name="high"
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
+                <Row align="middle" gutter={16}>
+                  <Col span={6}>
+                    <Checkbox onChange={onCheckboxCheck}>Auto</Checkbox>
                   </Col>
-                  <Col span={4}>
-                    <Switch defaultChecked onChange={onChange} />
+                  <Col span={12}>
+                    <Btn block htmlType="submit">ROLL DICE</Btn>
                   </Col>
-                  <Col span={10}>
-                    <Form.Item<FieldType>
-                      label="High"
-                      name="high"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
+                  <Col span={6}></Col>
                 </Row>
-              </div>
-              <Flex align="center" justify="space-between">
-                
-              </Flex>
-
+                <Slider range={{ draggableTrack: true }} defaultValue={[20, 50]} />
+              </Space>
             </Form>
           </Card>
         </Col>

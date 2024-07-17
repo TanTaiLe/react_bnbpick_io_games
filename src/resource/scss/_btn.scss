@@ -42,4 +42,8 @@
       box-shadow: none;
     }
   }
+  &-group {
+    display: flex;
+    align-items: center;
+  }
 }
