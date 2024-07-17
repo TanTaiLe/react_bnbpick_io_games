@@ -7,6 +7,6 @@ export const capitalizeFirstLetter = (string: string) => {
   return splitStr?.join(" ");
 };
 
-export const numberFormat = (value: number, digits: number) => {
-  return value.toLocaleString("en", { minimumFractionDigits: digits })
+export const numberFormat = (value: number | undefined, digits: number) => {
+  return value?.toLocaleString("en", { minimumFractionDigits: digits })
 }

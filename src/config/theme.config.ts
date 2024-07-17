@@ -7,6 +7,7 @@ const themeConfig: ThemeConfig = {
     // colorBgContainer: "#ffffff",
     // colorPrimaryBorder: "#006600",
     borderRadius: 4,
+
   },
 };
 
