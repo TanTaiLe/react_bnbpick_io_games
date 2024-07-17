@@ -4,6 +4,7 @@ import { Img } from "@component/DesignSystem/Img";
 import { Layout } from "@component/DesignSystem/Layout"
 import type { FormProps, CheckboxProps } from 'antd';
 import { Card, Checkbox, Col, Flex, Form, Input, Row, Slider, Space, Switch } from "antd"
+import { useEffect, useState } from "react";
 
 type FieldType = {
   betAmount?: number
@@ -15,6 +16,17 @@ type FieldType = {
   outside?: boolean // false = inside, true = outside
   auto?: boolean
 };
+
+const defaultValues = {
+  betAmount: 0.00000001,
+  profitOnWin: 0.00000001,
+  multiplier: 2,
+  winChance: 48.5,
+  low: 25.75,
+  high: 74.25,
+  outside: false,
+  auto: false,
+}
 
 const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
   console.log('Success:', values);
@@ -33,6 +45,25 @@ const onCheckboxCheck: CheckboxProps['onChange'] = (e) => {
 };
 
 export const UltimateDice = () => {
+  const [values, setValues] = useState<FieldType>()
+  const [form] = Form.useForm();
+
+  console.log(values)
+  useEffect(() => {
+    setValues(defaultValues)
+    // console.log(values)
+    // form.setFieldsValue({
+    //   betAmount: 0.00000001,
+    //   profitOnWin: 0.00000001,
+    //   multiplier: 2,
+    //   winChance: 48.5,
+    //   low: 25.75,
+    //   high: 74.25,
+    //   outside: false,
+    //   auto: false,
+    // });
+  }, [])
+
   return (
     <Layout title="Ultimate dice">
       <Row style={{ width: '100%' }} justify='center'>
@@ -41,7 +72,8 @@ export const UltimateDice = () => {
             <Form
               name="ultimateDice"
               layout="vertical"
-              // initialValues={{ remember: true }}
+              initialValues={values}
+              form={form}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
@@ -50,13 +82,11 @@ export const UltimateDice = () => {
                 <div className="form-group">
                   <Row gutter={16}>
                     <Col span={12}>
-                      <Form.Item<FieldType>
-                        label="Bet Amount"
-                        name="betAmount"
-                      >
+                      <Form.Item<FieldType> label="Bet Amount" name="betAmount">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                            value={values?.betAmount?.toLocaleString("en", { minimumFractionDigits: 8 })}
                           />
                           <div className="btn-group">
                             <Btn>2X</Btn>
@@ -66,13 +96,13 @@ export const UltimateDice = () => {
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType>
-                        label="Profit On Win"
-                        name="profitOnWin"
-                      >
-                        <Input
-                          prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                        />
+                      <Form.Item<FieldType> label="Profit On Win" name="profitOnWin">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                            value={values?.profitOnWin?.toLocaleString("en", { minimumFractionDigits: 8 })}
+                          />
+                        </Space.Compact>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -81,23 +111,24 @@ export const UltimateDice = () => {
                 <div className="form-group">
                   <Row gutter={16}>
                     <Col span={12}>
-                      <Form.Item<FieldType>
-                        label="Multiplier"
-                        name="multiplier"
-                      >
-                        <Input
-                          suffix={<Icon icon="close" size={20} color="#4caf50" />}
-                        />
+                      <Form.Item<FieldType> label="Multiplier" name="multiplier">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            suffix={<Icon icon="close" size={20} color="#4caf50" />}
+                            value={values?.multiplier?.toLocaleString("en", { minimumFractionDigits: 2 })}
+                          />
+                        </Space.Compact>
+
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType>
-                        label="Win Chance"
-                        name="winChance"
-                      >
-                        <Input
-                          suffix={<Icon icon="percent" size={20} color="#4caf50" />}
-                        />
+                      <Form.Item<FieldType> label="Win Chance" name="winChance">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            suffix={<Icon icon="percent" size={20} color="#4caf50" />}
+                            value={values?.winChance?.toLocaleString("en", { minimumFractionDigits: 2 })}
+                          />
+                        </Space.Compact>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -106,32 +137,46 @@ export const UltimateDice = () => {
                 <div className="form-group">
                   <Row align="bottom" gutter={16}>
                     <Col span={10}>
-                      <Form.Item<FieldType>
-                        label="Low"
-                        name="low"
-                      >
-                        <Input />
+                      <Form.Item<FieldType> label="Low" name="low">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            value={values?.low?.toLocaleString("en", { minimumFractionDigits: 2 })}
+                          />
+                        </Space.Compact>
+
                       </Form.Item>
                     </Col>
                     <Col span={4}>
+                      {/* <Form.Item<FieldType> name="outside"> */}
                       <Flex vertical align="center">
-                        <Switch defaultChecked onChange={onChange} />
+                        <Switch
+                          checked={values?.outside}
+                          onChange={onChange}
+                        />
                         <span>Inside</span>
                       </Flex>
+                      {/* </Form.Item> */}
                     </Col>
                     <Col span={10}>
-                      <Form.Item<FieldType>
-                        label="High"
-                        name="high"
-                      >
-                        <Input />
+                      <Form.Item<FieldType> label="High" name="high">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            value={values?.high?.toLocaleString("en", { minimumFractionDigits: 2 })}
+                          />
+                        </Space.Compact>
+
                       </Form.Item>
                     </Col>
                   </Row>
                 </div>
                 <Row align="middle" gutter={16}>
                   <Col span={6}>
-                    <Checkbox onChange={onCheckboxCheck}>Auto</Checkbox>
+                    {/* <Form.Item<FieldType> name="auto"> */}
+                    <Checkbox
+                      checked={values?.auto}
+                      onChange={onCheckboxCheck}
+                    >Auto</Checkbox>
+                    {/* </Form.Item> */}
                   </Col>
                   <Col span={12}>
                     <Btn block htmlType="submit">ROLL DICE</Btn>
