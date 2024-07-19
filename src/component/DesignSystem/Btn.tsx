@@ -6,17 +6,19 @@ interface Props {
   block?: boolean
   style?: object
   type?: any
-  htmlType?: any,
+  htmlType?: any
   vertical?: boolean
   onClick?: React.MouseEventHandler<HTMLButtonElement>
+  className?: any
   // any props that come into the component
 }
 
-export const Btn: FC<Props> = ({ children, block, style, type, htmlType, vertical, onClick }) => {
+export const Btn: FC<Props> = ({ children, block, style, type, htmlType, vertical, onClick, className }) => {
   return (
     <Button
       className={`
       btn
+      ${className}
       ${vertical && 'btn-vertical'}
       ${type == 'text' && 'btn-text'}
     `}

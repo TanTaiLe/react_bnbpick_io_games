@@ -144,6 +144,46 @@ html {
   display: flex;
 }
 
-@import './resource/scss/btn';
+.ant-radio {
+  &-group {
+    width: 100%;
+    display: flex;
+  }
 
-.form {}
+  &-wrapper {
+    width: calc(100%/3);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-inner {
+    width: 24px !important;
+    height: 24px !important;
+    &::after {
+      display: none !important;
+    }
+  }
+
+  &-checked {
+
+    &::after {
+      top: 0;
+      left: 2px;
+      width: 7px !important;
+      height: 10px !important;
+      border: solid 2px #fff !important;
+      border-left: none !important;
+      border-top: none !important;
+      transform: translate(8px, 4.5px) rotate(45deg) !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background-color: transparent !important;
+      border-radius: 0 !important;
+    }
+  }
+}
+
+@import './resource/scss/btn';
+@import './resource/scss/games';
