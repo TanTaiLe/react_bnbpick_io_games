@@ -161,6 +161,7 @@ html {
   &-inner {
     width: 24px !important;
     height: 24px !important;
+
     &::after {
       display: none !important;
     }
@@ -181,6 +182,55 @@ html {
       opacity: 1 !important;
       background-color: transparent !important;
       border-radius: 0 !important;
+    }
+  }
+}
+
+.history {
+  .ant-tabs {
+    &-nav-wrap {
+      justify-content: center
+    }
+
+    &-tab {
+      padding: 12px 20px;
+
+      &-btn {
+        font-weight: 700;
+        letter-spacing: .5px;
+      }
+    }
+  }
+
+  &-table {
+    th {
+      color: #fff !important;
+      background-color: #03a9f4 !important;
+      text-align: center !important;
+
+      &::before {
+        display: none !important
+      }
+    }
+    td {
+      text-align: center !important;
+    }
+    &-game {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      span {
+        margin-right: 4px
+      }
+    }
+    &-multiplier {
+      color: #03a9f4 !important;
+    }
+    &-positive {
+      color: #38cb74 !important
+    }
+    &-negative {
+      color: #ff5722 !important
     }
   }
 }

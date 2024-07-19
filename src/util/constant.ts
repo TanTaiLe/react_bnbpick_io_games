@@ -6,7 +6,7 @@ export const ROUTE = {
 
 export const GEMS_BET_MINIMUM = 0.00000100
 
-export const GEMS_PROFITS = [
+export const GEMS_SETTINGS = [
   {
     name: "Easy",
     column: 3,

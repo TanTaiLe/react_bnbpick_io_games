@@ -6,7 +6,7 @@ import { Card, Col, Form, Input, Radio, Row, Space } from "antd"
 import type { FormProps } from "antd"
 import { ReactNode, useEffect, useState } from "react"
 import _debounce from 'lodash/debounce'
-import { GEMS_BET_MINIMUM, GEMS_PROFITS } from "@util/constant"
+import { GEMS_BET_MINIMUM, GEMS_SETTINGS } from "@util/constant"
 import _ from "lodash";
 import { Icon } from "@component/DesignSystem/Icon"
 import useStateCallback from "@hook/common/useStateCallback"
@@ -51,7 +51,7 @@ export const Gems = () => {
 
   const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
     setPlay(true);
-    onRandomGems();
+    onRandomGems(_.find(GEMS_SETTINGS, ['name', diff])?.gems, _.find(GEMS_SETTINGS, ['name', diff])?.column);
     setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     setCurrentLevel({
       level: 1,
@@ -100,11 +100,11 @@ export const Gems = () => {
     }
   }
 
-  const onRandomGems = () => {
+  const onRandomGems = (gemNum: number | any, choiceNum: number | any) => {
     let sets = []
     while (sets.length < 10) {
-      const numbers = Array.from({ length: 3 }, () => Math.round(Math.random()));
-      numbers.filter(num => num === 1).length == 2 && sets.push(numbers)
+      const numbers = Array.from({ length: choiceNum }, () => Math.round(Math.random()));
+      numbers.filter(num => num === 1).length == gemNum && sets.push(numbers)
     }
     setGems(sets);
   }
@@ -126,7 +126,7 @@ export const Gems = () => {
     console.log(time)
     setRecord(record?.concat({
       time: time,
-      game: <span className="table-game">
+      game: <span className="history-table-game">
         <Icon icon="diamond" size={14} />
         Gems
       </span>,
@@ -170,14 +170,14 @@ export const Gems = () => {
                   </Space.Compact>
                 </Form.Item>
                 <div className={`playground ${!play && 'not-allowed'}`}>
-                  {_.find(GEMS_PROFITS, ['name', diff])?.multiplier.map((d, i) => (
+                  {_.find(GEMS_SETTINGS, ['name', diff])?.multiplier.map((d, i) => (
                     <Row
                       gutter={[4, 4]} key={i}
                       style={{ width: '100%' }}
                       className={`${((i + 1) > currentLevel.level) && 'disabled'}`}
                     >
-                      {[...Array(_.find(GEMS_PROFITS, ['name', diff])?.column)].map((e, j) =>
-                        <Col span={8} key={j}>
+                      {[...Array(_.find(GEMS_SETTINGS, ['name', diff])?.column)].map((e, j) =>
+                        <Col span={_.find(GEMS_SETTINGS, ['name', diff])?.column == 3 ? 8 : 12} key={j}>
                           <Btn block onClick={() => onAnswer(i, d, j)}>
                             {
                               isChosen[i] == 0
@@ -197,7 +197,7 @@ export const Gems = () => {
                   value={diff}
                   className={`${play && 'disabled'}`}
                 >
-                  {GEMS_PROFITS.map((d, key) =>
+                  {GEMS_SETTINGS.map((d, key) =>
                     <Radio key={key} value={d.name}>{d.name}</Radio>
                   )}
                 </Radio.Group>
@@ -223,8 +223,10 @@ export const Gems = () => {
             </Form>
           </Card>
         </Col>
-        <Col md={{ span: 20 }}>
-          <BetHistory dataSource={record} />
+        <Col md={{ span: 22 }}>
+          <BetHistory
+          // dataSource={record} need API to fetch Data for rendering
+          />
         </Col>
       </Row>
     </Layout>
