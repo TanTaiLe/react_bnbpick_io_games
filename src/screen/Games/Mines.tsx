@@ -22,24 +22,42 @@ export const Mines = () => {
   const [form] = Form.useForm();
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
+  const [isChosen, setIsChosen] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [mines, setMines] = useState<Number[]>([])
   const [session, setSession] = useStateCallback<{
     multiplier: number
+    multiplierPerTile: number
     profit: number
   }>({
     multiplier: 0,
+    multiplierPerTile: 1,
     profit: 0.00000000
   })
 
   const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
     setPlay(true);
-    // onRandomGems(_.find(GEMS_SETTINGS, ['name', diff])?.gems, _.find(GEMS_SETTINGS, ['name', diff])?.column);
-    // setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-    // setCurrentLevel({
-    //   level: 1,
-    //   multiplier: 0,
-    //   profit: 0.00000000
-    // })
-  };
+    onRandomMines(3);
+    setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    setSession({
+      multiplier: 0,
+      multiplierPerTile: 1,
+      profit: 0.00000000
+    })
+  }
+
+  const onRandomMines = (mineNum: number | any) => {
+    let sets = []
+    while (true) {
+      sets = Array.from({ length: 25 }, () => Math.round(Math.random()));
+
+      // Kiểm tra số lượng số 0 trong mảng
+      const zeroCount = sets.filter(num => num === 0).length;
+      if (zeroCount === mineNum) {
+        break;
+      }
+    }
+    setMines(sets)
+  }
 
   const onChange = (name: string, value: any) => {
     setFormData({ [name]: value })
@@ -54,6 +72,26 @@ export const Mines = () => {
     let newValue = formData.betAmount && formData.betAmount / 2
     if (newValue && newValue >= MINES_BET_MINIMUM)
       setFormData({ 'betAmount': newValue })
+  }
+
+  const onTilePress = (multiplier: number, multiplierPerTile: number, tileId: number) => {
+    if (formData.betAmount) {
+      if (mines[tileId] == 1) {
+        setIsChosen(prev => prev.map((e, i) => (i === tileId ? 1 : e)))
+        setSession({
+          multiplier: multiplier,
+          multiplierPerTile: multiplierPerTile,
+          profit: formData.betAmount * (multiplier + multiplierPerTile)
+        })
+      } else {
+        setIsChosen([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        setSession({
+          multiplier: 0,
+          multiplierPerTile: 0,
+          profit: formData.betAmount * -1
+        }, () => onStopPlaying())
+      }
+    }
   }
 
   const onStopPlaying = () => {
@@ -165,10 +203,16 @@ export const Mines = () => {
                   <Row gutter={8}>
                     {[...Array(25)].map((e, i) =>
                       <Col flex="20%" key={i}>
-                        <Btn className="tile">
+                        <Btn className="tile" onClick={() => onTilePress(i)}>
                           <div className="tile-back"></div>
                           <div className="tile-front">
-
+                            {
+                              isChosen[i] == 0
+                                ? ''
+                                : mines[i]
+                                  ? <Img src="/mines_gem.png" w={40} />
+                                  : <Img src="/mines_mine.png" w={40} />
+                            }
                           </div>
                         </Btn>
                       </Col>
@@ -176,7 +220,7 @@ export const Mines = () => {
                   </Row>
                 </div>
 
-                <Row gutter={16} align="middle">
+                <Row gutter={16} align="middle" className={`${play && 'disabled'}`}>
                   <Col span={5}>
                     <Checkbox
                     // onChange={onChange}

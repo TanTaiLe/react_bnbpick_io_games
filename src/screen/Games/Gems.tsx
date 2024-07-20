@@ -57,7 +57,7 @@ export const Gems = () => {
       multiplier: 0,
       profit: 0.00000000
     })
-  };
+  }
 
   const onChange = (name: string, value: any) => {
     setFormData({ [name]: value })
@@ -74,7 +74,7 @@ export const Gems = () => {
       setFormData({ 'betAmount': newValue })
   }
 
-  const onAnswer = async (level: number, multiplier: number, answerId: number) => {
+  const onAnswer = (level: number, multiplier: number, answerId: number) => {
     /**
      * level: level+1 = session
      * multiplier: current multiplier
@@ -92,7 +92,7 @@ export const Gems = () => {
         setIsChosen([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         setSession({
           level: 10,
-          multiplier: 0.00,
+          multiplier: 0,
           profit: formData.betAmount * -1
         }, () => onStopPlaying())
       }
