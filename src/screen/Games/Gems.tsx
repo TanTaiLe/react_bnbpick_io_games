@@ -25,8 +25,7 @@ interface RecordType {
 }
 
 const defaultValues = {
-  profit: 0.00000000,
-  betAmount: 0.00000100,
+  betAmount: GEMS_BET_MINIMUM,
 }
 
 
@@ -39,7 +38,7 @@ export const Gems = () => {
   const [isChosen, setIsChosen] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [gems, setGems] = useState<Number[][]>([])
   const [record, setRecord] = useState<RecordType[]>([])
-  const [currentLevel, setCurrentLevel] = useStateCallback<{
+  const [session, setSession] = useStateCallback<{
     level: number
     multiplier: number
     profit: number
@@ -53,7 +52,7 @@ export const Gems = () => {
     setPlay(true);
     onRandomGems(_.find(GEMS_SETTINGS, ['name', diff])?.gems, _.find(GEMS_SETTINGS, ['name', diff])?.column);
     setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-    setCurrentLevel({
+    setSession({
       level: 1,
       multiplier: 0,
       profit: 0.00000000
@@ -77,21 +76,21 @@ export const Gems = () => {
 
   const onAnswer = async (level: number, multiplier: number, answerId: number) => {
     /**
-     * level: level+1 = currentLevel
+     * level: level+1 = session
      * multiplier: current multiplier
      * answerId: answer id
      */
     if (formData.betAmount) {
       if (gems[level][answerId] == 1) {
         setIsChosen(prev => prev.map((e, i) => (i === level ? 1 : e)))
-        setCurrentLevel({
+        setSession({
           level: level + 2,
           multiplier: multiplier,
           profit: formData.betAmount * multiplier
         })
       } else {
         setIsChosen([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        setCurrentLevel({
+        setSession({
           level: 10,
           multiplier: 0.00,
           profit: formData.betAmount * -1
@@ -111,9 +110,8 @@ export const Gems = () => {
 
   const onStopPlaying = () => {
     setPlay(false)
-    console.log(currentLevel)
+    console.log(session)
     onSaveRecord()
-    // onSaveRecord()
   }
 
   const onCashOut = () => {
@@ -127,12 +125,12 @@ export const Gems = () => {
     setRecord(record?.concat({
       time: time,
       game: <span className="history-table-game">
-        <Icon icon="diamond" size={14} />
+        <Icon fill icon="diamond" size={14} />
         Gems
       </span>,
       bet: formData.betAmount,
-      multiplier: currentLevel.multiplier,
-      profit: currentLevel.profit
+      multiplier: session.multiplier,
+      profit: session.profit
     }))
   }
 
@@ -144,7 +142,7 @@ export const Gems = () => {
       // onSaveRecord()
     }
 
-  }, [form, formData, currentLevel, play, record])
+  }, [form, formData, session, play, record])
 
   return (
     <Layout title="Gems">
@@ -164,7 +162,7 @@ export const Gems = () => {
                   <Space.Compact style={{ width: '100%' }}>
                     <Input
                       prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                      value={numberFormat(currentLevel?.profit, 8)}
+                      value={numberFormat(session?.profit, 8)}
                       disabled
                     />
                   </Space.Compact>
@@ -174,7 +172,7 @@ export const Gems = () => {
                     <Row
                       gutter={[4, 4]} key={i}
                       style={{ width: '100%' }}
-                      className={`${((i + 1) > currentLevel.level) && 'disabled'}`}
+                      className={`${((i + 1) > session.level) && 'disabled'}`}
                     >
                       {[...Array(_.find(GEMS_SETTINGS, ['name', diff])?.column)].map((e, j) =>
                         <Col span={_.find(GEMS_SETTINGS, ['name', diff])?.column == 3 ? 8 : 12} key={j}>
@@ -183,7 +181,7 @@ export const Gems = () => {
                               isChosen[i] == 0
                                 ? `x` + d
                                 : (gems[i][j]
-                                  ? <Icon icon="diamond" size={20} />
+                                  ? <Icon fill icon="diamond" size={20} />
                                   : '')
                             }
                           </Btn>

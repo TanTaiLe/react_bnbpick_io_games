@@ -21,9 +21,42 @@
   }
 }
 
+.mines {
+  .btn {
+    &.tile {
+      min-width: 100%;
+      min-height: 0;
+      padding-bottom: 91.75%;
+      background-color: transparent;
+      position: relative;
+      overflow: hidden;
+      .tile-front, .tile-back {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+      .tile-front {
+        background-color: #00BCD4;
+        &:hover {
+          background-color: darken(#00BCD4, 5%) ;
+        }
+      }
+      .tile-back {
+        background-color: #EAEAEA;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
 
 .disabled {
-  opacity: 0.5;
+  opacity: 0.8;
   cursor: not-allowed;
   pointer-events: none;
 }

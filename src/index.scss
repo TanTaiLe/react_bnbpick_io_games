@@ -29,7 +29,7 @@ html {
 
 .form {
   &-group {
-    padding: 16px;
+    padding: 8px 16px 16px;
     background-color: #F5F5F5;
     border: 1px solid #DDD;
     border-radius: 4px;
@@ -40,9 +40,11 @@ html {
     margin: 0;
 
     &.disabled {
-      .ant-form-item-control-input-content {
+
+      .ant-form-item-control-input-content,
+      .ant-input-outlined {
         cursor: not-allowed;
-        background-color: #ebebe4;
+        background-color: #ebebe4 !important;
       }
 
       .ant-input-disabled {
@@ -124,7 +126,7 @@ html {
 
     label {
       color: #4caf50 !important;
-      font-size: 12px;
+      font-size: 14px;
     }
 
     input {
@@ -136,6 +138,39 @@ html {
         outline: none;
         box-shadow: none
       }
+    }
+
+    .ant-select {
+      &-selector {
+        padding: 0;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent;
+
+        &:focus {
+          outline: none;
+          box-shadow: none
+        }
+      }
+
+      &-selection-item {
+        padding-inline-end: 12px !important;
+      }
+
+      &-arrow {
+        right: -4px;
+      }
+    }
+
+    .select-icon {
+      margin-left: 12px;
+    }
+  }
+
+  .ant-checkbox {
+    &-inner {
+      width: 20px;
+      height: 20px;
     }
   }
 }
@@ -212,23 +247,29 @@ html {
         display: none !important
       }
     }
+
     td {
       text-align: center !important;
     }
+
     &-game {
       display: flex;
       align-items: center;
       justify-content: center;
+
       span {
         margin-right: 4px
       }
     }
+
     &-multiplier {
       color: #03a9f4 !important;
     }
+
     &-positive {
       color: #38cb74 !important
     }
+
     &-negative {
       color: #ff5722 !important
     }

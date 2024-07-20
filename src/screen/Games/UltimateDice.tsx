@@ -101,7 +101,7 @@ export const UltimateDice = () => {
                       <Form.Item<FieldType> label="Multiplier" name="multiplier">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
-                            suffix={<Icon icon="close" size={20} color="#4caf50" />}
+                            suffix={<Icon fill icon="close" size={20} color="#4caf50" />}
                             value={numberFormat(newValue.multiplier, 2)}
                           />
                         </Space.Compact>
@@ -112,7 +112,7 @@ export const UltimateDice = () => {
                       <Form.Item<FieldType> label="Win Chance" name="winChance">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
-                            suffix={<Icon icon="percent" size={20} color="#4caf50" />}
+                            suffix={<Icon fill icon="percent" size={20} color="#4caf50" />}
                             value={numberFormat(newValue.winChance, 2)}
                           />
                         </Space.Compact>

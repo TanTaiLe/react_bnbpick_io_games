@@ -101,7 +101,7 @@ const allBetsColumns: TableProps<AllBetsType>['columns'] = [
 const sample = [{
   time: '00:00:00',
   game: <span className="history-table-game">
-    <Icon icon="diamond" size={14} />
+    <Icon fill icon="diamond" size={14} />
     Gems
   </span>,
   bet: 0.00000100,
@@ -110,7 +110,7 @@ const sample = [{
 }, {
   time: '00:00:00',
   game: <span className="history-table-game">
-    <Icon icon="diamond" size={14} />
+    <Icon fill icon="diamond" size={14} />
     Gems
   </span>,
   bet: 0.00000100,
