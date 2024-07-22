@@ -26,13 +26,14 @@ export const Mines = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [isChosen, setIsChosen] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [mines, setMines] = useState<Number[]>([])
+  const [tileCount, setTileCount] = useState(0)
   const [session, setSession] = useStateCallback<{
     multiplier: number
     multiplierPerTile: number
     profit: number
   }>({
-    multiplier: 0,
-    multiplierPerTile: 1,
+    multiplier: 1,
+    multiplierPerTile: 0,
     profit: 0.00000000
   })
 
@@ -40,9 +41,10 @@ export const Mines = () => {
     setPlay(true);
     onRandomMines(formData.mines);
     setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    setTileCount(0)
     setSession({
-      multiplier: 0,
-      multiplierPerTile: 1,
+      multiplier: 1,
+      multiplierPerTile: 0,
       profit: 0.00000000
     })
   }
@@ -90,10 +92,11 @@ export const Mines = () => {
       if (mines[tileId] == 1) {
         setIsChosen(prev => prev.map((e, i) => (i === tileId ? 1 : e)))
         setSession({
-          multiplier: multiplier,
+          multiplier: (session.multiplier == 1 ? MINES_SETTINGS[formData.mines - 1].multiplier : session.multiplier) + (session.multiplier == 1 ? 0 : multiplierPerTile),
           multiplierPerTile: multiplierPerTile,
-          profit: formData.betAmount * (multiplier + multiplierPerTile)
+          profit: formData.betAmount * (multiplier + multiplierPerTile * tileCount) - formData.betAmount
         })
+        setTileCount(prev => prev + 1)
       } else {
         setIsChosen([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         setSession({
@@ -123,7 +126,6 @@ export const Mines = () => {
     }
 
   }, [form, formData, play])
-  console.log(formData)
 
   return (
     <Layout title="Mines">
@@ -175,7 +177,7 @@ export const Mines = () => {
                           <Space.Compact style={{ width: '100%' }}>
                             <Input
                               suffix={<Icon fill icon="diamond" size={20} color="#8bc34a" />}
-                              value={22}
+                              value={25 - formData.mines}
                               disabled
                             />
                           </Space.Compact>
@@ -187,22 +189,22 @@ export const Mines = () => {
                 <div className="form-group">
                   <Row gutter={16}>
                     <Col span={12}>
-                      <Form.Item label={`Profit On Next Tile (${''}x)`} name="nextProfit" className="disabled">
+                      <Form.Item label={`Profit On Next Tile (${numberFormat(MINES_SETTINGS[formData.mines - 1].multiplier + MINES_SETTINGS[formData.mines - 1].multiplierPerTile * tileCount, 2)}x)`} name="nextProfit" className="disabled">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(formData?.betAmount, 8)}
+                            value={numberFormat(formData?.betAmount * (MINES_SETTINGS[formData.mines - 1].multiplier + MINES_SETTINGS[formData.mines - 1].multiplierPerTile * tileCount) - formData?.betAmount, 8)}
                             disabled
                           />
                         </Space.Compact>
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item label={`Total Profit (${''}x)`} name="totalProfit" className="disabled">
+                      <Form.Item label={`Total Profit (${numberFormat(session.multiplier, 2)}x)`} name="totalProfit" className="disabled">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(formData?.betAmount, 8)}
+                            value={numberFormat(session.profit, 8)}
                             disabled
                           />
                         </Space.Compact>
@@ -215,18 +217,12 @@ export const Mines = () => {
                   <Row gutter={8}>
                     {[...Array(25)].map((e, i) =>
                       <Col flex="20%" key={i}>
-                        <Btn className="tile"
+                        <Btn className={`tile ${isChosen[i] == 1 && 'showed'}`}
                           onClick={() => onTilePress(MINES_SETTINGS[formData.mines - 1].multiplier, MINES_SETTINGS[formData.mines - 1].multiplierPerTile, i)}
                         >
-                          <div className="tile-back"></div>
-                          <div className="tile-front">
-                            {
-                              isChosen[i] == 0
-                                ? ''
-                                : mines[i]
-                                  ? <Img src="/mines_gem.png" w={40} />
-                                  : <Img src="/mines_mine.png" w={40} />
-                            }
+                          <div className="tile-front"></div>
+                          <div className="tile-back">
+                            <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
                           </div>
                         </Btn>
                       </Col>

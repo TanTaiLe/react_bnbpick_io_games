@@ -30,6 +30,15 @@
       background-color: transparent;
       position: relative;
       overflow: hidden;
+      &.showed {
+        .tile-back {
+          
+        opacity: 1;
+        }
+        img {
+          transform: scale(1);
+        }
+      }
       .tile-front, .tile-back {
         position: absolute;
         top: 0;
@@ -50,6 +59,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        opacity: 0;
+      }
+      img {
+        transform: scale(0);
+        transition: .3s all ease;
       }
     }
   }
