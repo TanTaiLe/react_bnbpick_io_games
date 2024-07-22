@@ -60,7 +60,10 @@ export const Gems = () => {
   }
 
   const onChange = (name: string, value: any) => {
-    setFormData({ [name]: value })
+    setFormData(prevValue => ({
+      ...prevValue,
+      [name]: value
+    }))
   }
 
   const onBetDouble = () => {

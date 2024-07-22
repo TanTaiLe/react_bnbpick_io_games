@@ -11,11 +11,13 @@ import type { FormProps } from "antd"
 import { useEffect, useState } from "react";
 
 interface FieldType {
-  betAmount?: number
+  betAmount: number
+  mines: number
 }
 
 const defaultValues = {
   betAmount: MINES_BET_MINIMUM,
+  mines: 3
 }
 
 export const Mines = () => {
@@ -36,7 +38,7 @@ export const Mines = () => {
 
   const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
     setPlay(true);
-    onRandomMines(3);
+    onRandomMines(formData.mines);
     setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     setSession({
       multiplier: 0,
@@ -60,18 +62,27 @@ export const Mines = () => {
   }
 
   const onChange = (name: string, value: any) => {
-    setFormData({ [name]: value })
+    setFormData(prevValue => ({
+      ...prevValue,
+      [name]: value
+    }))
   }
 
   const onBetDouble = () => {
     let newValue = formData.betAmount && formData.betAmount * 2
-    setFormData({ 'betAmount': newValue })
+    setFormData(prevValue => ({
+      ...prevValue,
+      'betAmount': newValue
+    }))
   }
 
   const onBetHalf = () => {
     let newValue = formData.betAmount && formData.betAmount / 2
     if (newValue && newValue >= MINES_BET_MINIMUM)
-      setFormData({ 'betAmount': newValue })
+      setFormData(prevValue => ({
+        ...prevValue,
+        'betAmount': newValue
+      }))
   }
 
   const onTilePress = (multiplier: number, multiplierPerTile: number, tileId: number) => {
@@ -112,6 +123,7 @@ export const Mines = () => {
     }
 
   }, [form, formData, play])
+  console.log(formData)
 
   return (
     <Layout title="Mines">
@@ -147,9 +159,9 @@ export const Mines = () => {
                         <Form.Item label="Mines" name="mines" className={`${play && 'disabled'}`}>
                           <Space.Compact style={{ width: '100%' }}>
                             <Select
-                              defaultValue="3"
+                              defaultValue={defaultValues.mines}
                               style={{ width: 120 }}
-                              onChange={onChange}
+                              onChange={e => onChange('mines', e)}
                               options={Array.from({ length: 24 }, (_, i) => ({ value: i + 1, label: i + 1 }))}
                             />
                             <div className="select-icon">
@@ -203,7 +215,9 @@ export const Mines = () => {
                   <Row gutter={8}>
                     {[...Array(25)].map((e, i) =>
                       <Col flex="20%" key={i}>
-                        <Btn className="tile" onClick={() => onTilePress(i)}>
+                        <Btn className="tile"
+                          onClick={() => onTilePress(MINES_SETTINGS[formData.mines - 1].multiplier, MINES_SETTINGS[formData.mines - 1].multiplierPerTile, i)}
+                        >
                           <div className="tile-back"></div>
                           <div className="tile-front">
                             {
