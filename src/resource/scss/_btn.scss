@@ -46,4 +46,10 @@
     display: flex;
     align-items: center;
   }
+  &-cashout {
+    background-color: #f7655a !important;
+    &:hover {
+      background-color: darken(#f7655a, 5%) !important;
+    }
+  }
 }

@@ -8,25 +8,31 @@ import { numberFormat } from "@util/common";
 import { MINES_BET_MINIMUM, MINES_SETTINGS } from "@util/constant";
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
 import type { FormProps } from "antd"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface FieldType {
   betAmount: number
   mines: number
+  isAuto: boolean
 }
 
 const defaultValues = {
   betAmount: MINES_BET_MINIMUM,
-  mines: 3
+  mines: 3,
+  isAuto: false
 }
 
 export const Mines = () => {
   const [form] = Form.useForm();
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
-  const [isChosen, setIsChosen] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-  const [mines, setMines] = useState<Number[]>([])
+  const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const [isChosen, setIsChosen] = useState(Array(25).fill(0))
+  const [mines, setMines] = useState<number[]>([])
   const [tileCount, setTileCount] = useState(0)
+  const [tileAutoSet, setTileAutoSet] = useState<number[]>([])
+  const [minesUpdated, setMinesUpdated] = useState<boolean>(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const [session, setSession] = useStateCallback<{
     multiplier: number
     multiplierPerTile: number
@@ -40,7 +46,7 @@ export const Mines = () => {
   const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
     setPlay(true);
     onRandomMines(formData.mines);
-    setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    setIsChosen(Array(25).fill(0))
     setTileCount(0)
     setSession({
       multiplier: 1,
@@ -49,7 +55,22 @@ export const Mines = () => {
     })
   }
 
-  const onRandomMines = (mineNum: number | any) => {
+  const onStartAutoBet = () => {
+    setAutoPlay(true)
+    setTimeout(() => setIsChosen(Array(25).fill(1)), 1000)
+  }
+
+  const onStopAutoBet = () => {
+    console.log('Stopping auto bet...');
+    setAutoPlay(false)
+    setTimeout(() => setIsChosen(Array(25).fill(0)), 1000)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    onStopPlaying()
+  }
+
+  const onRandomMines = (mineNum: number) => {
     let sets = []
     while (true) {
       sets = Array.from({ length: 25 }, () => Math.round(Math.random()));
@@ -61,6 +82,20 @@ export const Mines = () => {
       }
     }
     setMines(sets)
+    setMinesUpdated(true); // Đánh dấu rằng mines đã được cập nhật
+  }
+
+  const onCheckTileAutoSet = () => {
+    console.log(tileAutoSet)
+
+    for (const i of tileAutoSet) {
+      console.log('mines', mines)
+      console.log('i', i)
+      if (mines[i] === 0) {
+        onStopAutoBet();
+        break;
+      }
+    }
   }
 
   const onChange = (name: string, value: any) => {
@@ -98,7 +133,7 @@ export const Mines = () => {
         })
         setTileCount(prev => prev + 1)
       } else {
-        setIsChosen([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        setIsChosen(Array(25).fill(1))
         setSession({
           multiplier: 0,
           multiplierPerTile: 0,
@@ -108,9 +143,17 @@ export const Mines = () => {
     }
   }
 
+  const onTileChange = (tileId: number) => {
+    setTileAutoSet(prev => {
+      if (prev.includes(tileId))
+        return prev.filter(tile => tile !== tileId)
+      else
+        return [...prev, tileId]
+    })
+  }
+
   const onStopPlaying = () => {
     setPlay(false)
-    console.log(session)
     // onSaveRecord()
   }
 
@@ -120,12 +163,34 @@ export const Mines = () => {
 
   useEffect(() => {
     form.setFieldsValue(formData)
+    formData.isAuto && setPlay(true)
     if (!play && play != undefined) {
       // console.log(record)
       // onSaveRecord()
     }
 
-  }, [form, formData, play])
+    console.log('autoplay', autoPlay)
+
+    if (autoPlay) {
+      intervalRef.current = setInterval(() => {
+        onRandomMines(formData.mines)
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+
+  }, [form, formData, play, autoPlay])
+
+  useEffect(() => {
+    if (minesUpdated) {
+      onCheckTileAutoSet();
+      setMinesUpdated(false); // Reset lại trạng thái
+    }
+  }, [mines, minesUpdated]);
 
   return (
     <Layout title="Mines">
@@ -217,30 +282,46 @@ export const Mines = () => {
                   <Row gutter={8}>
                     {[...Array(25)].map((e, i) =>
                       <Col flex="20%" key={i}>
-                        <Btn className={`tile ${isChosen[i] == 1 && 'showed'}`}
-                          onClick={() => onTilePress(MINES_SETTINGS[formData.mines - 1].multiplier, MINES_SETTINGS[formData.mines - 1].multiplierPerTile, i)}
-                        >
-                          <div className="tile-front"></div>
-                          <div className="tile-back">
-                            <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
-                          </div>
-                        </Btn>
+                        {
+                          formData.isAuto
+                            ? <Btn className={`tile ${isChosen[i] == 1 && 'showed'} ${formData.isAuto && 'auto'} ${tileAutoSet.includes(i) && 'checked'}`}
+                              onClick={() => onTileChange(i)}
+                            >
+                              <div className="tile-front"></div>
+                              <div className="tile-back">
+                                <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
+                              </div>
+                            </Btn>
+                            : <Btn className={`tile ${isChosen[i] == 1 && 'showed'}`}
+                              onClick={() => onTilePress(MINES_SETTINGS[formData.mines - 1].multiplier, MINES_SETTINGS[formData.mines - 1].multiplierPerTile, i)}
+                            >
+                              <div className="tile-front"></div>
+                              <div className="tile-back">
+                                <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
+                              </div>
+                            </Btn>
+                        }
                       </Col>
                     )}
                   </Row>
                 </div>
 
-                <Row gutter={16} align="middle" className={`${play && 'disabled'}`}>
+                <Row gutter={16} align="middle">
                   <Col span={5}>
                     <Checkbox
-                    // onChange={onChange}
+                      onChange={e => onChange('isAuto', e.target.checked)}
+                      className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}
                     >Auto</Checkbox>
                   </Col>
                   <Col span={14}>
                     {
-                      play
-                        ? <Btn block onClick={onCashOut}>CASHOUT</Btn>
-                        : <Btn block htmlType="submit">START</Btn>
+                      formData.isAuto
+                        ? autoPlay
+                          ? <Btn block onClick={onStopAutoBet}>STOP AUTO BET</Btn>
+                          : <Btn block onClick={onStartAutoBet} className={`${tileAutoSet.length < 1 && 'disabled'}`}>START AUTO BET</Btn>
+                        : play
+                          ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
+                          : <Btn block htmlType="submit">BET</Btn>
                     }
                   </Col>
                   <Col span={5}>
