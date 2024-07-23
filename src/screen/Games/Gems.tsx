@@ -35,7 +35,7 @@ export const Gems = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [diff, setDiff] = useState('Easy')
   const [play, setPlay] = useState<boolean | undefined>()
-  const [isChosen, setIsChosen] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [isChosen, setIsChosen] = useState(Array(10).fill(0))
   const [gems, setGems] = useState<Number[][]>([])
   const [record, setRecord] = useState<RecordType[]>([])
   const [session, setSession] = useStateCallback<{
@@ -51,7 +51,7 @@ export const Gems = () => {
   const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
     setPlay(true);
     onRandomGems(_.find(GEMS_SETTINGS, ['name', diff])?.gems, _.find(GEMS_SETTINGS, ['name', diff])?.column);
-    setIsChosen([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    setIsChosen(Array(10).fill(0))
     setSession({
       level: 1,
       multiplier: 0,
@@ -64,6 +64,7 @@ export const Gems = () => {
       ...prevValue,
       [name]: value
     }))
+
   }
 
   const onBetDouble = () => {
@@ -75,6 +76,17 @@ export const Gems = () => {
     let newValue = formData.betAmount && formData.betAmount / 2
     if (newValue && newValue >= GEMS_BET_MINIMUM)
       setFormData({ 'betAmount': newValue })
+  }
+
+  const onSetDiff = (diff: string) => {
+    setDiff(diff)
+    setGems([])
+    setIsChosen(Array(10).fill(0))
+    setSession({
+      level: 0,
+      multiplier: 0,
+      profit: 0.00000000
+    })
   }
 
   const onAnswer = (level: number, multiplier: number, answerId: number) => {
@@ -92,7 +104,7 @@ export const Gems = () => {
           profit: formData.betAmount * multiplier
         })
       } else {
-        setIsChosen([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        setIsChosen(Array(10).fill(1))
         setSession({
           level: 10,
           multiplier: 0,
@@ -194,7 +206,7 @@ export const Gems = () => {
                   ))}
                 </div>
                 <Radio.Group
-                  onChange={e => setDiff(e.target.value)}
+                  onChange={e => onSetDiff(e.target.value)}
                   value={diff}
                   className={`${play && 'disabled'}`}
                 >
