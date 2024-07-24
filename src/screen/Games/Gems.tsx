@@ -171,87 +171,80 @@ export const Gems = () => {
 
   return (
     <Layout title="Gems">
-      <Row style={{ width: '100%' }} justify='center' gutter={[24, 24]}>
-        <Col md={{ span: 8 }}>
-          <Card className="card form gems">
-            <Form
-              form={form}
-              name="gems"
-              initialValues={defaultValues}
-              onFinish={onStartPlaying}
-              layout="vertical"
-              autoComplete="off"
-            >
-              <Space size="middle" direction="vertical" style={{ width: '100%' }}>
-                <Form.Item label="Profit" name="profit" className="disabled">
-                  <Space.Compact style={{ width: '100%' }}>
-                    <Input
-                      prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                      value={numberFormat(session?.profit, 8)}
-                      disabled
-                    />
-                  </Space.Compact>
-                </Form.Item>
-                <div className={`playground ${!play && 'not-allowed'}`}>
-                  {_.find(GEMS_SETTINGS, ['name', diff])?.multiplier.map((d, i) => (
-                    <Row
-                      gutter={[4, 4]} key={i}
-                      style={{ width: '100%' }}
-                      className={`${((i + 1) > session.level) && 'disabled'}`}
-                    >
-                      {[...Array(_.find(GEMS_SETTINGS, ['name', diff])?.column)].map((e, j) =>
-                        <Col span={_.find(GEMS_SETTINGS, ['name', diff])?.column == 3 ? 8 : 12} key={j}>
-                          <Btn block onClick={() => onAnswer(i, d, j)}>
-                            {
-                              isChosen[i] == 0
-                                ? `x` + d
-                                : (gems[i][j]
-                                  ? <Icon fill icon="diamond" size={20} />
-                                  : '')
-                            }
-                          </Btn>
-                        </Col>
-                      )}
-                    </Row>
-                  ))}
-                </div>
-                <Radio.Group
-                  onChange={e => onSetDiff(e.target.value)}
-                  value={diff}
-                  className={`${play && 'disabled'}`}
-                >
-                  {GEMS_SETTINGS.map((d, key) =>
-                    <Radio key={key} value={d.name}>{d.name}</Radio>
-                  )}
-                </Radio.Group>
-                <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${play && 'disabled'}`}>
-                  <Space.Compact style={{ width: '100%' }}>
-                    <Input
-                      prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                      value={numberFormat(formData?.betAmount, 8)}
-                      onChange={e => onChange('betAmount', e.currentTarget.value)}
-                    />
-                    <div className="btn-group">
-                      <Btn onClick={onBetDouble}>2X</Btn>
-                      <Btn onClick={onBetHalf}>1/2</Btn>
-                    </div>
-                  </Space.Compact>
-                </Form.Item>
-                {
-                  play
-                    ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
-                    : <Btn block htmlType="submit">START</Btn>
-                }
-              </Space>
-            </Form>
-          </Card>
-        </Col>
-        <Col md={{ span: 22 }}>
-          <BetHistory
-          // dataSource={record} need API to fetch Data for rendering
-          />
-        </Col>
-      </Row>
+      <Col md={{ span: 8 }}>
+        <Card className="card form gems">
+          <Form
+            form={form}
+            name="gems"
+            initialValues={defaultValues}
+            onFinish={onStartPlaying}
+            layout="vertical"
+            autoComplete="off"
+          >
+            <Space size="middle" direction="vertical" style={{ width: '100%' }}>
+              <Form.Item label="Profit" name="profit" className="disabled">
+                <Space.Compact style={{ width: '100%' }}>
+                  <Input
+                    prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                    value={numberFormat(session?.profit, 8)}
+                    disabled
+                  />
+                </Space.Compact>
+              </Form.Item>
+              <div className={`playground ${!play && 'not-allowed'}`}>
+                {_.find(GEMS_SETTINGS, ['name', diff])?.multiplier.map((d, i) => (
+                  <Row
+                    gutter={[4, 4]} key={i}
+                    style={{ width: '100%' }}
+                    className={`${((i + 1) > session.level) && 'disabled'}`}
+                  >
+                    {[...Array(_.find(GEMS_SETTINGS, ['name', diff])?.column)].map((e, j) =>
+                      <Col span={_.find(GEMS_SETTINGS, ['name', diff])?.column == 3 ? 8 : 12} key={j}>
+                        <Btn block onClick={() => onAnswer(i, d, j)}>
+                          {
+                            isChosen[i] == 0
+                              ? `x` + d
+                              : (gems[i][j]
+                                ? <Icon fill icon="diamond" size={20} />
+                                : '')
+                          }
+                        </Btn>
+                      </Col>
+                    )}
+                  </Row>
+                ))}
+              </div>
+              <Radio.Group
+                onChange={e => onSetDiff(e.target.value)}
+                value={diff}
+                className={`${play && 'disabled'}`}
+              >
+                {GEMS_SETTINGS.map((d, key) =>
+                  <Radio key={key} value={d.name}>{d.name}</Radio>
+                )}
+              </Radio.Group>
+              <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${play && 'disabled'}`}>
+                <Space.Compact style={{ width: '100%' }}>
+                  <Input
+                    prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                    value={numberFormat(formData?.betAmount, 8)}
+                    onChange={e => onChange('betAmount', e.currentTarget.value)}
+                  />
+                  <div className="btn-group">
+                    <Btn onClick={onBetDouble}>2X</Btn>
+                    <Btn onClick={onBetHalf}>1/2</Btn>
+                  </div>
+                </Space.Compact>
+              </Form.Item>
+              {
+                play
+                  ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
+                  : <Btn block htmlType="submit">START</Btn>
+              }
+            </Space>
+          </Form>
+        </Card>
+      </Col>
     </Layout>
   )
 }

@@ -121,6 +121,7 @@ const sample = [{
 export const BetHistory: FC<Props> = ({ dataSource }) => {
   return (
     <Tabs
+      style={{ width: 'calc(100vw - 300px)' }}
       defaultActiveKey="1"
       className="history"
       items={[

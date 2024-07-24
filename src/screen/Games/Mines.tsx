@@ -194,149 +194,142 @@ export const Mines = () => {
 
   return (
     <Layout title="Mines">
-      <Row style={{ width: '100%' }} justify='center' gutter={[24, 24]}>
-        <Col md={{ span: 8 }}>
-          <Card className="card form mines">
-            <Form
-              form={form}
-              name="gems"
-              initialValues={defaultValues}
-              onFinish={onStartPlaying}
-              layout="vertical"
-              autoComplete="off"
-            >
-              <Space size="middle" direction="vertical" style={{ width: '100%' }}>
-                <div className="form-group">
-                  <Space size="small" direction="vertical" style={{ width: '100%' }}>
-                    <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${play && 'disabled'}`}>
+      <Col md={{ span: 8 }}>
+        <Card className="card form mines">
+          <Form
+            form={form}
+            name="gems"
+            initialValues={defaultValues}
+            onFinish={onStartPlaying}
+            layout="vertical"
+            autoComplete="off"
+          >
+            <Space size="middle" direction="vertical" style={{ width: '100%' }}>
+              <div className="form-group">
+                <Space size="small" direction="vertical" style={{ width: '100%' }}>
+                  <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${play && 'disabled'}`}>
+                    <Space.Compact style={{ width: '100%' }}>
+                      <Input
+                        prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                        value={numberFormat(formData?.betAmount, 8)}
+                        onChange={e => onChange('betAmount', e.currentTarget.value)}
+                      />
+                      <div className="btn-group">
+                        <Btn onClick={onBetDouble}>2X</Btn>
+                        <Btn onClick={onBetHalf}>1/2</Btn>
+                      </div>
+                    </Space.Compact>
+                  </Form.Item>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item label="Mines" name="mines" className={`${play && 'disabled'}`}>
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Select
+                            defaultValue={defaultValues.mines}
+                            style={{ width: 120 }}
+                            onChange={e => onChange('mines', e)}
+                            options={Array.from({ length: 24 }, (_, i) => ({ value: i + 1, label: i + 1 }))}
+                          />
+                          <div className="select-icon">
+                            <Icon fill icon="bomb" size={20} color="#ff5722" />
+                          </div>
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Gems" name="gem" className="disabled">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            suffix={<Icon fill icon="diamond" size={20} color="#8bc34a" />}
+                            value={25 - formData.mines}
+                            disabled
+                          />
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Space>
+              </div>
+              <div className="form-group">
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item label={`Profit On Next Tile (${numberFormat(MINES_SETTINGS[formData.mines - 1].multiplier + MINES_SETTINGS[formData.mines - 1].multiplierPerTile * tileCount, 2)}x)`} name="nextProfit" className="disabled">
                       <Space.Compact style={{ width: '100%' }}>
                         <Input
                           prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                          value={numberFormat(formData?.betAmount, 8)}
-                          onChange={e => onChange('betAmount', e.currentTarget.value)}
+                          value={numberFormat(formData?.betAmount * (MINES_SETTINGS[formData.mines - 1].multiplier + MINES_SETTINGS[formData.mines - 1].multiplierPerTile * tileCount) - formData?.betAmount, 8)}
+                          disabled
                         />
-                        <div className="btn-group">
-                          <Btn onClick={onBetDouble}>2X</Btn>
-                          <Btn onClick={onBetHalf}>1/2</Btn>
-                        </div>
                       </Space.Compact>
                     </Form.Item>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Form.Item label="Mines" name="mines" className={`${play && 'disabled'}`}>
-                          <Space.Compact style={{ width: '100%' }}>
-                            <Select
-                              defaultValue={defaultValues.mines}
-                              style={{ width: 120 }}
-                              onChange={e => onChange('mines', e)}
-                              options={Array.from({ length: 24 }, (_, i) => ({ value: i + 1, label: i + 1 }))}
-                            />
-                            <div className="select-icon">
-                              <Icon fill icon="bomb" size={20} color="#ff5722" />
-                            </div>
-                          </Space.Compact>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item label="Gems" name="gem" className="disabled">
-                          <Space.Compact style={{ width: '100%' }}>
-                            <Input
-                              suffix={<Icon fill icon="diamond" size={20} color="#8bc34a" />}
-                              value={25 - formData.mines}
-                              disabled
-                            />
-                          </Space.Compact>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Space>
-                </div>
-                <div className="form-group">
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item label={`Profit On Next Tile (${numberFormat(MINES_SETTINGS[formData.mines - 1].multiplier + MINES_SETTINGS[formData.mines - 1].multiplierPerTile * tileCount, 2)}x)`} name="nextProfit" className="disabled">
-                        <Space.Compact style={{ width: '100%' }}>
-                          <Input
-                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(formData?.betAmount * (MINES_SETTINGS[formData.mines - 1].multiplier + MINES_SETTINGS[formData.mines - 1].multiplierPerTile * tileCount) - formData?.betAmount, 8)}
-                            disabled
-                          />
-                        </Space.Compact>
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item label={`Total Profit (${numberFormat(session.multiplier, 2)}x)`} name="totalProfit" className="disabled">
-                        <Space.Compact style={{ width: '100%' }}>
-                          <Input
-                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(session.profit, 8)}
-                            disabled
-                          />
-                        </Space.Compact>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </div>
-
-                <div className={`playground ${!play && 'not-allowed'}`} style={{ marginTop: '-10px' }}>
-                  <Row gutter={8}>
-                    {[...Array(25)].map((e, i) =>
-                      <Col flex="20%" key={i}>
-                        {
-                          formData.isAuto
-                            ? <Btn className={`tile ${isChosen[i] == 1 && 'showed'} ${formData.isAuto && 'auto'} ${tileAutoSet.includes(i) && 'checked'}`}
-                              onClick={() => onTileChange(i)}
-                            >
-                              <div className="tile-front"></div>
-                              <div className="tile-back">
-                                <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
-                              </div>
-                            </Btn>
-                            : <Btn className={`tile ${isChosen[i] == 1 && 'showed'}`}
-                              onClick={() => onTilePress(MINES_SETTINGS[formData.mines - 1].multiplier, MINES_SETTINGS[formData.mines - 1].multiplierPerTile, i)}
-                            >
-                              <div className="tile-front"></div>
-                              <div className="tile-back">
-                                <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
-                              </div>
-                            </Btn>
-                        }
-                      </Col>
-                    )}
-                  </Row>
-                </div>
-
-                <Row gutter={16} align="middle">
-                  <Col span={5}>
-                    <Checkbox
-                      onChange={e => onChange('isAuto', e.target.checked)}
-                      className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}
-                    >Auto</Checkbox>
                   </Col>
-                  <Col span={14}>
-                    {
-                      formData.isAuto
-                        ? autoPlay
-                          ? <Btn block onClick={onStopAutoBet}>STOP AUTO BET</Btn>
-                          : <Btn block onClick={onStartAutoBet} className={`${tileAutoSet.length < 1 && 'disabled'}`}>START AUTO BET</Btn>
-                        : play
-                          ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
-                          : <Btn block htmlType="submit">BET</Btn>
-                    }
-                  </Col>
-                  <Col span={5}>
+                  <Col span={12}>
+                    <Form.Item label={`Total Profit (${numberFormat(session.multiplier, 2)}x)`} name="totalProfit" className="disabled">
+                      <Space.Compact style={{ width: '100%' }}>
+                        <Input
+                          prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                          value={numberFormat(session.profit, 8)}
+                          disabled
+                        />
+                      </Space.Compact>
+                    </Form.Item>
                   </Col>
                 </Row>
-              </Space>
-            </Form>
-          </Card>
-        </Col>
-        <Col md={{ span: 22 }}>
-          <BetHistory
-          // dataSource={record} need API to fetch Data for rendering
-          />
-        </Col>
-      </Row>
+              </div>
+
+              <div className={`playground ${!play && 'not-allowed'}`} style={{ marginTop: '-10px' }}>
+                <Row gutter={8}>
+                  {[...Array(25)].map((e, i) =>
+                    <Col flex="20%" key={i}>
+                      {
+                        formData.isAuto
+                          ? <Btn className={`tile ${isChosen[i] == 1 && 'showed'} ${formData.isAuto && 'auto'} ${tileAutoSet.includes(i) && 'checked'}`}
+                            onClick={() => onTileChange(i)}
+                          >
+                            <div className="tile-front"></div>
+                            <div className="tile-back">
+                              <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
+                            </div>
+                          </Btn>
+                          : <Btn className={`tile ${isChosen[i] == 1 && 'showed'}`}
+                            onClick={() => onTilePress(MINES_SETTINGS[formData.mines - 1].multiplier, MINES_SETTINGS[formData.mines - 1].multiplierPerTile, i)}
+                          >
+                            <div className="tile-front"></div>
+                            <div className="tile-back">
+                              <Img src={`${(isChosen[i] == 1 && mines[i]) ? '/mines_gem.png' : '/mines_mine.png'}`} w={40} />
+                            </div>
+                          </Btn>
+                      }
+                    </Col>
+                  )}
+                </Row>
+              </div>
+
+              <Row gutter={16} align="middle">
+                <Col span={5}>
+                  <Checkbox
+                    onChange={e => onChange('isAuto', e.target.checked)}
+                    className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}
+                  >Auto</Checkbox>
+                </Col>
+                <Col span={14}>
+                  {
+                    formData.isAuto
+                      ? autoPlay
+                        ? <Btn block onClick={onStopAutoBet}>STOP AUTO BET</Btn>
+                        : <Btn block onClick={onStartAutoBet} className={`${tileAutoSet.length < 1 && 'disabled'}`}>START AUTO BET</Btn>
+                      : play
+                        ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
+                        : <Btn block htmlType="submit">BET</Btn>
+                  }
+                </Col>
+                <Col span={5}>
+                </Col>
+              </Row>
+            </Space>
+          </Form>
+        </Card>
+      </Col>
     </Layout>
   )
 }
