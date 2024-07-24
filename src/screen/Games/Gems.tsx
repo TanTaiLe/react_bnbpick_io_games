@@ -13,7 +13,7 @@ import useStateCallback from "@hook/common/useStateCallback"
 import { BetHistory } from "@component/DesignSystem/BetHistory"
 
 interface FieldType {
-  betAmount?: number
+  betAmount: number
 }
 
 interface RecordType {
@@ -38,6 +38,7 @@ export const Gems = () => {
   const [isChosen, setIsChosen] = useState(Array(10).fill(0))
   const [gems, setGems] = useState<Number[][]>([])
   const [record, setRecord] = useState<RecordType[]>([])
+  const [gemsReset, setGemsReset] = useState<boolean>(false);
   const [session, setSession] = useStateCallback<{
     level: number
     multiplier: number
@@ -80,6 +81,10 @@ export const Gems = () => {
 
   const onSetDiff = (diff: string) => {
     setDiff(diff)
+    onResetGame()
+  }
+
+  const onResetGame = () => {
     setGems([])
     setIsChosen(Array(10).fill(0))
     setSession({
@@ -87,6 +92,7 @@ export const Gems = () => {
       multiplier: 0,
       profit: 0.00000000
     })
+    setGemsReset(true) // đánh dấu game reset
   }
 
   const onAnswer = (level: number, multiplier: number, answerId: number) => {
@@ -130,7 +136,7 @@ export const Gems = () => {
   }
 
   const onCashOut = () => {
-    onStopPlaying();
+    onResetGame()
   }
 
   const onSaveRecord = () => {
@@ -156,8 +162,12 @@ export const Gems = () => {
       console.log(record)
       // onSaveRecord()
     }
+    if (gemsReset) {
+      onStopPlaying()
+      setGemsReset(false) // Reset lại trạng thái
+    }
 
-  }, [form, formData, session, play, record])
+  }, [form, formData, session, play, record, gemsReset])
 
   return (
     <Layout title="Gems">
@@ -229,7 +239,7 @@ export const Gems = () => {
                 </Form.Item>
                 {
                   play
-                    ? <Btn block onClick={onCashOut}>CASHOUT</Btn>
+                    ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
                     : <Btn block htmlType="submit">START</Btn>
                 }
               </Space>
