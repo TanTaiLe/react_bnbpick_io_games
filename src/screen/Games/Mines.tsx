@@ -278,7 +278,7 @@ export const Mines = () => {
                   </Row>
                 </div>
 
-                <div className={`playground ${!play && 'not-allowed'}`}>
+                <div className={`playground ${!play && 'not-allowed'}`} style={{ marginTop: '-10px' }}>
                   <Row gutter={8}>
                     {[...Array(25)].map((e, i) =>
                       <Col flex="20%" key={i}>
