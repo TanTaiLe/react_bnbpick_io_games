@@ -35,7 +35,7 @@ export const GameInfo: FC = () => {
 
   useEffect(() => {
     form.setFieldsValue(formData)
-  }, [])
+  }, [form, formData])
 
   return (
     <Space align="center" className="game-info" size="middle">

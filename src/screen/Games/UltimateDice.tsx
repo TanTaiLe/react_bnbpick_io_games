@@ -10,11 +10,11 @@ import { useEffect, useState, useCallback } from "react";
 import _debounce from 'lodash/debounce';
 
 type FieldType = {
-  betAmount?: number
-  profitOnWin?: number
-  multiplier?: number
-  winChance?: number
-  range?: Array<number>
+  betAmount: number
+  profitOnWin: number
+  multiplier: number
+  winChance: number
+  range: Array<number>
 };
 
 const defaultValues = {
@@ -25,29 +25,41 @@ const defaultValues = {
   range: [25.75, 74.25],
 }
 
-const onValueChange: FormProps<FieldType>['onValuesChange'] = (values) => {
-  console.log('Change: ', values)
-}
-
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values);
-};
-
-// const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-//   console.log('Failed:', errorInfo);
-// };
-
 export const UltimateDice = () => {
-  const [newValue, setNewvalue] = useState<FieldType>(defaultValues)
   const [form] = Form.useForm()
+  const [formData, setFormData] = useState<FieldType>(defaultValues)
+  const [play, setPlay] = useState<boolean | undefined>()
+  const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
 
-  const onHandleChange = (name: string, value: any) => {
-    setNewvalue({ [name]: value })
+  const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
+    setPlay(true);
+    let result = parseFloat((Math.random() * 100).toFixed(2));
+    let low = formData.range[0]
+    let high = formData.range[1]
+    if (formData) {
+      if (low > high)
+        [low, high] = [high, low];
+
+      if (result >= low && result <= high)
+        console.log('Win')
+      else
+        console.log('Lose')
+    }
+  }
+
+  const onChange = (name: string, value: any) => {
+    setFormData(prevValue => ({
+      ...prevValue,
+      [name]: value
+    }))
   }
 
   // const onSliderChange = (values: any) => {
   //   console.log('Success:', values);
   // }
+  useEffect(() => {
+    form.setFieldsValue(formData)
+  }, [form, formData])
 
   return (
     <Layout title="Ultimate dice">
@@ -58,11 +70,9 @@ export const UltimateDice = () => {
             <Form
               name="ultimateDice"
               layout="vertical"
-              initialValues={newValue ? defaultValues : newValue}
+              initialValues={formData ? defaultValues : formData}
               form={form}
-              onFinish={onFinish}
-              onValuesChange={useCallback(_debounce(onValueChange, 1000), [])}
-              // onFinishFailed={onFinishFailed}
+              onFinish={onStartPlaying}
               autoComplete="off"
             >
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
@@ -73,7 +83,8 @@ export const UltimateDice = () => {
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(newValue.betAmount, 8)}
+                            value={numberFormat(formData.betAmount, 8)}
+                            onChange={e => onChange('betAmount', e)}
                           />
                           <div className="btn-group">
                             <Btn>2X</Btn>
@@ -87,7 +98,8 @@ export const UltimateDice = () => {
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(newValue.profitOnWin, 8)}
+                            value={numberFormat(formData.profitOnWin, 8)}
+                            onChange={e => onChange('profitOnWin', e)}
                           />
                         </Space.Compact>
                       </Form.Item>
@@ -102,7 +114,8 @@ export const UltimateDice = () => {
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             suffix={<Icon fill icon="close" size={20} color="#4caf50" />}
-                            value={numberFormat(newValue.multiplier, 2)}
+                            value={numberFormat(formData.multiplier, 2)}
+                            onChange={e => onChange('multiplier', e)}
                           />
                         </Space.Compact>
 
@@ -113,7 +126,8 @@ export const UltimateDice = () => {
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             suffix={<Icon fill icon="percent" size={20} color="#4caf50" />}
-                            value={numberFormat(newValue.winChance, 2)}
+                            value={numberFormat(formData.winChance, 2)}
+                            onChange={e => onChange('winChance', e)}
                           />
                         </Space.Compact>
                       </Form.Item>
@@ -121,15 +135,17 @@ export const UltimateDice = () => {
                   </Row>
                 </div>
 
-                {newValue.range &&
+                {formData.range &&
                   <div className="form-group">
                     <Row align="bottom" gutter={16}>
                       <Col span={10}>
-                        <Space.Compact style={{ width: '100%' }}>
-                          <Input
-                            value={numberFormat(newValue.range[0], 2)}
-                          />
-                        </Space.Compact>
+                        <Form.Item label="Low">
+                          <Space.Compact style={{ width: '100%' }}>
+                            <Input
+                              value={numberFormat(formData.range[0], 2)}
+                            />
+                          </Space.Compact>
+                        </Form.Item>
                       </Col>
                       <Col span={4}>
                         <Flex vertical align="center">
@@ -140,12 +156,13 @@ export const UltimateDice = () => {
                         </Flex>
                       </Col>
                       <Col span={10}>
-                        <Space.Compact style={{ width: '100%' }}>
-                          <Input
-                            value={numberFormat(newValue.range[1], 2)}
-                            onChange={(value: any) => onHandleChange("range", [value])}
-                          />
-                        </Space.Compact>
+                        <Form.Item label="High">
+                          <Space.Compact style={{ width: '100%' }}>
+                            <Input
+                              value={numberFormat(formData.range[1], 2)}
+                            />
+                          </Space.Compact>
+                        </Form.Item>
                       </Col>
                     </Row>
                   </div>
@@ -162,12 +179,12 @@ export const UltimateDice = () => {
                   <Col span={6}></Col>
                 </Row>
 
-                {newValue.range &&
+                {formData.range &&
                   <Slider
                     range={{ draggableTrack: true }}
-                    value={newValue.range}
+                    value={formData.range}
                     step={0.01}
-                    onChange={(value: any) => onHandleChange("range", value)}
+                    onChange={(value: any) => onChange("range", value)}
                   />
                 }
               </Space>
