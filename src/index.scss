@@ -15,15 +15,18 @@ html {
     text-transform: uppercase;
     margin-bottom: 48px
   }
+
   &-info {
     display: flex;
     justify-content: center;
+
     &-item {
       cursor: pointer;
       color: #999;
       display: flex;
       flex-direction: column;
       align-items: center;
+
       span {
         margin-bottom: 2px;
       }
@@ -37,8 +40,34 @@ html {
     align-items: center;
     color: #555;
     margin-bottom: 24px;
+
     span {
       margin-right: 4px;
+    }
+  }
+
+  &-content {
+
+    ul,
+    ol {
+      padding-left: 16px;
+    }
+
+    &.form {
+      .ant-form-item-control-input-content {
+        padding: 0 !important;
+      }
+      .ant-input-group-wrapper, .ant-input-group {
+        height: 100%;
+      }
+      .ant-input-group-addon {
+        background-color: #EEE;
+        border: none;
+        border-right: 1px solid #D5D5D5;
+      }
+      .ant-input {
+        padding: 4px 12px;
+      }
     }
   }
 }
