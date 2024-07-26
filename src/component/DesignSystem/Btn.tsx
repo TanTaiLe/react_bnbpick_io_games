@@ -16,12 +16,7 @@ interface Props {
 export const Btn: FC<Props> = ({ children, block, style, type, htmlType, vertical, onClick, className }) => {
   return (
     <Button
-      className={`
-      btn
-      ${className}
-      ${vertical && 'btn-vertical'}
-      ${type == 'text' && 'btn-text'}
-    `}
+      className={`btn ${className ? className : ''} ${vertical ? 'btn-vertical' : ''} ${type == 'text' ? 'btn-text' : ''}`}
       style={style}
       block={block}
       type={type}

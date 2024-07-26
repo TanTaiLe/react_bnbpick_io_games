@@ -33,6 +33,7 @@ export const Mines = () => {
   const [tileAutoSet, setTileAutoSet] = useState<number[]>([])
   const [minesUpdated, setMinesUpdated] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [gameReset, setGameReset] = useState<boolean>(false);
   const [session, setSession] = useStateCallback<{
     multiplier: number
     multiplierPerTile: number
@@ -43,7 +44,7 @@ export const Mines = () => {
     profit: 0.00000000
   })
 
-  const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
+  const onStartPlaying = () => {
     setPlay(true);
     onRandomMines(formData.mines);
     setIsChosen(Array(25).fill(0))
@@ -86,8 +87,6 @@ export const Mines = () => {
   }
 
   const onCheckTileAutoSet = () => {
-    console.log(tileAutoSet)
-
     for (const i of tileAutoSet) {
       console.log('mines', mines)
       console.log('i', i)
@@ -120,6 +119,17 @@ export const Mines = () => {
         ...prevValue,
         'betAmount': newValue
       }))
+  }
+
+  const onResetGame = () => {
+    setMines([])
+    setIsChosen(Array(25).fill(0))
+    setSession({
+      multiplier: 1,
+      multiplierPerTile: 0,
+      profit: 0.00000000
+    })
+    setGameReset(true) // đánh dấu game reset
   }
 
   const onTilePress = (multiplier: number, multiplierPerTile: number, tileId: number) => {
@@ -158,7 +168,8 @@ export const Mines = () => {
   }
 
   const onCashOut = () => {
-    onStopPlaying();
+    // onStopPlaying();
+    onResetGame()
   }
 
   useEffect(() => {
@@ -169,12 +180,17 @@ export const Mines = () => {
       // onSaveRecord()
     }
 
-    console.log('autoplay', autoPlay)
+    console.log('play', play)
 
     if (autoPlay) {
       intervalRef.current = setInterval(() => {
         onRandomMines(formData.mines)
       }, 1000)
+    }
+
+    if (gameReset) {
+      onStopPlaying()
+      setGameReset(false) // Reset lại trạng thái
     }
 
     return () => {
@@ -183,7 +199,7 @@ export const Mines = () => {
       }
     };
 
-  }, [form, formData, play, autoPlay])
+  }, [form, formData, play, autoPlay, gameReset])
 
   useEffect(() => {
     if (minesUpdated) {
@@ -200,7 +216,6 @@ export const Mines = () => {
             form={form}
             name="gems"
             initialValues={defaultValues}
-            onFinish={onStartPlaying}
             layout="vertical"
             autoComplete="off"
           >
@@ -277,7 +292,7 @@ export const Mines = () => {
                 </Row>
               </div>
 
-              <div className={`playground ${!play && 'not-allowed'}`} style={{ marginTop: '-10px' }}>
+              <div className={`playground ${!play ? 'not-allowed' : ''}`} style={{ marginTop: '-10px' }}>
                 <Row gutter={8}>
                   {[...Array(25)].map((e, i) =>
                     <Col flex="20%" key={i}>
@@ -309,8 +324,17 @@ export const Mines = () => {
                 <Col span={5}>
                   <Checkbox
                     onChange={e => onChange('isAuto', e.target.checked)}
-                    className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}
-                  >Auto</Checkbox>
+                    // className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}
+                    className={`${formData.isAuto
+                      ? autoPlay
+                        ? 'disabled'
+                        : play
+                          ? ''
+                          : 'disabled'
+                      : play
+                        ? 'disabled'
+                        : ''
+                      }`}>Auto</Checkbox>
                 </Col>
                 <Col span={14}>
                   {
@@ -320,7 +344,7 @@ export const Mines = () => {
                         : <Btn block onClick={onStartAutoBet} className={`${tileAutoSet.length < 1 && 'disabled'}`}>START AUTO BET</Btn>
                       : play
                         ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
-                        : <Btn block htmlType="submit">BET</Btn>
+                        : <Btn block onClick={onStartPlaying}>BET</Btn>
                   }
                 </Col>
                 <Col span={5}>

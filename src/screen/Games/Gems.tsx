@@ -38,7 +38,7 @@ export const Gems = () => {
   const [isChosen, setIsChosen] = useState(Array(10).fill(0))
   const [gems, setGems] = useState<Number[][]>([])
   const [record, setRecord] = useState<RecordType[]>([])
-  const [gemsReset, setGemsReset] = useState<boolean>(false);
+  const [gameReset, setGameReset] = useState<boolean>(false);
   const [session, setSession] = useStateCallback<{
     level: number
     multiplier: number
@@ -92,7 +92,7 @@ export const Gems = () => {
       multiplier: 0,
       profit: 0.00000000
     })
-    setGemsReset(true) // đánh dấu game reset
+    setGameReset(true) // đánh dấu game reset
   }
 
   const onAnswer = (level: number, multiplier: number, answerId: number) => {
@@ -162,12 +162,12 @@ export const Gems = () => {
       console.log(record)
       // onSaveRecord()
     }
-    if (gemsReset) {
+    if (gameReset) {
       onStopPlaying()
-      setGemsReset(false) // Reset lại trạng thái
+      setGameReset(false) // Reset lại trạng thái
     }
 
-  }, [form, formData, session, play, record, gemsReset])
+  }, [form, formData, session, play, record, gameReset])
 
   return (
     <Layout title="Gems">
