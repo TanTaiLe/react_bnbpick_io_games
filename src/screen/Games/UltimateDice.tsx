@@ -30,8 +30,9 @@ export const UltimateDice = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const [swapRange, setSwapRange] = useState<boolean | undefined>()
 
-  const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
+  const onStartPlaying = () => {
     setPlay(true);
     let result = parseFloat((Math.random() * 100).toFixed(2));
     let low = formData.range[0]
@@ -40,10 +41,17 @@ export const UltimateDice = () => {
       if (low > high)
         [low, high] = [high, low];
 
-      if (result >= low && result <= high)
-        console.log('Win')
-      else
-        console.log('Lose')
+      if (swapRange) {
+        if (result <= low && result >= high)
+          console.log('Win')
+        else
+          console.log('Lose')
+      } else {
+        if (result >= low && result <= high)
+          console.log('Win')
+        else
+          console.log('Lose')
+      }
     }
   }
 
@@ -54,9 +62,10 @@ export const UltimateDice = () => {
     }))
   }
 
-  // const onSliderChange = (values: any) => {
-  //   console.log('Success:', values);
-  // }
+  const onSwapRange = () => {
+    setSwapRange(!swapRange)
+  }
+
   useEffect(() => {
     form.setFieldsValue(formData)
   }, [form, formData])
@@ -72,7 +81,6 @@ export const UltimateDice = () => {
               layout="vertical"
               initialValues={formData ? defaultValues : formData}
               form={form}
-              onFinish={onStartPlaying}
               autoComplete="off"
             >
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
@@ -150,9 +158,9 @@ export const UltimateDice = () => {
                       <Col span={4}>
                         <Flex vertical align="center">
                           <Switch
-                          // onChange={onChange}
+                            onChange={onSwapRange}
                           />
-                          <span>Inside</span>
+                          <span>{swapRange ? 'Outside' : 'Inside'}</span>
                         </Flex>
                       </Col>
                       <Col span={10}>
@@ -174,19 +182,24 @@ export const UltimateDice = () => {
                     >Auto</Checkbox>
                   </Col>
                   <Col span={12}>
-                    <Btn block htmlType="submit">ROLL DICE</Btn>
+                    <Btn block onClick={onStartPlaying}>ROLL DICE</Btn>
                   </Col>
                   <Col span={6}></Col>
                 </Row>
 
-                {formData.range &&
-                  <Slider
-                    range={{ draggableTrack: true }}
-                    value={formData.range}
-                    step={0.01}
-                    onChange={(value: any) => onChange("range", value)}
-                  />
-                }
+                <div className={`range ${swapRange ? 'range-reverse' : ''}`}>
+                  <span className="range-min-max">0</span>
+                  {formData.range &&
+                    <Slider
+                      range={{ draggableTrack: true }}
+                      value={formData.range}
+                      step={0.01}
+                      onChange={(value: any) => onChange("range", value)}
+                      className="range-slider"
+                    />
+                  }
+                  <span className="range-min-max">100</span>
+                </div>
               </Space>
             </Form>
           </Card>

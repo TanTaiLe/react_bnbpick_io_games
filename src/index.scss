@@ -57,14 +57,18 @@ html {
       .ant-form-item-control-input-content {
         padding: 0 !important;
       }
-      .ant-input-group-wrapper, .ant-input-group {
+
+      .ant-input-group-wrapper,
+      .ant-input-group {
         height: 100%;
       }
+
       .ant-input-group-addon {
         background-color: #EEE;
         border: none;
         border-right: 1px solid #D5D5D5;
       }
+
       .ant-input {
         padding: 4px 12px;
       }
@@ -329,6 +333,127 @@ html {
       color: #ff5722 !important
     }
   }
+}
+
+.range {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F5F5F5;
+  border-radius: 100px;
+  border: 1px solid #DDD;
+  height: 50px;
+
+  &-min-max {
+    width: 50px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  &-slider {
+    width: 100%;
+  }
+
+  &-reverse {
+    .ant-slider-rail {
+      background-color: #4caf50 !important;
+
+      &:hover {
+        background-color: darken(#4caf50, 5%) !important;
+      }
+    }
+
+    .ant-slider-track {
+      background-color: #f44336 !important;
+
+      &:hover {
+        background-color: darken(#f44336, 5%) !important;
+      }
+    }
+  }
+
+  .ant-slider {
+    &:hover {
+      .ant-slider-rail {
+        background-color: #f44336;
+      }
+
+      .ant-slider-track {
+        background-color: #4caf50;
+      }
+    }
+  }
+
+  .ant-slider-horizontal,
+  .ant-slider-rail,
+  .ant-slider-track,
+  .ant-slider-step {
+    height: 10px;
+  }
+
+  .ant-slider-horizontal {
+    padding-block: 0;
+  }
+
+  .ant-slider-track-draggable {
+    transform: translateY(-2.5px);
+  }
+
+  .ant-slider-rail {
+    background-color: #f44336;
+    border-radius: 5px;
+
+    &:hover {
+      background-color: darken(#f44336, 5%) !important;
+    }
+  }
+
+  .ant-slider-track {
+    background-color: #4caf50;
+
+    &:hover {
+      background-color: darken(#4caf50, 5%) !important;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      width: 30px;
+      height: 24px;
+      background: url(/slider-button.png) no-repeat #FFF;
+      background-position: center;
+      background-size: 70%;
+      border: 1px solid #EFEFEF;
+    }
+  }
+
+  .ant-slider-handle {
+    width: 34px;
+    height: 34px;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    background: url(/slider-arrow.svg) no-repeat #FFF;
+    background-position: center;
+    background-size: 50%;
+    border: 1px solid #EFEFEF;
+    cursor: col-resize;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+
+    &-2 {
+      transform: rotate(180deg) translateX(50%) !important;
+    }
+  }
+
 }
 
 @import './resource/scss/btn';
