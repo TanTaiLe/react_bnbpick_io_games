@@ -49,7 +49,7 @@ export const Gems = () => {
     profit: 0.00000000
   })
 
-  const onStartPlaying: FormProps<FieldType>['onFinish'] = () => {
+  const onStartPlaying = () => {
     setPlay(true);
     onRandomGems(_.find(GEMS_SETTINGS, ['name', diff])?.gems, _.find(GEMS_SETTINGS, ['name', diff])?.column);
     setIsChosen(Array(10).fill(0))
@@ -239,7 +239,7 @@ export const Gems = () => {
               {
                 play
                   ? <Btn block onClick={onCashOut} className={`btn-cashout ${isChosen.includes(1) ? '' : (play && 'disabled')}`}>CASHOUT</Btn>
-                  : <Btn block htmlType="submit">START</Btn>
+                  : <Btn block onClick={onStartPlaying}>START</Btn>
               }
             </Space>
           </Form>
