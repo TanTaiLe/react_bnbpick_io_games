@@ -102,6 +102,8 @@ export const Mines = () => {
       ...prevValue,
       [name]: value
     }))
+
+    name == 'isAuto' && onResetGame()
   }
 
   const onBetDouble = () => {
@@ -124,6 +126,7 @@ export const Mines = () => {
   const onResetGame = () => {
     setMines([])
     setIsChosen(Array(25).fill(0))
+    setTileAutoSet([])
     setSession({
       multiplier: 1,
       multiplierPerTile: 0,
