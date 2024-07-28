@@ -1,4 +1,3 @@
-import { BetHistory } from "@component/DesignSystem/BetHistory";
 import { Btn } from "@component/DesignSystem/Btn";
 import { Icon } from "@component/DesignSystem/Icon";
 import { Img } from "@component/DesignSystem/Img";
@@ -7,7 +6,6 @@ import useStateCallback from "@hook/common/useStateCallback";
 import { numberFormat } from "@util/common";
 import { MINES_BET_MINIMUM, MINES_SETTINGS } from "@util/constant";
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
-import type { FormProps } from "antd"
 import { useEffect, useRef, useState } from "react";
 
 interface FieldType {
@@ -298,7 +296,7 @@ export const Mines = () => {
               <div className={`playground ${!play ? 'not-allowed' : ''}`} style={{ marginTop: '-10px' }}>
                 <Row gutter={8}>
                   {[...Array(25)].map((e, i) =>
-                    <Col flex="20%" key={i}>
+                    <Col flex="20%" key={e}>
                       {
                         formData.isAuto
                           ? <Btn className={`tile ${isChosen[i] == 1 && 'showed'} ${formData.isAuto && 'auto'} ${tileAutoSet.includes(i) && 'checked'}`}

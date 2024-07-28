@@ -3,14 +3,12 @@ import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
 import { Card, Col, Form, Input, Radio, Row, Space } from "antd"
-import type { FormProps } from "antd"
 import { ReactNode, useEffect, useState } from "react"
 import _debounce from 'lodash/debounce'
 import { GEMS_BET_MINIMUM, GEMS_SETTINGS } from "@util/constant"
 import _ from "lodash";
 import { Icon } from "@component/DesignSystem/Icon"
 import useStateCallback from "@hook/common/useStateCallback"
-import { BetHistory } from "@component/DesignSystem/BetHistory"
 
 interface FieldType {
   betAmount: number
@@ -70,13 +68,19 @@ export const Gems = () => {
 
   const onBetDouble = () => {
     let newValue = formData.betAmount && formData.betAmount * 2
-    setFormData({ 'betAmount': newValue })
+    setFormData(prevValue => ({
+      ...prevValue,
+      'betAmount': newValue
+    }))
   }
 
   const onBetHalf = () => {
     let newValue = formData.betAmount && formData.betAmount / 2
     if (newValue && newValue >= GEMS_BET_MINIMUM)
-      setFormData({ 'betAmount': newValue })
+      setFormData(prevValue => ({
+        ...prevValue,
+        'betAmount': newValue
+      }))
   }
 
   const onSetDiff = (diff: string) => {
@@ -199,7 +203,7 @@ export const Gems = () => {
                     className={`${((i + 1) > session.level) && 'disabled'}`}
                   >
                     {[...Array(_.find(GEMS_SETTINGS, ['name', diff])?.column)].map((e, j) =>
-                      <Col span={_.find(GEMS_SETTINGS, ['name', diff])?.column == 3 ? 8 : 12} key={j}>
+                      <Col span={_.find(GEMS_SETTINGS, ['name', diff])?.column == 3 ? 8 : 12} key={e}>
                         <Btn block onClick={() => onAnswer(i, d, j)}>
                           {
                             isChosen[i] == 0

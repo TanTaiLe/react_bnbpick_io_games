@@ -6,6 +6,7 @@ export const ROUTE = {
 
 export const GEMS_BET_MINIMUM = 0.00000100
 export const MINES_BET_MINIMUM = 0.00000100
+export const ULTIMATE_DICE_BET_MINIMUM = 0.00000001
 
 export const GEMS_SETTINGS = [
   {
