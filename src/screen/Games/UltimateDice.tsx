@@ -4,18 +4,28 @@ import { Img } from "@component/DesignSystem/Img";
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common";
 import type { FormProps, CheckboxProps } from 'antd';
-import { Card, Checkbox, Col, Flex, Form, Input, Row, Slider, Space, Switch } from "antd"
+import { Card, Checkbox, Col, Flex, Form, Input, Radio, Row, Slider, Space, Switch } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { useEffect, useState, useCallback } from "react";
 import _debounce from 'lodash/debounce';
 
-type FieldType = {
+interface FieldType {
   betAmount: number
   profitOnWin: number
   multiplier: number
   winChance: number
   range: Array<number>
+  isAuto: boolean
 };
+
+interface AutoCondsType {
+  onWin: number // reset = 0, increase by = 1~
+  onLoss: number // reset = 0, increase by = 1~
+  stopOnProfit: number
+  stopOnLoss: number
+  bets: number
+  profit: number
+}
 
 const defaultValues = {
   betAmount: 0.00000001,
@@ -23,6 +33,7 @@ const defaultValues = {
   multiplier: 2,
   winChance: 48.5,
   range: [25.75, 74.25],
+  isAuto: false
 }
 
 export const UltimateDice = () => {
@@ -31,6 +42,14 @@ export const UltimateDice = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
   const [swapRange, setSwapRange] = useState<boolean | undefined>()
+  const [autoConds, setAutoConds] = useState<AutoCondsType>({
+    onWin: 0,
+    onLoss: 0,
+    stopOnProfit: 0,
+    stopOnLoss: 0,
+    bets: 1,
+    profit: 0
+  })
 
   const onStartPlaying = () => {
     setPlay(true);
@@ -55,8 +74,24 @@ export const UltimateDice = () => {
     }
   }
 
+  const onStartAutoDice = () => {
+    setAutoPlay(true)
+  }
+
+  const onStopAutoDice = () => {
+    console.log('Stopping auto dice...');
+    setAutoPlay(false)
+  }
+
   const onChange = (name: string, value: any) => {
     setFormData(prevValue => ({
+      ...prevValue,
+      [name]: value
+    }))
+  }
+
+  const onAutoCondChange = (name: string, value: any) => {
+    setAutoConds(prevValue => ({
       ...prevValue,
       [name]: value
     }))
@@ -178,11 +213,19 @@ export const UltimateDice = () => {
                 <Row align="middle" gutter={16}>
                   <Col span={6}>
                     <Checkbox
-                    // onChange={onCheckboxCheck}
+                      onChange={e => onChange('isAuto', e.target.checked)}
                     >Auto</Checkbox>
                   </Col>
                   <Col span={12}>
-                    <Btn block onClick={onStartPlaying}>ROLL DICE</Btn>
+                    {
+                      formData.isAuto
+                        ? autoPlay
+                          ? <Btn block onClick={onStopAutoDice}>STOP</Btn>
+                          : <Btn block onClick={onStartAutoDice}>AUTO DICE</Btn>
+                        : play
+                          ? <Btn block></Btn>
+                          : <Btn block onClick={onStartPlaying}>ROLL DICE</Btn>
+                    }
                   </Col>
                   <Col span={6}></Col>
                 </Row>
@@ -200,6 +243,115 @@ export const UltimateDice = () => {
                   }
                   <span className="range-min-max">100</span>
                 </div>
+
+
+
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <div className="form-group not-input">
+                      <Form.Item label="On Win">
+                        <Radio.Group
+                          onChange={e => onAutoCondChange('onWin', e.target.value)}
+                          value={autoConds.onWin}
+                          className={`${play && 'disabled'}`}
+                        >
+                          <Space direction="vertical" size={0}>
+                            <Radio value={0}>Reset</Radio>
+                            <Radio value={1}>
+                              Increase By
+                              <Space.Compact className={`radio-input ${autoConds.onWin == 0 ? 'disabled' : ''}`}>
+                                <Input
+                                  suffix={<Icon fill icon="percent" size={20} color="#4caf50" />}
+                                  value={100}
+                                  onChange={e => onAutoCondChange('onWin', e.target.value)}
+                                />
+                              </Space.Compact>
+                            </Radio>
+                          </Space>
+                        </Radio.Group>
+                      </Form.Item>
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className="form-group not-input">
+                      <Form.Item label="On Loss">
+                        <Radio.Group
+                          onChange={e => onAutoCondChange('onLoss', e.target.value)}
+                          value={autoConds.onLoss}
+                          className={`${play && 'disabled'}`}
+                        >
+                          <Space direction="vertical" size={0}>
+                            <Radio value={0}>Reset</Radio>
+                            <Radio value={1}>
+                              Increase By
+                              <Space.Compact className={`radio-input ${autoConds.onLoss == 0 ? 'disabled' : ''}`}>
+                                <Input
+                                  suffix={<Icon fill icon="percent" size={20} color="#4caf50" />}
+                                  value={100}
+                                  onChange={e => onAutoCondChange('onLoss', e.target.value)}
+                                />
+                              </Space.Compact>
+                            </Radio>
+                          </Space>
+                        </Radio.Group>
+                      </Form.Item>
+                    </div>
+                  </Col>
+                </Row>
+
+                <div className="form-group">
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item label="Stop On Profit">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                            value={numberFormat(autoConds.stopOnProfit, 8)}
+                            onChange={e => onAutoCondChange('stopOnProfit', e)}
+                          />
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Stop On Loss">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                            value={numberFormat(autoConds.stopOnLoss, 8)}
+                            onChange={e => onAutoCondChange('stopOnLoss', e)}
+                          />
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
+
+                <div className="form-group">
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item label="Bets">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            value={autoConds.bets}
+                            onChange={e => onAutoCondChange('bets', e)}
+                          />
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Profit">
+                        <Space.Compact style={{ width: '100%' }}>
+                          <Input
+                            prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
+                            value={numberFormat(autoConds.profit, 8)}
+                            onChange={e => onAutoCondChange('profit', e)}
+                          />
+                        </Space.Compact>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
+
               </Space>
             </Form>
           </Card>
