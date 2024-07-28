@@ -97,6 +97,7 @@ html {
       .ant-radio-wrapper {
         width: 100%;
         justify-content: flex-start;
+
         span {
           display: flex;
           align-items: center;
@@ -377,6 +378,7 @@ html {
   border-radius: 100px;
   border: 1px solid #DDD;
   height: 50px;
+  margin-top: 18px;
 
   &-min-max {
     width: 50px;
@@ -406,7 +408,51 @@ html {
     }
   }
 
+  &-result {
+    color: #fff;
+    width: 60px;
+    font-weight: 500;
+    height: 36px;
+    border-radius: 4px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: -50px;
+    position: relative;
+    text-align: center;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+    }
+
+    &.win {
+      background-color: #8bc34a;
+      &::after {
+        border-top: 10px solid #8bc34a;
+      }
+    }
+
+    &.loss {
+      background-color: #ff9800;
+      &::after {
+        border-top: 10px solid #ff9800;
+      }
+    }
+  }
+
   .ant-slider {
+    margin: 12px 0 !important;
+
     &:hover {
       .ant-slider-rail {
         background-color: #f44336;
@@ -416,6 +462,11 @@ html {
         background-color: #4caf50;
       }
     }
+  }
+
+  .ant-slider-mark-text {
+    transition: .15s all ease;
+    top: -7px;
   }
 
   .ant-slider-horizontal,
@@ -429,6 +480,10 @@ html {
     padding-block: 0;
   }
 
+  .ant-slider-step {
+    top: -0.5px;
+  }
+
   .ant-slider-track-draggable {
     transform: translateY(-2.5px);
   }
@@ -440,6 +495,10 @@ html {
     &:hover {
       background-color: darken(#f44336, 5%) !important;
     }
+  }
+
+  .ant-slider-dot {
+    display: none;
   }
 
   .ant-slider-track {

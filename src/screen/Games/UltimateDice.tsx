@@ -4,9 +4,10 @@ import { Img } from "@component/DesignSystem/Img";
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common";
 import { Card, Checkbox, Col, Flex, Form, Input, Radio, Row, Slider, Space, Switch } from "antd"
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import _debounce from 'lodash/debounce';
 import { ULTIMATE_DICE_BET_MINIMUM } from "@util/constant";
+import { spawn } from "child_process";
 
 interface FieldType {
   betAmount: number
@@ -41,45 +42,124 @@ export const UltimateDice = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
   const [swapRange, setSwapRange] = useState<boolean | undefined>()
+  const [resultMarker, setResultMarker] = useState<{
+    [x: number]: {
+      label: ReactNode
+    }
+  }>()
   const [autoConds, setAutoConds] = useState<AutoCondsType>({
     onWin: 0,
     onLoss: 0,
     stopOnProfit: 0,
     stopOnLoss: 0,
-    bets: 1,
+    bets: 0,
     profit: 0
   })
 
-  const onStartPlaying = () => {
-    setPlay(true);
-    let result = parseFloat((Math.random() * 100).toFixed(2));
-    let low = formData.range[0]
-    let high = formData.range[1]
-    if (formData) {
-      if (low > high)
-        [low, high] = [high, low];
+  const onStartPlaying = (): any => {
+    setPlay(true)
+    let result = parseFloat((Math.random() * 100).toFixed(2)),
+      low = formData.range[0],
+      high = formData.range[1],
+      winChance = formData.winChance,
+      probability = Math.random() * 100, // Xác suất từ 0 đến 100
+      resultText = ''
 
-      if (swapRange) {
-        if (result <= low && result >= high)
-          console.log('Win')
-        else
-          console.log('Lose')
+    if (low > high) [low, high] = [high, low];
+
+    if (swapRange) {
+      if (probability <= winChance) {
+        // Nếu xác suất nằm trong khoảng winChance%
+        if (low >= result && result >= high) {
+          resultText = 'win';
+        } else {
+          resultText = 'loss';
+        }
       } else {
-        if (result >= low && result <= high)
-          console.log('Win')
-        else
-          console.log('Lose')
+        // Nếu xác suất nằm ngoài khoảng N%
+        if (result > low || result < high) {
+          resultText = 'loss';
+        } else {
+          resultText = 'win';
+        }
+      }
+    } else {
+      if (probability <= winChance) {
+        // Nếu xác suất nằm trong khoảng winChance%
+        if (low <= result && result <= high) {
+          resultText = 'win';
+        } else {
+          resultText = 'loss';
+        }
+      } else {
+        // Nếu xác suất nằm ngoài khoảng N%
+        if (result < low || result > high) {
+          resultText = 'loss';
+        } else {
+          resultText = 'win';
+        }
       }
     }
+
+    resultText == 'win'
+      ? console.log('win', formData.betAmount * formData.multiplier)
+      : console.log('loss', probability, result, formData.betAmount * -1)
+
+    setResultMarker(() => ({
+      [result]: {
+        label: <span className={`range-result ${resultText}`}>{result}</span>
+      }
+    }))
+    setTimeout(() => onStopPlaying(), 100)
+    return resultText
   }
 
   const onStartAutoDice = () => {
     setAutoPlay(true)
+
+    let profit = autoConds.profit, // Lợi nhuận lưu lại khi auto play
+      stopP = autoConds.stopOnProfit, // Điều kiện dừng khi thẳng đến số n
+      stopL = autoConds.stopOnLoss, // Điều kiện dừng khi thua đến số n
+      onWin = autoConds.onWin, // nếu thắng thì tăng vốn lên bao nhiêu %
+      onLoss = autoConds.onLoss, // nếu thua thì tăng vốn lên bao nhiêu %
+      bets = autoConds.bets// đếm số lần bet
+
+    while (profit < stopP && profit > stopL) {
+      console.log('Auto dice...')
+      const { resultText } = onStartPlaying();
+      let change = 0
+      if (resultText === 'win') {
+        if (onWin > 0) {
+          change = formData.betAmount * (onWin / 100);
+          profit += change;
+        }
+      } else {
+        if (onLoss > 0) {
+          change = formData.betAmount * (onWin / 100);
+          profit += change;
+        }
+      }
+      setAutoConds(prev => ({
+        ...prev,
+        'profit': profit,
+        'bets': bets++
+      }))
+
+      // Kiểm tra điều kiện dừng
+      if (profit >= stopP || profit <= stopL) {
+        console.log('Auto dice stop...')
+        onStopAutoDice()
+        break;
+      }
+    }
+
+
   }
 
   const onStopAutoDice = () => {
     console.log('Stopping auto dice...');
     setAutoPlay(false)
+    onStopPlaying()
   }
 
   const onChange = (name: string, value: any) => {
@@ -115,6 +195,11 @@ export const UltimateDice = () => {
 
   const onSwapRange = () => {
     setSwapRange(!swapRange)
+  }
+
+  const onStopPlaying = () => {
+    setPlay(false)
+    // onSaveRecord()
   }
 
   useEffect(() => {
@@ -236,10 +321,10 @@ export const UltimateDice = () => {
                     {
                       formData.isAuto
                         ? autoPlay
-                          ? <Btn block onClick={onStopAutoDice}>STOP</Btn>
+                          ? <Btn block onClick={onStopAutoDice}> <Img src="/loading.gif" /> STOP</Btn>
                           : <Btn block onClick={onStartAutoDice}>AUTO DICE</Btn>
                         : play
-                          ? <Btn block></Btn>
+                          ? <Btn block><Img src="/loading.gif" /></Btn>
                           : <Btn block onClick={onStartPlaying}>ROLL DICE</Btn>
                     }
                   </Col>
@@ -251,6 +336,7 @@ export const UltimateDice = () => {
                   {formData.range &&
                     <Slider
                       range={{ draggableTrack: true }}
+                      marks={resultMarker}
                       value={formData.range}
                       step={0.01}
                       onChange={(value: any) => onChange("range", value)}
@@ -350,7 +436,7 @@ export const UltimateDice = () => {
                             <Space.Compact style={{ width: '100%' }}>
                               <Input
                                 value={autoConds.bets}
-                                onChange={e => onAutoCondChange('bets', e)}
+                              // onChange={e => onAutoCondChange('bets', e)}
                               />
                             </Space.Compact>
                           </Form.Item>
@@ -361,7 +447,7 @@ export const UltimateDice = () => {
                               <Input
                                 prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
                                 value={numberFormat(autoConds.profit, 8)}
-                                onChange={e => onAutoCondChange('profit', e)}
+                              // onChange={e => onAutoCondChange('profit', e)}
                               />
                             </Space.Compact>
                           </Form.Item>
