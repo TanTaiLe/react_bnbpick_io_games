@@ -1,7 +1,8 @@
 import { Home } from "@screen/Home";
-import { UltimateDice } from "@screen/Games/UltimateDice";
 import { Gems } from "@screen/Games/Gems";
 import { Mines } from "@screen/Games/Mines";
+import { Limbo } from "@screen/Games/Limbo";
+import { UltimateDice } from "@screen/Games/UltimateDice";
 
 export interface IRouteConfig {
   name: string;
@@ -29,6 +30,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/mines",
     component: (
       <Mines />
+    ),
+  },
+  {
+    name: "limbo",
+    path: "/limbo",
+    component: (
+      <Limbo />
     ),
   },
   {
