@@ -3,9 +3,10 @@ import { Icon } from "@component/DesignSystem/Icon"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
-import { LIMBO_BET_MINIMUM } from "@util/constant"
+import { LIMBO_BET_MINIMUM, LIMBO_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
 import { useEffect, useState } from "react"
+import CountUp from "react-countup"
 
 interface FieldType {
   betAmount: number
@@ -26,8 +27,36 @@ export const Limbo = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const [result, setResult] = useState<{ value: number, text: string }>({
+    value: 1,
+    text: ''
+  })
 
-  const onStartPlaying = (): any => { }
+  const onStartPlaying = (): any => {
+    setPlay(true)
+    const { xMax, xMin } = LIMBO_SETTINGS
+    let probality = Math.random(),
+      resultMul = 0, resultText = ''
+
+    if (probality <= (formData.winChance / 100)) {
+      resultMul = parseFloat((formData.multiplier + Math.random() * (xMax - 2)).toFixed(2));
+      resultText = 'win'
+    } else {
+      resultMul = parseFloat((xMin + Math.random() * (formData.multiplier - xMin)).toFixed(2));
+      resultText = 'loss'
+    }
+
+    setResult({
+      'value': resultMul,
+      'text': resultText
+    })
+
+    setTimeout(() => {
+      setPlay(false)
+    }, 800)
+
+
+  }
 
   const onChange = (name: string, value: any) => {
     setFormData(prevValue => ({
@@ -58,7 +87,8 @@ export const Limbo = () => {
 
   useEffect(() => {
     form.setFieldsValue(formData)
-  }, [form, formData])
+    console.log(result)
+  }, [form, formData, result])
 
   return (
     <Layout title="Limbo">
@@ -77,10 +107,22 @@ export const Limbo = () => {
 
                 <div className={`playground limbo ${!play && 'not-allowed'}`}>
 
-                  <h1 className="limbo-result">1.00x</h1>
-                  <div className="limbo-rocket">
-                    <div className="limbo-rocket-body"></div>
-                    <div className="limbo-rocket-tail"></div>
+                  <h1 className={`limbo-result ${result.text}`}>
+                    {/* {numberFormat(result.value, 2)}x */}
+                    <CountUp
+                      start={1.00}
+                      end={result.value}
+                      decimals={2}
+                      decimal="."
+                      duration={0.3}
+                    />x
+                  </h1>
+                  <div className={`limbo-explode ${play ? 'active' : ''}`}></div>
+                  <div className={`limbo-rocket  ${play ? 'fly' : ''}`}>
+                    <div className="limbo-rocket-wrap">
+                      <div className="limbo-rocket-body"></div>
+                      <div className="limbo-rocket-tail"></div>
+                    </div>
                   </div>
                 </div>
                 <Row align="middle" gutter={16}>

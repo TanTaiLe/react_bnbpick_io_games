@@ -6,7 +6,7 @@ export const ROUTE = {
 
 export const GEMS_BET_MINIMUM = 0.00000100
 export const MINES_BET_MINIMUM = 0.00000100
-export const LIMBO_BET_MINIMUM = 0.00000001
+export const LIMBO_BET_MINIMUM = 0.00000100
 export const ULTIMATE_DICE_BET_MINIMUM = 0.00000001
 
 export const GEMS_SETTINGS = [
@@ -151,3 +151,8 @@ export const MINES_SETTINGS = [
     multiplierPerTile: 0.24,
   },
 ]
+
+export const LIMBO_SETTINGS = {
+  xMax: 970.00,
+  xMin: 1.01
+}
