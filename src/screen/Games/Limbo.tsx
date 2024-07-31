@@ -5,7 +5,7 @@ import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
 import { LIMBO_BET_MINIMUM, LIMBO_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import CountUp from "react-countup"
 
 interface FieldType {
@@ -27,6 +27,7 @@ export const Limbo = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const [result, setResult] = useState<{ value: number, text: string }>({
     value: 1,
     text: ''
@@ -52,10 +53,14 @@ export const Limbo = () => {
     })
 
     setTimeout(() => {
-      setPlay(false)
+      onStopPlaying()
     }, 800)
 
 
+  }
+
+  const onStopPlaying = () => {
+    setPlay(false)
   }
 
   const onChange = (name: string, value: any) => {
@@ -63,6 +68,7 @@ export const Limbo = () => {
       ...prevValue,
       [name]: value
     }))
+    console.log(name, value)
   }
 
   const onBetDouble = () => {
@@ -82,13 +88,31 @@ export const Limbo = () => {
       }))
   }
 
-  const onStartAutoBet = () => { }
-  const onStopAutoBet = () => { }
+  const onStartAutoBet = () => {
+    setAutoPlay(true)
+  }
+  const onStopAutoBet = () => {
+    setAutoPlay(false)
+  }
 
   useEffect(() => {
     form.setFieldsValue(formData)
     console.log(result)
-  }, [form, formData, result])
+
+    if (autoPlay) {
+      intervalRef.current = setInterval(() => {
+        onStartPlaying()
+        console.log('play')
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+
+  }, [form, formData, result, autoPlay])
 
   return (
     <Layout title="Limbo">
@@ -126,7 +150,7 @@ export const Limbo = () => {
                   </div>
                   <div className="limbo-meteor">
                     {[...Array(15)].map((e, i) =>
-                      <div className={`limbo-meteor-${i + 1}`}>
+                      <div className={`limbo-meteor-${i + 1}`} key={i}>
                         {e}
                       </div>
                     )}
@@ -136,6 +160,7 @@ export const Limbo = () => {
                   <Col span={6}>
                     <Checkbox
                       onChange={e => onChange('isAuto', e.target.checked)}
+                      className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}
                     >Auto</Checkbox>
                   </Col>
                   <Col span={12}>
