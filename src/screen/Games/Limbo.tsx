@@ -124,6 +124,13 @@ export const Limbo = () => {
                       <div className="limbo-rocket-tail"></div>
                     </div>
                   </div>
+                  <div className="limbo-meteor">
+                    {[...Array(15)].map((e, i) =>
+                      <div className={`limbo-meteor-${i + 1}`}>
+                        {e}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <Row align="middle" gutter={16}>
                   <Col span={6}>

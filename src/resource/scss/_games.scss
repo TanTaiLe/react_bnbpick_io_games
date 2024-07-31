@@ -185,6 +185,40 @@
     }
   }
 
+
+  &-meteor {
+
+    &-1,
+    &-2,
+    &-3,
+    &-4,
+    &-5,
+    &-6,
+    &-7,
+    &-8,
+    &-9,
+    &-10,
+    &-11,
+    &-12,
+    &-13,
+    &-14,
+    &-15 {
+      position: absolute;
+      width: 100px;
+      height: 1px;
+      transform: rotate(-45deg);
+      background-image: linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
+      animation: limboMeteor linear infinite;
+    }
+
+    @for $i from 1 through 15 {
+      &-#{$i} {
+        top: randomMeteorTop()+px;
+        left: randomMeteorLeft();
+        animation-duration: randomMeteorDur()+s;
+      }
+    }
+  }
 }
 
 .disabled {
@@ -196,223 +230,4 @@
 .not-allowed {
   cursor: not-allowed;
   pointer-events: none;
-}
-
-@keyframes scaleImg {
-  0% {
-    transform: scale(0);
-  }
-
-  30% {
-    transform: scale(1.1);
-  }
-
-  40% {
-    transform: scale(1);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes limboRocketShake {
-  0% {
-    left: .3125rem;
-    top: .1875rem;
-  }
-
-  10% {
-    left: .1875rem;
-    top: .25rem;
-  }
-
-  20% {
-    left: -.0625rem;
-    top: .0625rem;
-  }
-
-  30% {
-    left: -.1875rem;
-    top: .125rem;
-  }
-
-  40% {
-    left: .25rem;
-    top: .3125rem;
-  }
-
-  50% {
-    left: -.125rem;
-    top: 0;
-  }
-
-  60% {
-    left: .1875rem;
-    top: .125rem;
-  }
-
-  70% {
-    left: .0625rem;
-    top: .25rem;
-  }
-
-  80% {
-    left: -.0625rem;
-    top: .0625rem;
-  }
-
-  90% {
-    left: -.125rem;
-    top: .1875rem;
-  }
-
-  100% {
-    left: .1875rem;
-    top: .3125rem;
-  }
-}
-
-@keyframes limboRocketTail {
-  0% {
-    background-position: center 0px;
-  }
-
-  6% {
-    background-position: center -100px;
-  }
-
-  12% {
-    background-position: center -200px;
-  }
-
-  18% {
-    background-position: center -300px;
-  }
-
-  24% {
-    background-position: center -400px;
-  }
-
-  30% {
-    background-position: center -500px;
-  }
-
-  36% {
-    background-position: center -600px;
-  }
-
-  42% {
-    background-position: center -700px;
-  }
-
-  48% {
-    background-position: center -800px;
-  }
-
-  55% {
-    background-position: center -900px;
-  }
-
-  62% {
-    background-position: center -1000px;
-  }
-
-  68% {
-    background-position: center -1100px;
-  }
-
-  76% {
-    background-position: center -1200px;
-  }
-
-  82% {
-    background-position: center -1300px;
-  }
-
-  90% {
-    background-position: center -1400px;
-  }
-
-  96% {
-    background-position: center -1500px;
-  }
-
-  100% {
-    background-position: center -1600px;
-  }
-}
-
-@keyframes limboRocketFly {
-  0% {
-    bottom: 15%;
-    opacity: 1;
-  }
-
-  50% {
-    bottom: 40%;
-    opacity: 1;
-  }
-
-  100% {
-    bottom: 65%;
-    opacity: 0;
-  }
-}
-
-@keyframes limboRocketExplode {
-  0% {
-    background-position: center 0px;
-    opacity: 0;
-  }
-
-  10% {
-    background-position: center -225px;
-    opacity: 1;
-  }
-
-  20% {
-    background-position: center -450px;
-    opacity: 1;
-  }
-
-  30% {
-    background-position: center -675px;
-    opacity: 1;
-  }
-
-  40% {
-    background-position: center -900px;
-    opacity: 1;
-  }
-
-  50% {
-    background-position: center -1125px;
-    opacity: 1;
-  }
-
-  60% {
-    background-position: center -1350px;
-    opacity: 1;
-  }
-
-  70% {
-    background-position: center -1575px;
-    opacity: 1;
-  }
-
-  80% {
-    background-position: center -1800px;
-    opacity: 1;
-  }
-
-  90% {
-    background-position: center -2025px;
-    opacity: 1;
-  }
-
-  100% {
-    background-position: center -2025px;
-    opacity: 1;
-  }
 }

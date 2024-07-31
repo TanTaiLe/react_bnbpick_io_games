@@ -1,0 +1,22 @@
+@use 'sass:math';
+
+@function randomFloat($min, $max) {
+  $precision: 100; // Độ chính xác của số thập phân, 4 chữ số thập phân.
+  $random-int: random(($max - $min) * $precision) + $min * $precision;
+  @return $random-int / $precision;
+}
+
+@function randomMeteorTop() {
+  $v: randomFloat(80, 300); // 80 - 300px
+  @return $v;
+}
+
+@function randomMeteorLeft() {
+  $v: percentage(randomFloat(0.1, 1)); // 10 - 100%
+  @return $v;
+}
+
+@function randomMeteorDur() {
+  $v: randomFloat(5, 10); // 5 - 10s
+  @return $v;
+}
