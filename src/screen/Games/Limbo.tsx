@@ -121,7 +121,7 @@ export const Limbo = () => {
           <Card className="card form">
 
             <Form
-              name="ultimateBet"
+              name="limbo"
               layout="vertical"
               initialValues={formData ? defaultValues : formData}
               form={form}
@@ -177,7 +177,7 @@ export const Limbo = () => {
                   <Col span={6}></Col>
                 </Row>
 
-                <div className="form-group">
+                <div className={`form-group ${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}>
                   <Row gutter={16}>
                     <Col span={24}>
                       <Form.Item<FieldType> label="Bet Amount" name="betAmount">

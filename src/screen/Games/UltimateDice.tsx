@@ -211,7 +211,6 @@ export const UltimateDice = () => {
       <Row style={{ width: '100%' }} justify='center'>
         <Col xl={{ span: 12 }}>
           <Card className="card form">
-
             <Form
               name="ultimateDice"
               layout="vertical"

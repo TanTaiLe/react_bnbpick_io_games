@@ -152,6 +152,7 @@ export const MINES_SETTINGS = [
   },
 ]
 
+
 export const LIMBO_SETTINGS = {
   xMax: 970.00,
   xMin: 1.01

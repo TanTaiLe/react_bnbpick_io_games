@@ -3,7 +3,7 @@
 @function randomFloat($min, $max) {
   $precision: 100; // Độ chính xác của số thập phân, 4 chữ số thập phân.
   $random-int: random(($max - $min) * $precision) + $min * $precision;
-  @return $random-int / $precision;
+  @return math.div($random-int, $precision);
 }
 
 @function randomMeteorTop() {
