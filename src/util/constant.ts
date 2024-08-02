@@ -152,6 +152,9 @@ export const MINES_SETTINGS = [
   },
 ]
 
+export const ROULETTE_SETTINGS = {
+  chips: [100, 1000, 10000, 100000, 1000000, 10000000, 100000000]
+}
 
 export const LIMBO_SETTINGS = {
   xMax: 970.00,

@@ -2,9 +2,10 @@ import Icon from "@ant-design/icons"
 import { Btn } from "@component/DesignSystem/Btn"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
-import { numberFormat } from "@util/common"
+import { chipsFormat, numberFormat } from "@util/common"
+import { ROULETTE_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { RouletteTable, RouletteWheel } from 'react-casino-roulette';
 import 'react-casino-roulette/dist/index.css';
 
@@ -26,16 +27,19 @@ export const Roulette = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean>(false)
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const [currentChip, setCurrentChip] = useState<number>()
+
   const [bets, setBets] = useState({});
   const [winningBet, setWinningBet] = useState('-1');
 
   const handleBet = (betData: any) => {
-    const { id } = betData;
+    const { id } = betData; //lấy id của ô
+    console.log(id, betData)
 
     setBets((prevState) => ({
       ...prevState,
       [id]: {
-        icon: 'https://cdn-icons-png.flaticon.com/512/10095/10095709.png',
+        icon: '/roulette_chips.svg',
       },
     }));
   };
@@ -61,6 +65,11 @@ export const Roulette = () => {
     console.log(name, value)
   }
 
+  const onChipSelect = (bet: number) => {
+    console.log(bet)
+    setCurrentChip(bet)
+  }
+
   const onStartAutoBet = () => {
     setAutoPlay(true)
   }
@@ -68,11 +77,15 @@ export const Roulette = () => {
     setAutoPlay(false)
   }
 
+  useEffect(() => {
+    console.log(bets)
+  }, [bets])
+
   return (
 
     <Layout title="Roulette">
       <Row style={{ width: '100%' }} justify='center'>
-        <Col xl={{ span: 8 }}>
+        <Col xl={{ span: 16 }}>
           <Card className="card form">
 
             <Form
@@ -92,7 +105,6 @@ export const Roulette = () => {
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
                             value={numberFormat(formData.betAmount, 8)}
-                          // onChange={e => onChange('betAmount', e)}
                           />
                         </Space.Compact>
                       </Form.Item>
@@ -100,21 +112,35 @@ export const Roulette = () => {
                     <Col span={24}>
                       <Form.Item<FieldType> label="Game History" name="history" className="disabled">
                         <Space.Compact style={{ width: '100%' }}>
-                          <Input
-                          // value={numberFormat(formData.betAmount, 8)}
-                          // onChange={e => onChange('betAmount', e)}
-                          />
+                          <Input />
                         </Space.Compact>
                       </Form.Item>
                     </Col>
                   </Space>
                 </Row>
 
-                <div className="playgound roulette">
-                  <RouletteWheel start={play} winningBet={winningBet} />
-                  <div className="roulette-table">
-                    <RouletteTable bets={bets} onBet={handleBet} />
-                  </div>
+                <div className="playground roulette">
+                  <Row align="middle" gutter={[0, 16]}>
+                    <Col span={12}>
+                      <div className="roulette-wheel">
+                        <RouletteWheel start={play} winningBet={winningBet} />
+                      </div>
+                    </Col>
+                    <Col span={12}>
+                      <div className="roulette-table">
+                        <RouletteTable bets={bets} onBet={handleBet} />
+                      </div>
+                    </Col>
+                    <Col span={24}>
+                      <div className="roulette-chip">
+                        {ROULETTE_SETTINGS.chips.map((e, i) =>
+                          <div className={`roulette-chip-wrapper ${currentChip == e ? 'selected' : ''}`} onClick={() => onChipSelect(e)}>
+                            <div key={i} data-coin={e} className="roulette-chip-item">{chipsFormat(e)}</div>
+                          </div>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
 
                 <Row align="middle" gutter={16}>

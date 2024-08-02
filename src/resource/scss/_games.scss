@@ -101,9 +101,27 @@
 }
 
 .roulette {
+  &-wheel {
+    transform: scale(0.9);
+
+    &-plate::after {
+      border: 6px solid #ddd;
+      box-shadow: inset 0px 0px 0px 2px #aaa, 0px 0px 0px 2px #ddd;
+    }
+
+    &-bet-number {
+      border-top-color: #cc000e;
+
+      &:nth-child(19),
+      &:nth-child(38) {
+        border-top-color: #8bc34a;
+      }
+    }
+  }
 
   &-table {
-    margin: 80px 0 60px;
+    margin: 80px 0;
+
     &-container {
       transform: rotate(90deg);
       display: flex;
@@ -117,8 +135,19 @@
           background-color: #8bc34a;
           font-size: 14px;
           height: calc(100% / 2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+
+          &:hover,
+          &.item-hover {
+            background-color: lighten(#8bc34a, 30%) !important;
+          }
         }
-        .red-item, .black-item {
+
+        .red-item,
+        .black-item {
           border: 2px solid #DDD;
           font-size: 14px;
           padding: 0;
@@ -127,12 +156,29 @@
           justify-content: center;
           height: calc(100% / 3);
         }
+
+        .red-item {
+
+          &:hover,
+          &.item-hover {
+            background-color: lighten(#cc000e, 30%) !important;
+          }
+        }
+
+        .black-item {
+
+          &:hover,
+          &.item-hover {
+            background-color: lighten(#000000, 30%) !important;
+          }
+        }
+
         .column-item {
           border: 2px solid #DDD;
           background: #EFEFEF;
           color: #000;
           font-size: 14px;
-          height: calc(100% / 3 );
+          height: calc(100% / 3);
         }
       }
 
@@ -150,6 +196,7 @@
 
       &-third {
         order: 1;
+
         .outside-section {
           height: 40px;
           border: 2px solid #DDD;
@@ -157,10 +204,70 @@
           color: #000;
           font-size: 14px;
         }
-        .rhomb-red, .rhomb-black {
+
+        .rhomb-red,
+        .rhomb-black {
           width: 20px;
           height: 20px;
         }
+      }
+    }
+  }
+
+  &-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &-wrapper {
+      width: 36px;
+      height: 36px;
+      border-radius: 36px;
+      background-color: rgba(0, 0, 0, 0.3);
+      margin: 0 4px;
+      
+      &:hover, &.selected {
+        .roulette-chip-item {
+          transform: translateY(-10px);
+        }
+      }
+    }
+
+    &-item {
+      width: 100%;
+      height: 100%;
+      background-image: url(/roulette_chips.svg);
+      background-repeat: no-repeat;
+      background-size: 266px 134px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      transform: translateY(-1px);
+      cursor: pointer;
+      transition: .15s all ease;
+
+      &[data-coin="100"] {
+        background-position-x: 0;
+      }
+      &[data-coin="1000"] {
+        background-position-x: -38px;
+      }
+      &[data-coin="10000"] {
+        background-position-x: -77px;
+      }
+      &[data-coin="100000"] {
+        background-position-x: -115px;
+      }
+      &[data-coin="1000000"] {
+        background-position-x: -154px;
+      }
+      &[data-coin="10000000"] {
+        background-position-x: -192px;
+      }
+      &[data-coin="100000000"] {
+        background-position-x: -230px;
       }
     }
   }
