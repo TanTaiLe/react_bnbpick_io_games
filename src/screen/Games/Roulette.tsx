@@ -112,7 +112,9 @@ export const Roulette = () => {
 
                 <div className="playgound roulette">
                   <RouletteWheel start={play} winningBet={winningBet} />
-                  <RouletteTable bets={bets} onBet={handleBet} />
+                  <div className="roulette-table">
+                    <RouletteTable bets={bets} onBet={handleBet} />
+                  </div>
                 </div>
 
                 <Row align="middle" gutter={16}>

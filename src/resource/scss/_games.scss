@@ -100,6 +100,72 @@
   }
 }
 
+.roulette {
+
+  &-table {
+    margin: 80px 0 60px;
+    &-container {
+      transform: rotate(90deg);
+      display: flex;
+      flex-direction: column;
+
+      &-first {
+        order: 1;
+        height: 220px;
+
+        .zero-item {
+          background-color: #8bc34a;
+          font-size: 14px;
+          height: calc(100% / 2);
+        }
+        .red-item, .black-item {
+          border: 2px solid #DDD;
+          font-size: 14px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: calc(100% / 3);
+        }
+        .column-item {
+          border: 2px solid #DDD;
+          background: #EFEFEF;
+          color: #000;
+          font-size: 14px;
+          height: calc(100% / 3 );
+        }
+      }
+
+      &-second {
+        order: 0;
+        height: 40px;
+
+        .doz-item {
+          border: 2px solid #DDD;
+          background: #EFEFEF;
+          color: #000;
+          font-size: 14px;
+        }
+      }
+
+      &-third {
+        order: 1;
+        .outside-section {
+          height: 40px;
+          border: 2px solid #DDD;
+          background: #EFEFEF;
+          color: #000;
+          font-size: 14px;
+        }
+        .rhomb-red, .rhomb-black {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
 .limbo {
   width: 100%;
   padding-bottom: 100%;
