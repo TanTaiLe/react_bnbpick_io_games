@@ -153,7 +153,35 @@ export const MINES_SETTINGS = [
 ]
 
 export const ROULETTE_SETTINGS = {
-  chips: [100, 1000, 10000, 100000, 1000000, 10000000, 100000000]
+  chips: [
+    {
+      value: 100,
+      img: '/roulette_100.png'
+    }, {
+      value: 1000,
+      img: '/roulette_1000.png'
+    }, {
+      value: 10000,
+      img: '/roulette_10000.png'
+    }, {
+      value: 100000,
+      img: '/roulette_100000.png'
+    }, {
+      value: 1000000,
+      img: '/roulette_1000000.png'
+    }, {
+      value: 10000000,
+      img: '/roulette_10000000.png'
+    }, {
+      value: 100000000,
+      img: '/roulette_100000000.png'
+    }
+  ],
+  wheelValues: [
+    '0',
+    '00',
+    ...Array.from({ length: 36 }, (_, i) => `${i + 1}`),
+  ]
 }
 
 export const LIMBO_SETTINGS = {

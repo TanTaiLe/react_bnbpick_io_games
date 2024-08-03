@@ -41,6 +41,9 @@
       background: transparent !important;
       box-shadow: none;
     }
+    &-red, &-red:hover {
+      color: #f7655a !important;
+    }
   }
   &-group {
     display: flex;
