@@ -5,7 +5,7 @@ import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
 import { ROULETTE_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { RouletteTable, RouletteWheel } from 'react-casino-roulette';
 import { IRouletteWheelProps } from "react-casino-roulette/dist/components/RouletteWheel"
 import 'react-casino-roulette/dist/index.css';
@@ -41,12 +41,13 @@ export const Roulette = () => {
   const [currentChip, setCurrentChip] = useState<BetType>()
   const [bets, setBets] = useState({});
   const [betHistory, setBetHistory] = useState<HistoryType[]>([]);
+  const [gameHistory, setGameHistory] = useState<string[]>([])
   const [resultBet, setResultBet] = useState<string>('-1');
-  const [resultHistory, setResultHistory] = useState([])
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleBet = (betData: any) => {
     const { id } = betData; //lấy id của ô
-    console.log(id, betData, bets)
+    console.log(`You bet ${currentChip?.value} on`, betData)
 
     if (currentChip) {
       setBets(prev => ({
@@ -67,19 +68,48 @@ export const Roulette = () => {
     setPlay(true)
     const { wheelValues } = ROULETTE_SETTINGS
     let result = wheelValues[Math.floor(Math.random() * wheelValues.length)]
+    console.log(result)
     setResultBet(result); //random
 
-    const checkResult = betHistory.some(e => e.id.toString() == result)
-
-    if (checkResult) {
-      console.log("You win!");
-    } else {
-      console.log("You lose!");
-    }
+    betHistory.map(e => {
+      if (onCheckResult(parseInt(result), e.id.toString())) {
+        console.log(`Bet ID: ${e.id} - You win!`);
+      } else {
+        console.log(`Bet ID: ${e.id} - You lose.`);
+      }
+    })
 
     setTimeout(() => {
       onStopPlaying()
+      setGameHistory(prev => [
+        ...prev,
+        result
+      ])
     }, 3000)
+  }
+
+  const onCheckResult = (result: number, id: string) => {
+    if (id === result.toString()) return true;
+    if (id === '1_TO_18' && result >= 1 && result <= 18) return true;
+    if (id === '19_TO_36' && result >= 19 && result <= 36) return true;
+    if (id === 'EVEN' && result % 2 === 0) return true;
+    if (id === 'ODD' && result % 2 !== 0) return true;
+    if (id === 'RED' && ROULETTE_SETTINGS.tile.red.includes(result)) return true;
+    if (id === 'BLACK' && ROULETTE_SETTINGS.tile.black.includes(result)) return true;
+    if (id === '1ST_DOZEN' && result >= 1 && result <= 12) return true;
+    if (id === '2ND_DOZEN' && result >= 13 && result <= 24) return true;
+    if (id === '3RD_DOZEN' && result >= 25 && result <= 36) return true;
+    if (id === '1ST_COLUMN' && result % 3 === 1) return true;
+    if (id === '2ND_COLUMN' && result % 3 === 2) return true;
+    if (id === '3RD_COLUMN' && result % 3 === 0) return true;
+
+    // Check for specific bet formats like [xx-yy-zz--...]
+    if (id.includes('-')) {
+      const numbers = id.split('-').map(Number);
+      if (numbers.includes(result)) return true;
+    }
+
+    return false;
   }
 
   const onStopPlaying = () => {
@@ -136,8 +166,20 @@ export const Roulette = () => {
   };
 
   useEffect(() => {
-    console.log(betHistory)
-  }, [bets])
+    console.log('Bet history:', betHistory)
+
+    if (autoPlay) {
+      intervalRef.current = setInterval(() => {
+        onStartPlaying()
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [betHistory])
 
   return (
 
@@ -169,9 +211,15 @@ export const Roulette = () => {
                     </Col>
                     <Col span={24}>
                       <Form.Item<FieldType> label="Game History" className="disabled">
-                        {/* {betHistory.map((e, i) => 
-                          <div key={i}>{e.value}</div>
-                        )} */}
+                        <Space size="small" align="center">
+                          {gameHistory.map((e, i) =>
+                            <div className={`
+                              roulette-history
+                              ${ROULETTE_SETTINGS.tile.red.includes(parseInt(e)) ? 'red' : ''}
+                              ${(e == "0" || e == "00" ? 'zero' : '')}
+                              `} key={i}>{e}</div>
+                          )}
+                        </Space>
                       </Form.Item>
                     </Col>
                   </Space>
@@ -220,10 +268,10 @@ export const Roulette = () => {
                       formData.isAuto
                         ? autoPlay
                           ? <Btn block onClick={onStopAutoBet}> <Img src="/loading.gif" /> STOP</Btn>
-                          : <Btn block onClick={onStartAutoBet} className={betHistory ? '' : 'disabled'}>AUTO SPIN</Btn>
+                          : <Btn block onClick={onStartAutoBet} className={betHistory.length > 0 ? '' : 'disabled'}>AUTO SPIN</Btn>
                         : play
                           ? <Btn block className="disabled"><Img src="/loading.gif" /></Btn>
-                          : <Btn block onClick={onStartPlaying} className={betHistory ? '' : 'disabled'}>SPIN</Btn>
+                          : <Btn block onClick={onStartPlaying} className={betHistory.length > 0 ? '' : 'disabled'}>SPIN</Btn>
                     }
                   </Col>
                   <Col span={6}>
