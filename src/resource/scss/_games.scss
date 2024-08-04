@@ -111,10 +111,10 @@
     justify-content: center;
     font-weight: 600;
     border-radius: 50%;
-    .red {
+    &.red {
       background-color: #cc000e;
     }
-    .zero {
+    &.zero {
       background-color: #8bc34a;
     }
   }
