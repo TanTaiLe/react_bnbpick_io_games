@@ -7,6 +7,7 @@ export const ROUTE = {
 export const GEMS_BET_MINIMUM = 0.00000100
 export const MINES_BET_MINIMUM = 0.00000100
 export const LIMBO_BET_MINIMUM = 0.00000100
+export const WHEEL_OF_FORTUNE_BET_MINIMUM = 0.00000100
 export const ULTIMATE_DICE_BET_MINIMUM = 0.00000001
 
 export const GEMS_SETTINGS = [
@@ -187,6 +188,22 @@ export const ROULETTE_SETTINGS = {
     black: [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
   }
 }
+
+export const WHEEL_OF_FORTUNE_SETTINGS = [
+  { position: 0, multiplier: 3 },
+  { position: 30, multiplier: 0 },
+  { position: 60, multiplier: 1.5 },
+  { position: 90, multiplier: 0 },
+  { position: 120, multiplier: 2.5 },
+  { position: 150, multiplier: 0 },
+  { position: 180, multiplier: 1 },
+  { position: 210, multiplier: 0 },
+  { position: 240, multiplier: 2 },
+  { position: 270, multiplier: 0 },
+  { position: 300, multiplier: 1.5 },
+  { position: 330, multiplier: 0 },
+  { position: 360, multiplier: 3 }
+]
 
 export const LIMBO_SETTINGS = {
   xMax: 970.00,

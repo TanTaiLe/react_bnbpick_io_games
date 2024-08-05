@@ -7,7 +7,6 @@ import { ROULETTE_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
 import { useEffect, useRef, useState } from "react"
 import { RouletteTable, RouletteWheel } from 'react-casino-roulette';
-import { IRouletteWheelProps } from "react-casino-roulette/dist/components/RouletteWheel"
 import 'react-casino-roulette/dist/index.css';
 
 interface FieldType {
@@ -187,7 +186,6 @@ export const Roulette = () => {
       <Row style={{ width: '100%' }} justify='center'>
         <Col xl={{ span: 16 }}>
           <Card className="card form">
-
             <Form
               name="limbo"
               layout="vertical"

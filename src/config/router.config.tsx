@@ -4,6 +4,7 @@ import { Mines } from "@screen/Games/Mines";
 import { Limbo } from "@screen/Games/Limbo";
 import { UltimateDice } from "@screen/Games/UltimateDice";
 import { Roulette } from "@screen/Games/Roulette";
+import { WheelOfFortune } from "@screen/Games/WheelOfFortune";
 
 export interface IRouteConfig {
   name: string;
@@ -38,6 +39,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/roulette",
     component: (
       <Roulette />
+    ),
+  },
+  {
+    name: "wheel of fortune",
+    path: "/wheel-of-fortune",
+    component: (
+      <WheelOfFortune />
     ),
   },
   {

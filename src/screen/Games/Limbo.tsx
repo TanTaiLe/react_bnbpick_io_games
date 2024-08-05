@@ -129,7 +129,7 @@ export const Limbo = () => {
             >
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
 
-                <div className={`playground limbo ${!play && 'not-allowed'}`}>
+                <div className="playground limbo">
 
                   <h1 className={`limbo-result ${result.text}`}>
                     {/* {numberFormat(result.value, 2)}x */}
