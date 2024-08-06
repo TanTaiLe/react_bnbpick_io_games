@@ -4,11 +4,28 @@ export const ROUTE = {
   PUBLIC: "PUBLIC",
 }
 
+export const SLOTS_BET_MINIMUM = 0.00000001
 export const GEMS_BET_MINIMUM = 0.00000100
 export const MINES_BET_MINIMUM = 0.00000100
 export const LIMBO_BET_MINIMUM = 0.00000100
 export const WHEEL_OF_FORTUNE_BET_MINIMUM = 0.00000100
 export const ULTIMATE_DICE_BET_MINIMUM = 0.00000001
+
+export const SLOTS_SETTINGS = {
+  tile: [
+    '/slots_bell.svg', // 0
+    '/slots_bnb.svg', // 1
+    '/slots_cherry.svg', // 2
+    '/slots_orange.svg', // 3
+    '/slots_seven.svg', // 4
+    '/slots_watermelon.svg', // 5
+  ],
+  columns: [
+    [0, 0, 3, 5, 5, 3, 5, 0, 0, 1, 5, 0, 4, 0, 5, 0, 2, 2, 0, 0, 0, 0, 0, 5, 5, 2, 4, 5, 2, 0, 0, 5, 0, 2, 0, 3],
+    [0, 0, 3, 5, 5, 3, 5, 0, 0, 1, 5, 0, 4, 0, 5, 0, 2, 2, 0, 0, 0, 0, 0, 5, 5, 2, 4, 5, 2, 0, 0, 5, 0, 2, 0, 3],
+    [0, 0, 3, 5, 5, 3, 5, 0, 0, 1, 5, 0, 4, 0, 5, 0, 2, 2, 0, 0, 0, 0, 0, 5, 5, 2, 4, 5, 2, 0, 0, 5, 0, 2, 0, 3],
+  ]
+}
 
 export const GEMS_SETTINGS = [
   {

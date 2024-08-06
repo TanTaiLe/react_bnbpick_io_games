@@ -5,7 +5,6 @@ import { numberFormat } from "@util/common"
 import { WHEEL_OF_FORTUNE_BET_MINIMUM, WHEEL_OF_FORTUNE_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
 import { useEffect, useRef, useState } from "react"
-import { Wheel } from 'react-custom-roulette'
 
 interface FieldType {
   betAmount: number
@@ -23,7 +22,6 @@ export const WheelOfFortune = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
   const [wheelPosition, setWheelPosition] = useState<number>(0)
-  const [cyclePosition, setCyclePosition] = useState<number>(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = (): any => {
@@ -108,7 +106,7 @@ export const WheelOfFortune = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [autoPlay, form, formData, cyclePosition, wheelPosition])
+  }, [autoPlay, form, formData, wheelPosition])
 
   return (
     <Layout title="Wheel Of Fortune">

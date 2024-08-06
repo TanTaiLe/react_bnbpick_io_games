@@ -1,3 +1,26 @@
+.slots {
+  border: 1px solid #e5e5e5;
+  box-shadow: inset 0 0 10px 1px rgba(130, 130, 130, 0.1);
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+
+  &-column {
+    height: 290px;
+    overflow: hidden;
+    perspective: 1000px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: -webkit-filter 1s ease-in-out;
+    transition: filter 1s ease-in-out;
+    transition: filter 1s ease-in-out, -webkit-filter 1s ease-in-out;
+    width: 100%;
+    border-right: 1px solid #e5e5e5;
+  }
+}
+
 .gems {
   .playground {
     width: 100%;
