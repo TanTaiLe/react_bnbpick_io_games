@@ -93,8 +93,10 @@ export const Slots = () => {
                   <Row style={{ width: '100%' }}>
                     {SLOTS_SETTINGS.columns.map((e, i) =>
                       <Col span={8} key={i}>
-                        <div className="slots-column">
-                          {e.map(d => <Img src={SLOTS_SETTINGS.tile[d]} w={60} />)}
+                        <div className={`slots-column slots-column-${i + 1}`}>
+                          <div className="slots-cycle slots-cycle-start" style={{ transform: 'rotateX(90deg)' }}>
+                            {e.map(d => <Img src={SLOTS_SETTINGS.tile[d]} />)}
+                          </div>
                         </div>
                       </Col>
                     )}
