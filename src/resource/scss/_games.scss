@@ -22,6 +22,118 @@
     }
   }
 
+  &-indicators {
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 5;
+  }
+
+  &-indicator {
+    display: block;
+    height: 1px;
+    left: 0;
+    position: absolute;
+    right: 0;
+
+    &-1 {
+      top: 50%
+    }
+
+    &-2 {
+      top: 17%
+    }
+    &-3 {
+      top: 83%
+    }
+
+    &.active {
+
+      &::after,
+      &::before {
+        transform: scale(1) translateY(-50%);
+      }
+
+      span {
+        &::after,
+        &::before {
+          background-image: linear-gradient(to left, #2196f380 40%, transparent 40%) !important;
+        }
+      }
+    }
+
+    &::before {
+      border-left: 10.66667px solid #03a9f4;
+      left: 0;
+      transform-origin: left top;
+    }
+
+    &::after {
+      border-right: 10.66667px solid #03a9f4;
+      right: 0;
+      transform-origin: right top;
+    }
+
+    &::after,
+    &::before {
+
+      content: '';
+      border-bottom: 8px solid transparent;
+      border-top: 8px solid transparent;
+      display: block;
+      position: absolute;
+      top: 50%;
+      transform: scale(0) translateY(-50%);
+      transition: transform 300ms ease-in-out;
+    }
+
+    span {
+      display: block;
+      height: 1px;
+      position: absolute;
+      top: 0;
+      width: 33%;
+
+      &::before {
+        left: 0;
+      }
+
+      &::after {
+        right: 0;
+      }
+
+      &::after,
+      &::before {
+        background-image: linear-gradient(to left, rgba(187, 190, 197, 0.2) 40%, transparent 40%);
+        background-position: right;
+        background-size: 20px;
+        background-repeat: repeat-x;
+        bottom: 0;
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        width: 27%;
+      }
+
+      &:nth-child(1) {
+        left: 0;
+      }
+
+      &:nth-child(2) {
+        left: 33%;
+      }
+
+      &:nth-child(3) {
+        left: 66%;
+      }
+    }
+  }
+
   &-cycle {
     height: 290px;
     position: relative;
@@ -40,6 +152,7 @@
       transition: opacity 500ms ease-out;
       align-items: center;
       justify-content: center;
+
       // display: block;
       img {
         height: 150%;

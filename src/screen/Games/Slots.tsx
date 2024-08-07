@@ -5,7 +5,7 @@ import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
 import { SLOTS_BET_MINIMUM, SLOTS_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 interface FieldType {
   betAmount: number
@@ -24,9 +24,14 @@ export const Slots = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const [columnResult, setColumnResult] = useState([90, -90, -70])
+  const [convertedResult, setConvertedResult] = useState<[] | undefined>()
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = (): any => {
     setPlay(true)
+
+    setColumnResult(prev => prev.map(val => val + onGetRandomValue()))
 
     setTimeout(() => {
       onStopPlaying()
@@ -35,6 +40,12 @@ export const Slots = () => {
 
   const onStopPlaying = () => {
     setPlay(false)
+  }
+
+  const onGetRandomValue = () => {
+    let random = Math.floor(Math.random() * ((360 - 10) / 10 + 1))
+    console.log(10 - random * 10)
+    return 10 - random * 10
   }
 
   const onChange = (name: string, value: any) => {
@@ -69,6 +80,39 @@ export const Slots = () => {
     setAutoPlay(false)
   }
 
+  const onCheckResult = () => {
+
+    columnResult.map((e, i) => {
+      let convertedValue = e
+
+      while (convertedValue < 0) {
+        convertedValue += 360
+      }
+      // setConvertedResult(prev => prev?.map(val => val + convertedValue))
+      // console.log(SLOTS_SETTINGS.columns[i][Math.floor(convertedValue / 10) % 36])
+    })
+
+  }
+
+  useEffect(() => {
+    form.setFieldsValue(formData)
+
+    onCheckResult()
+
+    if (autoPlay) {
+      intervalRef.current = setInterval(() => {
+        onStartPlaying()
+        console.log('play')
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [autoPlay, form, formData,])
+
   return (
     <Layout title="Slots">
       <Row style={{ width: '100%' }} justify='center'>
@@ -85,7 +129,7 @@ export const Slots = () => {
                 <div className="playground slots">
                   <div className="slots-indicators">
                     {[...Array(3)].map((e, i) =>
-                      <div className={`slots-indicator slots-indicator-${i + 1}`}>
+                      <div className={`slots-indicator ${i + 1 <= formData.lines ? 'active' : ''} slots-indicator-${i + 1}`}>
                         {[...Array(3)].map(j => <span key={j}></span>)}
                       </div>
                     )}
@@ -94,7 +138,7 @@ export const Slots = () => {
                     {SLOTS_SETTINGS.columns.map((e, i) =>
                       <Col span={8} key={i}>
                         <div className={`slots-column slots-column-${i + 1}`}>
-                          <div className="slots-cycle slots-cycle-start" style={{ transform: 'rotateX(90deg)' }}>
+                          <div className="slots-cycle slots-cycle-start" style={{ transform: `rotateX(${columnResult[i]}deg)` }}>
                             {e.map(d => <Img src={SLOTS_SETTINGS.tile[d]} />)}
                           </div>
                         </div>
@@ -147,7 +191,7 @@ export const Slots = () => {
                           <Select
                             defaultValue={defaultValues.lines}
                             style={{ width: 120 }}
-                            onChange={e => onChange('mines', e)}
+                            onChange={e => onChange('lines', e)}
                             options={Array.from({ length: 3 }, (_, i) => ({ value: i + 1, label: i + 1 }))}
                           />
                           <div className="select-icon">
