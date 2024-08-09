@@ -98,7 +98,7 @@ export const WheelOfFortune = () => {
       intervalRef.current = setInterval(() => {
         onStartPlaying()
         console.log('play')
-      }, 1000)
+      }, 500)
     }
 
     return () => {
@@ -123,7 +123,7 @@ export const WheelOfFortune = () => {
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
                 <Row gutter={16}>
                   <Col span={24}>
-                    <Form.Item<FieldType> label="Bet Amount" name="betAmount">
+                    <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}>
                       <Space.Compact style={{ width: '100%' }}>
                         <Input
                           prefix={<Img src="/coin_logo.svg" w={20} h={20} />}

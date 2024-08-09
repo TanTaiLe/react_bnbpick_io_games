@@ -148,7 +148,7 @@
       left: 0;
       position: absolute;
       right: 0;
-      top: calc(50% - 25.075px);
+      top: calc(50% - 32px);
       transition: opacity 500ms ease-out;
       align-items: center;
       justify-content: center;
@@ -169,9 +169,9 @@
     }
 
     &-start {
-      transition: transform 200ms cubic-bezier(0.91, 0.22, 0.99, 0.64);
+      transition: transform 300ms cubic-bezier(0.91, 0.22, 0.99, 0.64);
       // animation-name: rotate;
-      animation-duration: 100ms;
+      animation-duration: 300ms;
       animation-fill-mode: both;
       animation-iteration-count: infinite;
       animation-timing-function: linear;

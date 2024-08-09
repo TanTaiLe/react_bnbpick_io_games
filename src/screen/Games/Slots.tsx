@@ -25,7 +25,6 @@ export const Slots = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
   const [columnResult, setColumnResult] = useState([90, -90, -70])
-  const [convertedResult, setConvertedResult] = useState<[] | undefined>()
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = (): any => {
@@ -35,7 +34,7 @@ export const Slots = () => {
 
     setTimeout(() => {
       onStopPlaying()
-    }, 500)
+    }, 300)
   }
 
   const onStopPlaying = () => {
@@ -43,9 +42,9 @@ export const Slots = () => {
   }
 
   const onGetRandomValue = () => {
-    let random = Math.floor(Math.random() * ((360 - 10) / 10 + 1))
-    console.log(10 - random * 10)
-    return 10 - random * 10
+    let random = Math.floor(Math.random() * ((360 - 10) / 10))
+    // console.log(random * 10)
+    return -10 - random * 10
   }
 
   const onChange = (name: string, value: any) => {
@@ -80,30 +79,53 @@ export const Slots = () => {
     setAutoPlay(false)
   }
 
-  const onCheckResult = () => {
+  const onConvertResult = () => {
+    let cvResult: any = []
 
-    columnResult.map((e, i) => {
+    columnResult.map(e => {
       let convertedValue = e
 
       while (convertedValue < 0) {
         convertedValue += 360
       }
-      // setConvertedResult(prev => prev?.map(val => val + convertedValue))
-      // console.log(SLOTS_SETTINGS.columns[i][Math.floor(convertedValue / 10) % 36])
+
+      cvResult.push(convertedValue / 10)
     })
 
+    return cvResult
   }
+
+  const checkRowWin = (offset: number, rowIndex: number) => {
+    const { columns } = SLOTS_SETTINGS
+    let cr = onConvertResult()
+    const [c1, c2, c3] = [columns[0][cr[0] + offset], columns[1][cr[1] + offset], columns[2][cr[2] + offset]];
+    console.log(c1 === c2 && c2 === c3 ? `Row ${rowIndex} win` : `Row ${rowIndex} lose`);
+  };
+
+  const onCheckResult = () => {
+    checkRowWin(0, 1); // Luôn kiểm tra dòng giữa
+
+    if (formData.lines >= 2) {
+      checkRowWin(-1, 2); // Kiểm tra dòng trước đó
+    }
+
+    if (formData.lines === 3) {
+      checkRowWin(1, 3); // Kiểm tra dòng sau đó
+    }
+  }
+
+
 
   useEffect(() => {
     form.setFieldsValue(formData)
 
-    onCheckResult()
+    play && onCheckResult()
 
     if (autoPlay) {
       intervalRef.current = setInterval(() => {
         onStartPlaying()
         console.log('play')
-      }, 1000)
+      }, 300)
     }
 
     return () => {
@@ -111,7 +133,7 @@ export const Slots = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [autoPlay, form, formData,])
+  }, [autoPlay, form, formData, onCheckResult])
 
   return (
     <Layout title="Slots">
@@ -168,7 +190,7 @@ export const Slots = () => {
                   <Col span={6}></Col>
                 </Row>
 
-                <div className="form-group">
+                <div className={`form-group ${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}>
                   <Row gutter={16}>
                     <Col span={16}>
                       <Form.Item<FieldType> label="Bet Amount" name="betAmount">
