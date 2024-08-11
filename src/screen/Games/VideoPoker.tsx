@@ -28,11 +28,20 @@ export const VideoPoker = () => {
   const [form] = Form.useForm()
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
-  const [hand, setHand] = useState<CardType[]>([]);
-  const [result, setResult] = useState('');
+  const [hand, setHand] = useState<CardType[]>([])
+  const [handIsMatch, setHandIsMatch] = useState('')
+  const [hold, setHold] = useState<CardType[]>([])
+  const [holdIsMatch, setHoldIsMatch] = useState('')
+  const [flipped, setFlipped] = useState(true)
+  const [dealed, setDealed] = useState(true)
+  const [winning, setWinning] = useState<CardType[]>([])
+
 
   const onStartPlaying = (): any => {
+    setDealed(false)
     setPlay(true)
+    setFlipped(true);
+    setHold([])
 
     let newHand = [];
     let deckCopy = [...POKER_SETTINGS.deck];
@@ -45,11 +54,35 @@ export const VideoPoker = () => {
 
     setTimeout(() => {
       onStopPlaying()
+      setFlipped(false);
     }, 300)
   }
 
   const onStopPlaying = () => {
     setPlay(false)
+  }
+
+  const onDealing = () => {
+    setPlay(true)
+    setFlipped(true);
+
+    let newHand = [...hand]; // Bắt đầu với bộ bài hiện tại
+    let deckCopy = POKER_SETTINGS.deck.filter(card => !hand.includes(card)); // Lọc ra các lá bài chưa được sử dụng
+
+    for (let i = 0; i < newHand.length; i++) {
+      if (!hold.includes(newHand[i])) {
+        const randomIndex = Math.floor(Math.random() * deckCopy.length);
+        newHand[i] = deckCopy[randomIndex];
+        deckCopy.splice(randomIndex, 1);
+      }
+    }
+    setHand(newHand);
+
+    setTimeout(() => {
+      onStopPlaying()
+      setFlipped(false);
+      setDealed(true)
+    }, 300)
   }
 
   const onChange = (name: string, value: any) => {
@@ -76,111 +109,244 @@ export const VideoPoker = () => {
       }))
   }
 
+  const onHoldCard = (card: CardType) => {
+    setHold(prev =>
+      prev.includes(card)
+        ? prev.filter(c => c != card)
+        : [...prev, card]
+    )
+  }
+
   // Hàm kiểm tra các bộ bài thắng
-  const checkHand = (hand: CardType[]) => {
+  const onCheckHand = (hand: CardType[]) => {
+    let winningCards: CardType[] = [];
+
     // Kiểm tra Royal Flush
-    if (isRoyalFlush(hand)) return 'Royal Flush';
+    if (isRoyalFlush(hand)) {
+      // if(dealed) {}
+      dealed ? setHandIsMatch('ROYAL FLUSH') : setHoldIsMatch('ROYAL FLUSH');
+      winningCards = hand.filter(card => isRoyalFlushCard(card));
+    }
 
     // Kiểm tra Straight Flush
-    if (isStraightFlush(hand)) return 'Straight Flush';
+    else if (isStraightFlush(hand)) {
+      dealed ? setHandIsMatch('STRAIGHT FLUSH') : setHoldIsMatch('STRAIGHT FLUSH');
+      winningCards = hand.filter(card => isStraightFlushCard(card, hand));
+    }
 
     // Kiểm tra Four of a Kind
-    if (isFourOfAKind(hand)) return 'Four of a Kind';
+    else if (isFourOfAKind(hand)) {
+      dealed ? setHandIsMatch('4 OF A KIND') : setHoldIsMatch('4 OF A KIND');
+      winningCards = hand.filter(card => isFourOfAKindCard(card, hand));
+    }
 
     // Kiểm tra Full House
-    if (isFullHouse(hand)) return 'Full House';
+    else if (isFullHouse(hand)) {
+      dealed ? setHandIsMatch('FULL HOUSE') : setHoldIsMatch('FULL HOUSE');
+      winningCards = hand.filter(card => isFullHouseCard(card, hand));
+    }
 
     // Kiểm tra Flush
-    if (isFlush(hand)) return 'Flush';
+    else if (isFlush(hand)) {
+      dealed ? setHandIsMatch('FLUSH') : setHoldIsMatch('FLUSH');
+      winningCards = hand.filter(card => isFlushCard(card, hand));
+    }
 
     // Kiểm tra Straight
-    if (isStraight(hand)) return 'Straight';
+    else if (isStraight(hand)) {
+      dealed ? setHandIsMatch('STRAIGHT') : setHoldIsMatch('STRAIGHT');
+      winningCards = hand.filter(card => isStraightCard(card, hand));
+    }
 
     // Kiểm tra Three of a Kind
-    if (isThreeOfAKind(hand)) return 'Three of a Kind';
+    else if (isThreeOfAKind(hand)) {
+      dealed ? setHandIsMatch('3 OF A KIND') : setHoldIsMatch('3 OF A KIND');
+      winningCards = hand.filter(card => isThreeOfAKindCard(card, hand));
+    }
 
     // Kiểm tra Two Pair
-    if (isTwoPair(hand)) return 'Two Pair';
+    else if (isTwoPair(hand)) {
+      dealed ? setHandIsMatch('2 PAIR') : setHoldIsMatch('2 PAIR');
+      winningCards = hand.filter(card => isTwoPairCard(card, hand));
+    }
 
     // Kiểm tra Jacks or Better
-    if (isJacksOrBetter(hand)) return 'Jacks or Better';
+    else if (isJacksOrBetter(hand)) {
+      dealed ? setHandIsMatch('PAIR OF JACK OR BETTER') : setHoldIsMatch('PAIR OF JACK OR BETTER');
+      winningCards = hand.filter(card => isJacksOrBetterCard(card));
+    }
 
     // Không thuộc bộ bài thắng nào
-    return 'No Winning Hand';
+    else {
+      dealed ? setHandIsMatch('No Winning Hand') : setHoldIsMatch('No Winning Hand')
+    }
+
+    setWinning(winningCards);
   };
 
   // Các hàm kiểm tra từng loại bộ bài thắng (tương tự)
   const isRoyalFlush = (hand: CardType[]) => {
-    const ranks = ['A', 'K', 'Q', 'J', '10'];
-    const suits = hand.map(card => card.suit);
-    const allSameSuit = suits.every(suit => suit === suits[0]);
-    const hasAllRanks = ranks.every(rank => hand.some(card => card.rank === rank));
-    return allSameSuit && hasAllRanks;
+    if (hand.length >= 5) {
+      const ranks = ['A', 'K', 'Q', 'J', '10'];
+      const suits = hand.map(card => card.suit);
+      const allSameSuit = suits.every(suit => suit === suits[0]);
+      const hasAllRanks = ranks.every(rank => hand.some(card => card.rank === rank));
+      return allSameSuit && hasAllRanks;
+    }
+  };
+  const isRoyalFlushCard = (card: CardType) => {
+    const royalFlushRanks = ['A', 'K', 'Q', 'J', '10'];
+    return royalFlushRanks.includes(card.rank);
   };
 
   const isStraightFlush = (hand: CardType[]) => {
-    return isStraight(hand) && isFlush(hand);
+    if (hand.length >= 5) {
+      return isStraight(hand) && isFlush(hand);
+    }
+  };
+  const isStraightFlushCard = (card: CardType, hand: CardType[]) => {
+    // Giả sử hand đã được sắp xếp và kiểm tra trước đó để xác định bộ bài Straight Flush
+    const suits = hand.map(c => c.suit);
+    const ranks = hand.map(c => c.rank);
+
+    // Kiểm tra tất cả các lá bài trong hand có cùng một suit
+    const isSameSuit = suits.every(suit => suit === card.suit);
+    if (!isSameSuit) return false;
+
+    // Kiểm tra nếu card.rank là một trong các lá bài trong hand thuộc bộ bài Straight Flush
+    const straightFlushRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const cardIndex = straightFlushRanks.indexOf(card.rank);
+    return cardIndex !== -1;
   };
 
   const isFourOfAKind = (hand: CardType[]) => {
-    const rankCount: RankCountType = {};
-    hand.forEach(card => {
-      rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
-    });
-    return Object.values(rankCount).includes(4);
+    if (hand.length >= 4) {
+      const rankCount: RankCountType = {};
+      hand.forEach(card => {
+        rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
+      });
+      return Object.values(rankCount).includes(4);
+    }
+  };
+  const isFourOfAKindCard = (card: CardType, hand: CardType[]) => {
+    // Đếm số lượng các lá bài có cùng rank
+    const rankCount = hand.filter(c => c.rank === card.rank).length;
+    return rankCount === 4;
   };
 
   const isFullHouse = (hand: CardType[]) => {
-    const rankCount: RankCountType = {};
-    hand.forEach(card => {
-      rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
-    });
-    const values = Object.values(rankCount);
+    if (hand.length >= 5) {
+      const rankCount: RankCountType = {};
+      hand.forEach(card => {
+        rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
+      });
+      const values = Object.values(rankCount);
+      return values.includes(3) && values.includes(2);
+    }
+  };
+  const isFullHouseCard = (card: CardType, hand: CardType[]) => {
+    const rankCounts = hand.reduce((acc, c) => {
+      acc[c.rank] = (acc[c.rank] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const values = Object.values(rankCounts);
     return values.includes(3) && values.includes(2);
   };
 
   const isFlush = (hand: CardType[]) => {
-    const suits = hand.map(card => card.suit);
-    return suits.every(suit => suit === suits[0]);
+    if (hand.length >= 5) {
+      const suits = hand.map(card => card.suit);
+      return suits.every(suit => suit === suits[0]);
+    }
+  };
+  const isFlushCard = (card: CardType, hand: CardType[]) => {
+    // Kiểm tra tất cả các lá bài trong hand có cùng một suit
+    const suits = hand.map(c => c.suit);
+    return suits.every(suit => suit === card.suit);
   };
 
   const isStraight = (hand: CardType[]) => {
-    const ranks = 'A23456789TJQK';
-    const handRanks = hand.map(card => card.rank === '10' ? 'T' : card.rank).sort((a, b) => ranks.indexOf(a) - ranks.indexOf(b));
-    const startIndex = ranks.indexOf(handRanks[0]);
-    return handRanks.every((rank, index) => ranks[startIndex + index] === rank);
+    if (hand.length >= 5) {
+      const ranks = 'A23456789TJQK';
+      const handRanks = hand.map(card => card.rank === '10' ? 'T' : card.rank).sort((a, b) => ranks.indexOf(a) - ranks.indexOf(b));
+      const startIndex = ranks.indexOf(handRanks[0]);
+      return handRanks.every((rank, index) => ranks[startIndex + index] === rank);
+    }
+  };
+  const isStraightCard = (card: CardType, hand: CardType[]) => {
+    const ranks = hand.map(c => c.rank);
+    const straightRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const cardIndex = straightRanks.indexOf(card.rank);
+
+    // Kiểm tra nếu card.rank có thể tạo thành một dãy liên tiếp trong hand
+    const cardRankPosition = straightRanks.slice(cardIndex, cardIndex + 5);
+    return cardRankPosition.every(rank => ranks.includes(rank));
   };
 
   const isThreeOfAKind = (hand: CardType[]) => {
-    const rankCount: RankCountType = {};
-    hand.forEach(card => {
-      rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
-    });
-    return Object.values(rankCount).includes(3);
+    if (hand.length >= 3) {
+      const rankCount: RankCountType = {};
+      hand.forEach(card => {
+        rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
+      });
+      return Object.values(rankCount).includes(3);
+    }
+  };
+  const isThreeOfAKindCard = (card: CardType, hand: CardType[]) => {
+    const rankCount = hand.filter(c => c.rank === card.rank).length;
+    return rankCount === 3;
   };
 
   const isTwoPair = (hand: CardType[]) => {
-    const rankCount: RankCountType = {};
-    hand.forEach(card => {
-      rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
-    });
-    const values = Object.values(rankCount);
-    return values.filter(value => value === 2).length === 2;
+    if (hand.length >= 4) {
+      const rankCount: RankCountType = {};
+      hand.forEach(card => {
+        rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
+      });
+      const values = Object.values(rankCount);
+      return values.filter(value => value === 2).length === 2;
+    }
+  };
+  const isTwoPairCard = (card: CardType, hand: CardType[]) => {
+    const rankCounts = hand.reduce((acc, c) => {
+      acc[c.rank] = (acc[c.rank] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const pairs = Object.values(rankCounts).filter(count => count === 2).length;
+    return pairs === 2;
   };
 
   const isJacksOrBetter = (hand: CardType[]) => {
-    const rankCount: RankCountType = {};
-    hand.forEach(card => {
-      rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
-    });
-    return ['J', 'Q', 'K', 'A'].some(rank => rankCount[rank] === 2);
+    if (hand.length >= 2) {
+      const rankCount: RankCountType = {};
+      hand.forEach(card => {
+        rankCount[card.rank] = (rankCount[card.rank] || 0) + 1;
+      });
+      return ['J', 'Q', 'K', 'A'].some(rank => rankCount[rank] === 2);
+    }
+  };
+  const isJacksOrBetterCard = (card: CardType) => {
+    const jacksOrBetterRanks = ['J', 'Q', 'K', 'A'];
+    return jacksOrBetterRanks.includes(card.rank);
   };
 
   useEffect(() => {
-    if (hand.length === 5) {
-      setResult(checkHand(hand));
+    form.setFieldsValue(formData)
+
+    if (!dealed && hold.length > 0) {
+      console.log('Holded!')
+      onCheckHand(hold)
+      console.log(holdIsMatch)
     }
-  }, [hand]);
+
+    if (dealed && hand.length === 5) {
+      console.log('Dealed!')
+      onCheckHand(hand);
+      console.log(handIsMatch)
+    }
+  }, [form, formData, hand, hold, dealed, holdIsMatch, handIsMatch]);
 
   return (
     <Layout title="Video Poker">
@@ -199,7 +365,10 @@ export const VideoPoker = () => {
                   <div className="poker-set">
                     <Space size={4} direction="vertical" style={{ width: '100%' }}>
                       {POKER_SETTINGS.hands.map((e, i) =>
-                        <Row gutter={4} key={i} className={``}>
+                        <Row gutter={4} key={i} className={`
+                          ${holdIsMatch === e.name ? 'selected' : ''}
+                          ${handIsMatch === e.name ? 'won' : ''}
+                        `}>
                           <Col span={19}>
                             <div className="name">
                               <Icon icon="circle" fill />
@@ -215,26 +384,53 @@ export const VideoPoker = () => {
                       )}
                     </Space>
                   </div>
-                  <div className="poker-hand">
+                  <div className={`poker-hand ${dealed ? 'disabled' : ''}`}>
                     <Row gutter={8}>
-                      {[...Array(5)].map((e, i) =>
-                        <Col flex="20%" key={i}>
-                          <div className="poker-hand-card">
-                            <div className={`poker-hand-card-inner`}>
-                              <div className="front">
-                                <span className="rank"></span>
-                              </div>
-                              <div className="back">
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <Icon icon="help" fill color="#fff" />
+                      {hand.length === 5
+                        ? hand.map((e, i) =>
+                          <Col flex="20%" key={i}>
+                            <div className="poker-hand-card" onClick={() => onHoldCard(e)}>
+                              <div className={`
+                                poker-hand-card-inner 
+                                ${hold.includes(e) ? 'selected' : ''}
+                                ${winning.includes(e) ? 'won' : ''}
+                                ${!hold.includes(e) && flipped ? 'flipped' : ''}
+                              `}>
+                                <div className="front">
+                                  <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
+                                    {e.rank}
+                                  </span>
+                                  <Img src={`/card_${e.suit}.png`} />
+                                  {hold.includes(e) ? <span className="hold">HOLD</span> : ''}
+                                </div>
+                                <div className="back">
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                  <Icon icon="help" fill color="#fff" />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Col>
-                      )}
+                          </Col>
+                        )
+                        : [...Array(5)].map((e, i) =>
+                          <Col flex="20%" key={i}>
+                            <div className="poker-hand-card">
+                              <div className={`poker-hand-card-inner flipped`}>
+                                <div className="front">
+                                </div>
+                                <div className="back">
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                  <Icon icon="help" fill color="#fff" />
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                        )}
                     </Row>
                   </div>
                 </div>
@@ -242,9 +438,13 @@ export const VideoPoker = () => {
                   <Col span={6}></Col>
                   <Col span={12}>
                     {
-                      play
-                        ? <Btn block><Img src="/loading.gif" /></Btn>
-                        : <Btn block onClick={onStartPlaying}>BET</Btn>
+                      !dealed
+                        ? play
+                          ? <Btn className="btn-modal" block><Img src="/loading.gif" /></Btn>
+                          : <Btn className="btn-modal" block onClick={onDealing}>Deal</Btn>
+                        : play
+                          ? <Btn block><Img src="/loading.gif" /></Btn>
+                          : <Btn block onClick={onStartPlaying}>BET</Btn>
                     }
                   </Col>
                   <Col span={6}></Col>
@@ -253,7 +453,7 @@ export const VideoPoker = () => {
                 <div className="form-group">
                   <Row gutter={16}>
                     <Col span={24}>
-                      <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${play ? 'disabled' : ''}`}>
+                      <Form.Item<FieldType> label="Bet Amount" name="betAmount" className={`${dealed ? '' : hand.length > 0 ? 'disabled' : ''}`}>
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
