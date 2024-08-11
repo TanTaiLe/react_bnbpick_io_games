@@ -6,6 +6,7 @@ import { UltimateDice } from "@screen/Games/UltimateDice";
 import { Roulette } from "@screen/Games/Roulette";
 import { WheelOfFortune } from "@screen/Games/WheelOfFortune";
 import { Slots } from "@screen/Games/Slots";
+import { VideoPoker } from "@screen/Games/VideoPoker";
 
 export interface IRouteConfig {
   name: string;
@@ -40,6 +41,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/mines",
     component: (
       <Mines />
+    ),
+  },
+  {
+    name: "video poker",
+    path: "/video-poker",
+    component: (
+      <VideoPoker />
     ),
   },
   {
