@@ -38,10 +38,9 @@ export const VideoPoker = () => {
 
 
   const onStartPlaying = (): any => {
-    setDealed(false)
     setPlay(true)
     setFlipped(true);
-    setHold([])
+    onResetGame()
 
     let newHand = [];
     let deckCopy = [...POKER_SETTINGS.deck];
@@ -60,6 +59,14 @@ export const VideoPoker = () => {
 
   const onStopPlaying = () => {
     setPlay(false)
+  }
+
+  const onResetGame = () => {
+    setDealed(false)
+    setHold([])
+    setWinning([])
+    setHandIsMatch('')
+    setHoldIsMatch('')
   }
 
   const onDealing = () => {
@@ -123,62 +130,101 @@ export const VideoPoker = () => {
 
     // Kiểm tra Royal Flush
     if (isRoyalFlush(hand)) {
-      // if(dealed) {}
-      dealed ? setHandIsMatch('ROYAL FLUSH') : setHoldIsMatch('ROYAL FLUSH');
-      winningCards = hand.filter(card => isRoyalFlushCard(card));
+      if (dealed) {
+        setHandIsMatch('ROYAL FLUSH');
+        winningCards = hand.filter(card => isRoyalFlushCard(card));
+      } else {
+        setHoldIsMatch('ROYAL FLUSH');
+      }
     }
 
     // Kiểm tra Straight Flush
     else if (isStraightFlush(hand)) {
-      dealed ? setHandIsMatch('STRAIGHT FLUSH') : setHoldIsMatch('STRAIGHT FLUSH');
-      winningCards = hand.filter(card => isStraightFlushCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('STRAIGHT FLUSH');
+        winningCards = hand.filter(card => isStraightFlushCard(card, hand));
+      } else {
+        setHoldIsMatch('STRAIGHT FLUSH');
+      }
     }
 
     // Kiểm tra Four of a Kind
     else if (isFourOfAKind(hand)) {
-      dealed ? setHandIsMatch('4 OF A KIND') : setHoldIsMatch('4 OF A KIND');
-      winningCards = hand.filter(card => isFourOfAKindCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('4 OF A KIND');
+        winningCards = hand.filter(card => isFourOfAKindCard(card, hand));
+      } else {
+        setHoldIsMatch('4 OF A KIND');
+      }
     }
 
     // Kiểm tra Full House
     else if (isFullHouse(hand)) {
-      dealed ? setHandIsMatch('FULL HOUSE') : setHoldIsMatch('FULL HOUSE');
-      winningCards = hand.filter(card => isFullHouseCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('FULL HOUSE');
+        winningCards = hand.filter(card => isFullHouseCard(card, hand));
+      } else {
+        setHoldIsMatch('FULL HOUSE');
+      }
     }
 
     // Kiểm tra Flush
     else if (isFlush(hand)) {
-      dealed ? setHandIsMatch('FLUSH') : setHoldIsMatch('FLUSH');
-      winningCards = hand.filter(card => isFlushCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('FLUSH');
+        winningCards = hand.filter(card => isFlushCard(card, hand));
+      } else {
+        setHoldIsMatch('FLUSH');
+      }
     }
 
     // Kiểm tra Straight
     else if (isStraight(hand)) {
-      dealed ? setHandIsMatch('STRAIGHT') : setHoldIsMatch('STRAIGHT');
-      winningCards = hand.filter(card => isStraightCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('STRAIGHT');
+        winningCards = hand.filter(card => isStraightCard(card, hand));
+      } else {
+        setHoldIsMatch('STRAIGHT');
+      }
     }
 
     // Kiểm tra Three of a Kind
     else if (isThreeOfAKind(hand)) {
-      dealed ? setHandIsMatch('3 OF A KIND') : setHoldIsMatch('3 OF A KIND');
-      winningCards = hand.filter(card => isThreeOfAKindCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('3 OF A KIND');
+        winningCards = hand.filter(card => isThreeOfAKindCard(card, hand));
+      } else {
+        setHoldIsMatch('3 OF A KIND');
+      }
     }
 
     // Kiểm tra Two Pair
     else if (isTwoPair(hand)) {
-      dealed ? setHandIsMatch('2 PAIR') : setHoldIsMatch('2 PAIR');
-      winningCards = hand.filter(card => isTwoPairCard(card, hand));
+      if (dealed) {
+        setHandIsMatch('2 PAIR');
+        winningCards = hand.filter(card => isTwoPairCard(card, hand));
+      } else {
+        setHoldIsMatch('2 PAIR');
+      }
     }
 
     // Kiểm tra Jacks or Better
     else if (isJacksOrBetter(hand)) {
-      dealed ? setHandIsMatch('PAIR OF JACK OR BETTER') : setHoldIsMatch('PAIR OF JACK OR BETTER');
-      winningCards = hand.filter(card => isJacksOrBetterCard(card));
+      if (dealed) {
+        setHandIsMatch('PAIR OF JACK OR BETTER');
+        winningCards = hand.filter(card => isJacksOrBetterCard(card));
+      } else {
+        setHoldIsMatch('PAIR OF JACK OR BETTER');
+      }
     }
 
     // Không thuộc bộ bài thắng nào
     else {
-      dealed ? setHandIsMatch('No Winning Hand') : setHoldIsMatch('No Winning Hand')
+      if (dealed) {
+        setHandIsMatch('No Winning Hand');
+      } else {
+        setHoldIsMatch('No Winning Hand');
+      }
     }
 
     setWinning(winningCards);
@@ -345,6 +391,7 @@ export const VideoPoker = () => {
       console.log('Dealed!')
       onCheckHand(hand);
       console.log(handIsMatch)
+      console.log('Winning Card:', winning)
     }
   }, [form, formData, hand, hold, dealed, holdIsMatch, handIsMatch]);
 
