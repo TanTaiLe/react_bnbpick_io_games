@@ -3,7 +3,7 @@ import { Icon } from "@component/DesignSystem/Icon"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
-import { POKER_BET_MINIMUM, POKER_SETTINGS } from "@util/constant"
+import { POKER_BET_MINIMUM, CARD_GAMES_SETTINGS } from "@util/constant"
 import { Card, Col, Form, Input, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 
@@ -43,7 +43,7 @@ export const VideoPoker = () => {
     onResetGame()
 
     let newHand = [];
-    let deckCopy = [...POKER_SETTINGS.deck];
+    let deckCopy = [...CARD_GAMES_SETTINGS.deck];
     for (let i = 0; i < 5; i++) {
       const randomIndex = Math.floor(Math.random() * deckCopy.length);
       newHand.push(deckCopy[randomIndex]);
@@ -74,7 +74,7 @@ export const VideoPoker = () => {
     setFlipped(true);
 
     let newHand = [...hand]; // Bắt đầu với bộ bài hiện tại
-    let deckCopy = POKER_SETTINGS.deck.filter(card => !hand.includes(card)); // Lọc ra các lá bài chưa được sử dụng
+    let deckCopy = CARD_GAMES_SETTINGS.deck.filter(card => !hand.includes(card)); // Lọc ra các lá bài chưa được sử dụng
 
     for (let i = 0; i < newHand.length; i++) {
       if (!hold.includes(newHand[i])) {
@@ -411,7 +411,7 @@ export const VideoPoker = () => {
                 <div className="playground poker">
                   <div className="poker-set">
                     <Space size={4} direction="vertical" style={{ width: '100%' }}>
-                      {POKER_SETTINGS.hands.map((e, i) =>
+                      {CARD_GAMES_SETTINGS.hands.map((e, i) =>
                         <Row gutter={4} key={i} className={`
                           ${holdIsMatch === e.name ? 'selected' : ''}
                           ${handIsMatch === e.name ? 'won' : ''}

@@ -171,7 +171,7 @@ export const MINES_SETTINGS = [
   },
 ]
 
-export const POKER_SETTINGS = {
+export const CARD_GAMES_SETTINGS = {
   deck: [
     { suit: 'hearts', rank: '2' },
     { suit: 'hearts', rank: '3' },
