@@ -7,6 +7,7 @@ import { Roulette } from "@screen/Games/Roulette";
 import { WheelOfFortune } from "@screen/Games/WheelOfFortune";
 import { Slots } from "@screen/Games/Slots";
 import { VideoPoker } from "@screen/Games/VideoPoker";
+import { Baccarat } from "@screen/Games/Baccarat";
 
 export interface IRouteConfig {
   name: string;
@@ -48,6 +49,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/video-poker",
     component: (
       <VideoPoker />
+    ),
+  },
+  {
+    name: "baccarat",
+    path: "/baccarat",
+    component: (
+      <Baccarat />
     ),
   },
   {
