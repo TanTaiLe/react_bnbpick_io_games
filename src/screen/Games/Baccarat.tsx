@@ -3,7 +3,7 @@ import { Icon } from "@component/DesignSystem/Icon"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
-import { BACCARAT_BET_MINIMUM } from "@util/constant"
+import { BACCARAT_BET_MINIMUM, CARD_GAMES_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Radio, Row, Space } from "antd"
 import { useEffect, useRef, useState } from "react"
 
@@ -34,7 +34,21 @@ export const Baccarat = () => {
 
   const onStartPlaying = (): any => {
     setPlay(true)
+    let newPlayerHand = []
+    let newBankerHand = []
+    let deckCopy = [...CARD_GAMES_SETTINGS.deck];
+    for (let i = 0; i < 3; i++) {
+      const randomPlayerIndex = Math.floor(Math.random() * deckCopy.length);
+      newPlayerHand.push(deckCopy[randomPlayerIndex]);
+      deckCopy.splice(randomPlayerIndex, 1);
 
+      const randomBankerIndex = Math.floor(Math.random() * deckCopy.length);
+      newBankerHand.push(deckCopy[randomBankerIndex]);
+      deckCopy.splice(randomBankerIndex, 1);
+    }
+
+    setPlayerHand(newPlayerHand)
+    setBankerHand(newBankerHand)
 
     setTimeout(() => {
       onStopPlaying()
@@ -133,6 +147,14 @@ export const Baccarat = () => {
                         </div>
                       )}
                     </div>
+                    <span className="baccarat-point">
+                      Banker: { }
+                    </span>
+                  </div>
+
+                  <div className="baccarat-payout">
+                    <Icon icon="trophy" fill size={20} />
+                    Tie pay 8 to 1
                   </div>
 
                   <div className="baccarat-side">
@@ -159,6 +181,9 @@ export const Baccarat = () => {
                         </div>
                       )}
                     </div>
+                    <span className="baccarat-point">
+                      Player: { }
+                    </span>
                   </div>
                 </div>
 
