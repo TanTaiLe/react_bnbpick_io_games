@@ -489,10 +489,13 @@
     border-radius: 4px;
     height: 93px;
     width: 58px;
+
     .baccarat-hand {
       display: block;
+
       &-card {
         margin-top: -89px;
+
         &:nth-child(1) {
           margin-top: 0;
         }
@@ -527,7 +530,10 @@
         transition: transform 0.3s;
         transform-style: preserve-3d;
         border: 1px solid #DDD !important;
-
+        animation: baccaratDrawCard .3s .5s linear forwards;
+        &.non-animate {
+          animation: none;
+        }
         &.flipped {
           transform: rotateY(180deg);
         }
@@ -650,9 +656,11 @@
     text-align: center;
     font-size: 12px;
     line-height: 20px;
+
     &.won {
       background-color: #8BC34A;
     }
+
     &.tie {
       background-color: #03a9f4;
     }

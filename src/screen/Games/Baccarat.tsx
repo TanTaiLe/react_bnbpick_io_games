@@ -32,12 +32,10 @@ export const Baccarat = () => {
   const [bankerHand, setBankerHand] = useState<CardType[]>([])
   const [deckCopy, setDeckCopy] = useState([...CARD_GAMES_SETTINGS.deck])
   const [result, setResult] = useState('')
-  const [flipped, setFlipped] = useState(true)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = (): any => {
     setPlay(true);
-    setFlipped(true);
     setDeckCopy([...CARD_GAMES_SETTINGS.deck])
     setPlayerHand([])
     setBankerHand([])
@@ -159,7 +157,6 @@ export const Baccarat = () => {
       }
 
       onStopPlaying();
-      setFlipped(false);
     };
 
     setTimeout(checkAndUpdateHands, 500);
@@ -220,7 +217,7 @@ export const Baccarat = () => {
                     <div className="baccarat-hand">
                       {[...Array(3)].map((e, i) =>
                         <div className="baccarat-hand-card" key={i}>
-                          <div className="baccarat-hand-card-inner flipped">
+                          <div className="baccarat-hand-card-inner flipped non-animate">
                             <div className="front"></div>
                             <div className="back">
                               <div></div>
@@ -240,9 +237,9 @@ export const Baccarat = () => {
                       {bankerHand.map((e, i) =>
                         <div className="baccarat-hand-card" key={i}>
                           <div className={`
-                                baccarat-hand-card-inner
+                                baccarat-hand-card-inner flipped
                                 ${result == 'tie' ? 'tie' : result == 'banker' ? 'won' : ''}
-                                ${flipped ? 'flipped' : ''}
+                                
                               `}>
                             <div className="front">
                               <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
@@ -276,9 +273,9 @@ export const Baccarat = () => {
                       {playerHand.map((e, i) =>
                         <div className="baccarat-hand-card" key={i}>
                           <div className={`
-                                baccarat-hand-card-inner 
+                                baccarat-hand-card-inner flipped
                                 ${result == 'tie' ? 'tie' : result == 'player' ? 'won' : ''}
-                                ${flipped ? 'flipped' : ''}
+                                
                               `}>
                             <div className="front">
                               <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
