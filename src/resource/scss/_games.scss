@@ -499,6 +499,24 @@
         &:nth-child(1) {
           margin-top: 0;
         }
+
+        &.animate {
+          position: absolute;
+          top: 97px;
+          left: 20px;
+          transition: transform .5s ease-in-out;
+          z-index: 99;
+
+          &.active {
+            animation: 
+              baccaratPlayerDraw .5s .5s linear forwards, 
+              baccaratBankerDraw .5s 1s linear forwards,
+              baccaratPlayerDraw .5s 1.5s linear forwards, 
+              baccaratBankerDraw .5s 2s linear forwards,
+              baccaratPlayerDraw .5s 2.5s linear forwards, 
+              baccaratBankerDraw .5s 3s linear forwards;
+          }
+        }
       }
     }
   }
@@ -530,10 +548,12 @@
         transition: transform 0.3s;
         transform-style: preserve-3d;
         border: 1px solid #DDD !important;
-        animation: baccaratDrawCard .5s linear forwards;
+        animation: drawCard .5s linear forwards;
+
         &.non-animate {
           animation: none;
         }
+
         &.flipped {
           transform: rotateY(180deg);
         }

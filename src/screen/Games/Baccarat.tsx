@@ -32,11 +32,13 @@ export const Baccarat = () => {
   const [bankerHand, setBankerHand] = useState<CardType[]>([])
   const [deckCopy, setDeckCopy] = useState([...CARD_GAMES_SETTINGS.deck])
   const [result, setResult] = useState('')
+  const [beginDraw, setBeginDraw] = useState<boolean>(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = async (): Promise<void> => {
     setPlay(true);
     setDeckCopy([...CARD_GAMES_SETTINGS.deck])
+    setBeginDraw(true)
     setPlayerHand([])
     setBankerHand([])
     setResult('')
@@ -45,14 +47,8 @@ export const Baccarat = () => {
     let newBankerHand: CardType[] = [];
 
     for (let i = 0; i < 2; i++) {
-      // setTimeout(() => {
-      //   onDrawCard(newPlayerHand, 'player');
-      //   onDrawCard(newBankerHand, 'banker');
-      // }, 500)
       await onDrawCardWithDelay(newPlayerHand, newBankerHand);
     }
-    // setPlayerHand(newPlayerHand);
-    // setBankerHand(newBankerHand);
 
     setTimeout(() => {
       onCheckResult(newPlayerHand, newBankerHand)
@@ -73,6 +69,7 @@ export const Baccarat = () => {
 
   const onStopPlaying = () => {
     setPlay(false)
+    setBeginDraw(false)
   }
 
   const onChange = (name: string, value: any) => {
@@ -215,24 +212,6 @@ export const Baccarat = () => {
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
 
                 <div className="playground baccarat">
-                  <div className="baccarat-deck">
-                    <div className="baccarat-hand">
-                      {[...Array(3)].map((e, i) =>
-                        <div className="baccarat-hand-card" key={i}>
-                          <div className="baccarat-hand-card-inner flipped non-animate">
-                            <div className="front"></div>
-                            <div className="back">
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <Icon icon="help" fill color="#fff" />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
                   <div className="baccarat-side">
                     <div className="baccarat-hand">
@@ -299,6 +278,40 @@ export const Baccarat = () => {
                     <span className={`baccarat-point ${result == 'tie' ? 'tie' : result == 'player' ? 'won' : ''}`}>
                       Player: {onSumPoints(playerHand)}
                     </span>
+                  </div>
+
+                  <div className="baccarat-deck">
+                    <div className="baccarat-hand">
+                      {[...Array(3)].map((_, i) =>
+                        <div className="baccarat-hand-card" key={i}>
+                          <div className="baccarat-hand-card-inner flipped non-animate">
+                            <div className="front"></div>
+                            <div className="back">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <Icon icon="help" fill color="#fff" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {
+                      beginDraw &&
+                      <div className={`baccarat-hand-card animate ${beginDraw ? 'active' : ''}`}>
+                        <div className="baccarat-hand-card-inner flipped non-animate">
+                          <div className="front"></div>
+                          <div className="back">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <Icon icon="help" fill color="#fff" />
+                          </div>
+                        </div>
+                      </div>
+                    }
                   </div>
                 </div>
 
