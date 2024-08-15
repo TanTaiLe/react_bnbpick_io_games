@@ -530,7 +530,7 @@
         transition: transform 0.3s;
         transform-style: preserve-3d;
         border: 1px solid #DDD !important;
-        animation: baccaratDrawCard .3s .5s linear forwards;
+        animation: baccaratDrawCard .5s linear forwards;
         &.non-animate {
           animation: none;
         }

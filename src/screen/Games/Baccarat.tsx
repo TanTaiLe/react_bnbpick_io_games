@@ -34,7 +34,7 @@ export const Baccarat = () => {
   const [result, setResult] = useState('')
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const onStartPlaying = (): any => {
+  const onStartPlaying = async (): Promise<void> => {
     setPlay(true);
     setDeckCopy([...CARD_GAMES_SETTINGS.deck])
     setPlayerHand([])
@@ -45,17 +45,31 @@ export const Baccarat = () => {
     let newBankerHand: CardType[] = [];
 
     for (let i = 0; i < 2; i++) {
-      onDrawCard(newPlayerHand);
-      onDrawCard(newBankerHand);
+      // setTimeout(() => {
+      //   onDrawCard(newPlayerHand, 'player');
+      //   onDrawCard(newBankerHand, 'banker');
+      // }, 500)
+      await onDrawCardWithDelay(newPlayerHand, newBankerHand);
     }
-
-    setPlayerHand(newPlayerHand);
-    setBankerHand(newBankerHand);
+    // setPlayerHand(newPlayerHand);
+    // setBankerHand(newBankerHand);
 
     setTimeout(() => {
       onCheckResult(newPlayerHand, newBankerHand)
     }, 500)
   }
+
+  const onDrawCardWithDelay = async (playerHand: CardType[], bankerHand: CardType[]) => {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        onDrawCard(playerHand, 'player');
+        setTimeout(() => {
+          onDrawCard(bankerHand, 'banker');
+        }, 500)
+        resolve();
+      }, 1000)
+    });
+  };
 
   const onStopPlaying = () => {
     setPlay(false)
@@ -119,24 +133,19 @@ export const Baccarat = () => {
     let playerHandCopy = [...pHand]
     let bankerHandCopy = [...bHand]
 
-    console.log('Player now =>', playerPoint, playerHandCopy)
-    console.log('Banker now =>', bankerPoint, bankerHandCopy)
-
     const checkAndUpdateHands = () => {
       if (playerPoint <= 5) {
         // Player draws another card
-        playerHandCopy = onDrawCardSync(playerHandCopy);
+        playerHandCopy = onDrawCard(playerHandCopy, 'player');
         playerPoint = onSumPoints(playerHandCopy);
         setPlayerHand(playerHandCopy);
-        console.log('Player draw another =>', playerPoint, playerHandCopy);
       }
 
       if (bankerPoint <= 5) {
         // Banker draws another card
-        bankerHandCopy = onDrawCardSync(bankerHandCopy);
+        bankerHandCopy = onDrawCard(bankerHandCopy, 'banker');
         bankerPoint = onSumPoints(bankerHandCopy);
         setBankerHand(bankerHandCopy);
-        console.log('Banker draw another =>', bankerPoint, bankerHandCopy);
       }
 
       if (playerPoint > bankerPoint) {
@@ -162,27 +171,20 @@ export const Baccarat = () => {
     setTimeout(checkAndUpdateHands, 500);
   }
 
-  const onDrawCard = (hand: CardType[]) => {
-    setDeckCopy((prevDeckCopy) => {
-      const randomIndex = Math.floor(Math.random() * prevDeckCopy.length);
-      const card = prevDeckCopy[randomIndex];
-      hand.push(card);
-      return prevDeckCopy.filter((_, index) => index !== randomIndex);
-    });
-  }
-
-  const onDrawCardSync = (hand: CardType[]): CardType[] => {
+  const onDrawCard = (hand: CardType[], side: string): CardType[] => {
     const randomIndex = Math.floor(Math.random() * deckCopy.length);
     const card = deckCopy[randomIndex];
     hand.push(card);
     setDeckCopy(deckCopy.filter((_, index) => index !== randomIndex));
+    side == 'player'
+      ? setPlayerHand([...hand])
+      : setBankerHand([...hand])
+    console.log(hand)
     return hand;
   }
 
   useEffect(() => {
     form.setFieldsValue(formData)
-
-    // play && onCheckResult()
 
     if (autoPlay) {
       intervalRef.current = setInterval(() => {
