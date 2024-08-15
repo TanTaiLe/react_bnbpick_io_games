@@ -87,7 +87,10 @@ html {
     padding: 16px
   }
 }
+.form .form-group-radio .ant-form-item.disabled .ant-form-item-control-input-content, .form .form-group-radio .ant-form-item.disabled .ant-input-outlined {
 
+  background-color: transparent !important;
+}
 .form {
   &-group {
     padding: 8px 16px 16px;

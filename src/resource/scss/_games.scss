@@ -469,19 +469,41 @@
 }
 
 .baccarat {
-  padding: 20px;
+  padding: 24px;
   background-color: #F5F5F5;
   border: 1px solid #DDD;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+
+  &-deck {
+    position: absolute;
+    top: 12px;
+    right: auto;
+    bottom: auto;
+    left: 20px;
+    z-index: 0;
+    box-shadow: 0px 3px 10px 1px rgb(0 0 0 / 35%);
+    border-radius: 4px;
+    height: 93px;
+    width: 58px;
+    .baccarat-hand {
+      display: block;
+      &-card {
+        margin-top: -89px;
+        &:nth-child(1) {
+          margin-top: 0;
+        }
+      }
+    }
+  }
 
   &-side {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     flex-direction: column;
   }
 
@@ -622,7 +644,7 @@
     align-items: center;
     border-radius: 15px;
     padding: 4px 24px;
-    margin: 12px 0;
+    margin: 12px 0 0;
     background: #9e9e9ec2;
     color: #FFF;
     text-align: center;

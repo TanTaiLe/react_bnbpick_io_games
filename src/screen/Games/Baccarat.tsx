@@ -32,10 +32,12 @@ export const Baccarat = () => {
   const [bankerHand, setBankerHand] = useState<CardType[]>([])
   const [deckCopy, setDeckCopy] = useState([...CARD_GAMES_SETTINGS.deck])
   const [result, setResult] = useState('')
+  const [flipped, setFlipped] = useState(true)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = (): any => {
     setPlay(true);
+    setFlipped(true);
     setDeckCopy([...CARD_GAMES_SETTINGS.deck])
     setPlayerHand([])
     setBankerHand([])
@@ -157,6 +159,7 @@ export const Baccarat = () => {
       }
 
       onStopPlaying();
+      setFlipped(false);
     };
 
     setTimeout(checkAndUpdateHands, 500);
@@ -213,6 +216,25 @@ export const Baccarat = () => {
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
 
                 <div className="playground baccarat">
+                  <div className="baccarat-deck">
+                    <div className="baccarat-hand">
+                      {[...Array(3)].map((e, i) =>
+                        <div className="baccarat-hand-card" key={i}>
+                          <div className="baccarat-hand-card-inner flipped">
+                            <div className="front"></div>
+                            <div className="back">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <Icon icon="help" fill color="#fff" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="baccarat-side">
                     <div className="baccarat-hand">
                       {bankerHand.map((e, i) =>
@@ -220,6 +242,7 @@ export const Baccarat = () => {
                           <div className={`
                                 baccarat-hand-card-inner
                                 ${result == 'tie' ? 'tie' : result == 'banker' ? 'won' : ''}
+                                ${flipped ? 'flipped' : ''}
                               `}>
                             <div className="front">
                               <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
@@ -255,6 +278,7 @@ export const Baccarat = () => {
                           <div className={`
                                 baccarat-hand-card-inner 
                                 ${result == 'tie' ? 'tie' : result == 'player' ? 'won' : ''}
+                                ${flipped ? 'flipped' : ''}
                               `}>
                             <div className="front">
                               <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
