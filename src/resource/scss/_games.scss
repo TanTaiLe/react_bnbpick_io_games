@@ -510,15 +510,15 @@
           transform: rotateY(180deg);
         }
 
-        &.selected {
+        &.tie {
           .front {
-            border: 2px solid #03a9f4;
+            border: 1px solid #03a9f4;
           }
         }
 
         &.won {
           .front {
-            border: 2px solid #8BC34A !important;
+            border: 1px solid #8BC34A !important;
           }
         }
       }
@@ -628,6 +628,12 @@
     text-align: center;
     font-size: 12px;
     line-height: 20px;
+    &.won {
+      background-color: #8BC34A;
+    }
+    &.tie {
+      background-color: #03a9f4;
+    }
   }
 }
 

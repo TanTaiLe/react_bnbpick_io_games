@@ -30,28 +30,30 @@ export const Baccarat = () => {
   const [betOn, setBetOn] = useState<'player' | 'banker' | 'tie'>('player')
   const [playerHand, setPlayerHand] = useState<CardType[]>([])
   const [bankerHand, setBankerHand] = useState<CardType[]>([])
+  const [deckCopy, setDeckCopy] = useState([...CARD_GAMES_SETTINGS.deck])
+  const [result, setResult] = useState('')
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const onStartPlaying = (): any => {
-    setPlay(true)
-    let newPlayerHand = []
-    let newBankerHand = []
-    let deckCopy = [...CARD_GAMES_SETTINGS.deck];
-    for (let i = 0; i < 3; i++) {
-      const randomPlayerIndex = Math.floor(Math.random() * deckCopy.length);
-      newPlayerHand.push(deckCopy[randomPlayerIndex]);
-      deckCopy.splice(randomPlayerIndex, 1);
+    setPlay(true);
+    setDeckCopy([...CARD_GAMES_SETTINGS.deck])
+    setPlayerHand([])
+    setBankerHand([])
+    setResult('')
 
-      const randomBankerIndex = Math.floor(Math.random() * deckCopy.length);
-      newBankerHand.push(deckCopy[randomBankerIndex]);
-      deckCopy.splice(randomBankerIndex, 1);
+    let newPlayerHand: CardType[] = [];
+    let newBankerHand: CardType[] = [];
+
+    for (let i = 0; i < 2; i++) {
+      onDrawCard(newPlayerHand);
+      onDrawCard(newBankerHand);
     }
 
-    setPlayerHand(newPlayerHand)
-    setBankerHand(newBankerHand)
+    setPlayerHand(newPlayerHand);
+    setBankerHand(newBankerHand);
 
     setTimeout(() => {
-      onStopPlaying()
+      onCheckResult(newPlayerHand, newBankerHand)
     }, 500)
   }
 
@@ -91,8 +93,96 @@ export const Baccarat = () => {
     setAutoPlay(false)
   }
 
+  const onSumPoints = (hand: CardType[]) => {
+    let sumVal = 0;
+
+    for (let i = 0; i < hand.length; i++) {
+      let nextVal = hand[i].rank
+      nextVal == 'J' || nextVal == 'Q' || nextVal == 'K'
+        ? sumVal += 10
+        : nextVal == 'A'
+          ? sumVal += 1
+          : sumVal += parseInt(nextVal)
+    }
+
+    while (sumVal >= 10) {
+      sumVal -= 10
+    }
+
+    return sumVal
+  }
+
+  const onCheckResult = (pHand: CardType[], bHand: CardType[]) => {
+    let playerPoint = onSumPoints(pHand);
+    let bankerPoint = onSumPoints(bHand);
+    let resultOnBet = '';
+    let playerHandCopy = [...pHand]
+    let bankerHandCopy = [...bHand]
+
+    console.log('Player now =>', playerPoint, playerHandCopy)
+    console.log('Banker now =>', bankerPoint, bankerHandCopy)
+
+    const checkAndUpdateHands = () => {
+      if (playerPoint <= 5) {
+        // Player draws another card
+        playerHandCopy = onDrawCardSync(playerHandCopy);
+        playerPoint = onSumPoints(playerHandCopy);
+        setPlayerHand(playerHandCopy);
+        console.log('Player draw another =>', playerPoint, playerHandCopy);
+      }
+
+      if (bankerPoint <= 5) {
+        // Banker draws another card
+        bankerHandCopy = onDrawCardSync(bankerHandCopy);
+        bankerPoint = onSumPoints(bankerHandCopy);
+        setBankerHand(bankerHandCopy);
+        console.log('Banker draw another =>', bankerPoint, bankerHandCopy);
+      }
+
+      if (playerPoint > bankerPoint) {
+        setResult('player');
+        resultOnBet = 'player';
+      } else if (playerPoint < bankerPoint) {
+        setResult('banker');
+        resultOnBet = 'banker';
+      } else {
+        setResult('tie');
+        resultOnBet = 'tie';
+      }
+
+      if (betOn === resultOnBet) {
+        console.log('Win bet');
+      } else {
+        console.log('Lose bet');
+      }
+
+      onStopPlaying();
+    };
+
+    setTimeout(checkAndUpdateHands, 500);
+  }
+
+  const onDrawCard = (hand: CardType[]) => {
+    setDeckCopy((prevDeckCopy) => {
+      const randomIndex = Math.floor(Math.random() * prevDeckCopy.length);
+      const card = prevDeckCopy[randomIndex];
+      hand.push(card);
+      return prevDeckCopy.filter((_, index) => index !== randomIndex);
+    });
+  }
+
+  const onDrawCardSync = (hand: CardType[]): CardType[] => {
+    const randomIndex = Math.floor(Math.random() * deckCopy.length);
+    const card = deckCopy[randomIndex];
+    hand.push(card);
+    setDeckCopy(deckCopy.filter((_, index) => index !== randomIndex));
+    return hand;
+  }
+
   useEffect(() => {
     form.setFieldsValue(formData)
+
+    // play && onCheckResult()
 
     if (autoPlay) {
       intervalRef.current = setInterval(() => {
@@ -106,7 +196,7 @@ export const Baccarat = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [autoPlay, form, formData])
+  }, [autoPlay, form, formData, play])
 
   return (
     <Layout title="Baccarat">
@@ -128,7 +218,8 @@ export const Baccarat = () => {
                       {bankerHand.map((e, i) =>
                         <div className="baccarat-hand-card" key={i}>
                           <div className={`
-                                baccarat-hand-card-inner 
+                                baccarat-hand-card-inner
+                                ${result == 'tie' ? 'tie' : result == 'banker' ? 'won' : ''}
                               `}>
                             <div className="front">
                               <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
@@ -147,8 +238,8 @@ export const Baccarat = () => {
                         </div>
                       )}
                     </div>
-                    <span className="baccarat-point">
-                      Banker: { }
+                    <span className={`baccarat-point ${result == 'tie' ? 'tie' : result == 'banker' ? 'won' : ''}`}>
+                      Banker: {onSumPoints(bankerHand)}
                     </span>
                   </div>
 
@@ -163,6 +254,7 @@ export const Baccarat = () => {
                         <div className="baccarat-hand-card" key={i}>
                           <div className={`
                                 baccarat-hand-card-inner 
+                                ${result == 'tie' ? 'tie' : result == 'player' ? 'won' : ''}
                               `}>
                             <div className="front">
                               <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
@@ -181,8 +273,8 @@ export const Baccarat = () => {
                         </div>
                       )}
                     </div>
-                    <span className="baccarat-point">
-                      Player: { }
+                    <span className={`baccarat-point ${result == 'tie' ? 'tie' : result == 'player' ? 'won' : ''}`}>
+                      Player: {onSumPoints(playerHand)}
                     </span>
                   </div>
                 </div>
@@ -199,10 +291,10 @@ export const Baccarat = () => {
                       formData.isAuto
                         ? autoPlay
                           ? <Btn block onClick={onStopAutoBet}> <Img src="/loading.gif" /> STOP</Btn>
-                          : <Btn block onClick={onStartAutoBet}>AUTO SPIN</Btn>
+                          : <Btn block onClick={onStartAutoBet}>AUTO BET</Btn>
                         : play
                           ? <Btn block><Img src="/loading.gif" /></Btn>
-                          : <Btn block onClick={onStartPlaying}>SPIN</Btn>
+                          : <Btn block onClick={onStartPlaying}>BET</Btn>
                     }
                   </Col>
                   <Col span={6}></Col>
@@ -216,7 +308,6 @@ export const Baccarat = () => {
                           <Radio.Group
                             onChange={e => setBetOn(e.target.value)}
                             value={betOn}
-                            className={`${play && 'disabled'}`}
                           >
                             <Radio value="player">Player</Radio>
                             <Radio value="banker">Banker</Radio>
