@@ -509,12 +509,12 @@
 
           &.active {
             animation: 
-              baccaratPlayerDraw .5s .5s linear forwards, 
-              baccaratBankerDraw .5s 1s linear forwards,
-              baccaratPlayerDraw .5s 1.5s linear forwards, 
-              baccaratBankerDraw .5s 2s linear forwards,
-              baccaratPlayerDraw .5s 2.5s linear forwards, 
-              baccaratBankerDraw .5s 3s linear forwards;
+              baccaratPlayerDraw .2s .2s linear forwards, 
+              baccaratBankerDraw .2s .4s linear forwards,
+              baccaratPlayerDraw .2s .6s linear forwards, 
+              baccaratBankerDraw .2s .8s linear forwards,
+              baccaratPlayerDraw .2s 1s linear forwards, 
+              baccaratBankerDraw .2s 1.2s linear forwards;
           }
         }
       }

@@ -52,7 +52,7 @@ export const Baccarat = () => {
 
     setTimeout(() => {
       onCheckResult(newPlayerHand, newBankerHand)
-    }, 500)
+    }, 200)
   }
 
   const onDrawCardWithDelay = async (playerHand: CardType[], bankerHand: CardType[]) => {
@@ -61,9 +61,9 @@ export const Baccarat = () => {
         onDrawCard(playerHand, 'player');
         setTimeout(() => {
           onDrawCard(bankerHand, 'banker');
-        }, 500)
+        }, 200)
         resolve();
-      }, 1000)
+      }, 400)
     });
   };
 
@@ -165,7 +165,7 @@ export const Baccarat = () => {
       onStopPlaying();
     };
 
-    setTimeout(checkAndUpdateHands, 500);
+    setTimeout(checkAndUpdateHands, 200);
   }
 
   const onDrawCard = (hand: CardType[], side: string): CardType[] => {
@@ -187,7 +187,7 @@ export const Baccarat = () => {
       intervalRef.current = setInterval(() => {
         onStartPlaying()
         console.log('play')
-      }, 500)
+      }, 1400)
     }
 
     return () => {
