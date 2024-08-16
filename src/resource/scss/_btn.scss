@@ -27,7 +27,13 @@
   }
 
   &-vertical {
-   display: block;
+    flex-direction: column;
+    height: unset;
+    padding: 12px;
+    font-size: 14px;
+    * {
+      line-height: 14px;
+    }
   }
   
   &-text {
@@ -45,20 +51,39 @@
       color: #f7655a !important;
     }
   }
+
   &-group {
     display: flex;
     align-items: center;
   }
+
   &-cashout {
     background-color: #f7655a !important;
     &:hover {
       background-color: darken(#f7655a, 5%) !important;
     }
   }
+
   &-modal {
     background-color: #8bc34a !important;
     &:hover {
       background-color: darken(#8bc34a, 5%) !important;
+    }
+  }
+
+  &-high {
+    background-color: #ffcc00 !important;
+    color: #333 !important;
+    &:hover {
+      color: #333 !important;
+      background-color: darken(#ffcc00, 5%) !important;
+    }
+  }
+
+  &-low {
+    background-color: #8644fb !important;
+    &:hover {
+      background-color: darken(#8644fb, 5%) !important;
     }
   }
   img {

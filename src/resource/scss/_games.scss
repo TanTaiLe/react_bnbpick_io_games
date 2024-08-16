@@ -687,6 +687,23 @@
   }
 }
 
+.highlow {
+  &-board {
+    padding: 16px;
+    background-color: #F5F5F5;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+
+  }
+  &-history {
+    padding: 4px;
+    background-color: #F5F5F5;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    margin-top: 16px;
+  }
+}
+
 .roulette {
   &-history {
     background-color: #000;

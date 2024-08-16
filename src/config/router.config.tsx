@@ -8,6 +8,7 @@ import { WheelOfFortune } from "@screen/Games/WheelOfFortune";
 import { Slots } from "@screen/Games/Slots";
 import { VideoPoker } from "@screen/Games/VideoPoker";
 import { Baccarat } from "@screen/Games/Baccarat";
+import { HighLow } from "@screen/Games/HighLow";
 
 export interface IRouteConfig {
   name: string;
@@ -56,6 +57,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/baccarat",
     component: (
       <Baccarat />
+    ),
+  },
+  {
+    name: "high low",
+    path: "/high-low",
+    component: (
+      <HighLow />
     ),
   },
   {
