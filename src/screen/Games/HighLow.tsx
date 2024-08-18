@@ -3,9 +3,9 @@ import { Icon } from "@component/DesignSystem/Icon"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
-import { HIGH_LOW_BET_MINIMUM } from "@util/constant"
+import { CARD_GAMES_SETTINGS, HIGH_LOW_BET_MINIMUM } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 interface FieldType {
   betAmount: number
@@ -14,12 +14,6 @@ interface FieldType {
 interface CardType {
   suit: string
   rank: string
-}
-
-interface BoardType {
-  current: CardType
-  high: CardType[]
-  low: CardType[]
 }
 
 const defaultValues = {
@@ -31,15 +25,21 @@ export const HighLow = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [rate, setRate] = useState(0)
-  const [board, setBoard] = useState<BoardType>()
+  const [board, setBoard] = useState<CardType>()
   const [history, setHistory] = useState<CardType[]>()
 
-  const onStartPlaying = async (): Promise<void> => {
+  const onStartPlaying = () => {
     setPlay(true);
 
     setTimeout(() => {
       // onCheckResult(newPlayerHand, newBankerHand)
     }, 200)
+  }
+
+  const onDrawCard = () => {
+    let deckCopy = [...CARD_GAMES_SETTINGS.deck];
+    const randomIndex = Math.floor(Math.random() * deckCopy.length);
+    setBoard(deckCopy[randomIndex])
   }
 
   const onStopPlaying = () => {
@@ -71,6 +71,10 @@ export const HighLow = () => {
       }))
   }
 
+  useEffect(() => {
+    !board && onDrawCard()
+  },)
+
   return (
     <Layout title="High Low">
       <Row style={{ width: '100%' }} justify='center'>
@@ -86,10 +90,82 @@ export const HighLow = () => {
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
                 <div className="playground highlow">
                   <div className="highlow-board">
+                    <div className="highlow-guide">
+                      <b>K<Icon icon="vertical_align_top" size={32} /></b>
+                      <span>KING BEING THE HIGHEST</span>
+                    </div>
 
+                    <div className="highlow-hand">
+                      <div className="highlow-hand-card">
+                        <div className="highlow-hand-card-inner flipped">
+                          <div className="front"></div>
+                          <div className="back">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <Icon icon="help" fill color="#fff" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="highlow-hand-card">
+                        <div className="highlow-hand-card-inner flipped">
+                          <div className="front"></div>
+                          <div className="back">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <Icon icon="help" fill color="#fff" />
+                          </div>
+                        </div>
+                      </div>
+                      {board &&
+                        <div className="highlow-hand-card">
+                          <div className="highlow-hand-card-inner">
+                            <div className="front">
+                              <span style={{ color: `${(board.suit == 'hearts' || board.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
+                                {board.rank}
+                              </span>
+                              <Img src={`/card_${board.suit}.png`} />
+                            </div>
+                            <div className="back">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <Icon icon="help" fill color="#fff" />
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+
+                    <div className="highlow-guide">
+                      <b>A<Icon icon="vertical_align_bottom" size={32} /></b>
+                      <span>ACE BEING THE LOWEST</span>
+                    </div>
                   </div>
                   <div className="highlow-history">
-
+                    {history?.map(e =>
+                      <div className="highlow-hand-card">
+                        <div className="highlow-hand-card-inner">
+                          <div className="front">
+                            <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
+                              {e.rank}
+                            </span>
+                            <Img src={`/card_${e.suit}.png`} />
+                          </div>
+                          <div className="back">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <Icon icon="help" fill color="#fff" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
