@@ -714,6 +714,7 @@
       font-weight: 500;
       line-height: 18px;
     }
+
     span:not(.material-symbols) {
       display: block;
       font-size: 12px;
@@ -722,12 +723,35 @@
   }
 
   &-history {
-    padding: 4px;
+    padding: 4px 0;
     background-color: #F5F5F5;
     border: 1px solid #DDD;
     border-radius: 4px;
     margin-top: 16px;
     height: 80px;
+    display: flex;
+    overflow: hidden;
+
+    .highlow-hand {
+      &-card {
+        margin: 0 4px !important;
+        height: 70px;
+        width: 44px;
+        flex-shrink: 0;
+
+        .front {
+          padding: 4px;
+          span {
+            width: 100%;
+            font-size: 24px;
+            line-height: 20px;
+          }
+          img {
+            margin: 0 auto;
+          }
+        }
+      }
+    }
   }
 
   &-hand {

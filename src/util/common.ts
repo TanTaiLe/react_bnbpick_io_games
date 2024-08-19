@@ -8,5 +8,8 @@ export const capitalizeFirstLetter = (string: string) => {
 };
 
 export const numberFormat = (value: number | undefined, digits: number) => {
-  return value?.toLocaleString("en", { minimumFractionDigits: digits })
+  return value?.toLocaleString("en", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  })
 }
