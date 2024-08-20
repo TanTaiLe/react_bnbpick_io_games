@@ -696,7 +696,7 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-
+    overflow: hidden;
   }
 
   &-guide {
@@ -738,16 +738,48 @@
         height: 70px;
         width: 44px;
         flex-shrink: 0;
+        position: relative;
+
+        .arrow {
+          position: absolute;
+          right: -14px;
+          z-index: 1;
+          border: 1px solid #ddd;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+          border-radius: 4px;
+          background: #FFF;
+          width: 20px;
+          height: 20px;
+          margin-top: 24px;
+          font-size: 12px;
+          opacity: 0;
+          transition-delay: 0.7s;
+          transition-duration: 0.3s;
+          &.true {
+            color: #4caf50;
+            opacity: 1;
+          }
+          &.false {
+            color: #e91e63;
+            opacity: 1;
+          }
+        }
 
         .front {
           padding: 4px;
+
           span {
             width: 100%;
             font-size: 24px;
             line-height: 20px;
           }
+
           img {
             margin: 0 auto;
+            width: 16px;
           }
         }
       }
@@ -764,6 +796,15 @@
       height: 150px;
       width: 95px;
 
+      &.draw-higher {
+        transform: translate(-300px, -150px) rotate(-45deg);
+        transition-duration: .7s;
+      }
+      &.draw-lower {
+        transform: translate(300px, -150px) rotate(45deg);
+        transition-duration: .7s;
+      }
+
       &:nth-child(1),
       &:nth-child(2) {
         margin-bottom: -153px;
@@ -779,6 +820,7 @@
         height: 100%;
         border: 1px solid #DDD !important;
         transform-style: preserve-3d;
+        transition: transform 0.3s;
 
         &.flipped {
           transform: rotateY(180deg);

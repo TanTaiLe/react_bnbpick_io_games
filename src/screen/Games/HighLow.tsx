@@ -26,16 +26,26 @@ export const HighLow = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [board, setBoard] = useState<CardType>()
   const [history, setHistory] = useState<CardType[]>()
+  const [historyArrow, setHistoryArrow] = useState<{
+    icon: string,
+    compResult: boolean
+  }[]>([])
+  const [toggleAnimate, setToggleAnimate] = useState(false)
+  const [drawAnimate, setDrawAnimate] = useState('')
+  const [flipped, setFlipped] = useState(false)
 
   const onStartPlaying = () => {
     setPlay(true);
+    setHistoryArrow([])
+    history!.length > 0 && setHistory([board!])
   }
 
   const onDrawCard = () => {
-    let deckCopy = [...CARD_GAMES_SETTINGS.deck];
-    const randomIndex = Math.floor(Math.random() * deckCopy.length);
+    let deckCopy = [...CARD_GAMES_SETTINGS.deck]
+    const randomIndex = Math.floor(Math.random() * deckCopy.length)
     setBoard(deckCopy[randomIndex])
     setHistory(prev => [...(prev || []), deckCopy[randomIndex]])
+    return deckCopy[randomIndex]
   }
 
   const onStopPlaying = () => {
@@ -67,20 +77,67 @@ export const HighLow = () => {
       }))
   }
 
-  const onSetBet = () => {
-    onDrawCard();
+  const onCashOut = () => {
+    onStopPlaying()
+  }
+
+  const onSetBet = (choice: string | string[], icon: string, animate: string) => {
+    let nextCard = onConvertCardToValue(onDrawCard().rank)
+    const currentCard = onConvertCardToValue(board!.rank)
+    let curHistoryArr = historyArrow
+    let result, compResult: boolean
+
+    if (nextCard > currentCard) result = 'HIGHER'
+    if (nextCard < currentCard) result = 'LOWER'
+    if (nextCard === currentCard) result = 'EQUAL'
+
+    if (choice.length === 2) {
+      if (choice.includes(result!)) {
+        console.log('Correct!')
+        compResult = true
+      }
+      else {
+        console.log('Lose!')
+        compResult = false
+        onStopPlaying()
+      }
+    } else {
+      if (choice === result) {
+        console.log('Correct!')
+        compResult = true
+      }
+      else {
+        console.log('Lose!')
+        compResult = false
+        onStopPlaying()
+      }
+    }
+
+    curHistoryArr.push({ icon: icon, compResult: compResult })
+    console.log(curHistoryArr)
+
+    setHistoryArrow(curHistoryArr)
+    setDrawAnimate(animate)
+    setToggleAnimate(true)
+    setFlipped(true)
+
+    setTimeout(() => {
+      setToggleAnimate(false)
+      setFlipped(false)
+    }, 700)
   }
 
   const onGetButtonText = (side: string) => {
-    if (side === 'higher') {
-      if (board?.rank === 'K') return <>EQUAL <Icon fill icon="equal" weight={700} /></>
-      if (board?.rank === 'A') return <>HIGHER <Icon fill icon="keyboard_arrow_up" weight={700} /></>
-      return <>HIGHER or EQUAL <Icon fill icon="keyboard_double_arrow_up" weight={700} /></>
+    let content: { text: string | string[], icon: string }
 
+    if (side === 'higher') {
+      if (board?.rank === 'K') return content = { text: 'EQUAL', icon: 'equal' }
+      if (board?.rank === 'A') return content = { text: 'HIGHER', icon: 'keyboard_arrow_up' }
+      return content = { text: ['HIGHER', 'EQUAL'], icon: 'keyboard_double_arrow_up' }
     } else { //lower
-      if (board?.rank === 'K') return <>LOWER <Icon fill icon="keyboard_arrow_down" weight={700} /></>
-      if (board?.rank === 'A') return <>EQUAL <Icon fill icon="equal" weight={700} /></>
-      return <>LOWER or EQUAL <Icon fill icon="keyboard_double_arrow_down" weight={700} /></>
+      if (board?.rank === 'K') return content = { text: 'LOWER', icon: 'keyboard_arrow_down' }
+      if (board?.rank === 'A') return content = { text: 'EQUAL', icon: 'equal' }
+      return content = { text: ['LOWER', 'EQUAL'], icon: 'keyboard_double_arrow_down' }
     }
   }
 
@@ -170,8 +227,8 @@ export const HighLow = () => {
                         </div>
                       </div>
                       {board &&
-                        <div className="highlow-hand-card">
-                          <div className="highlow-hand-card-inner">
+                        <div className={`highlow-hand-card  ${toggleAnimate ? `draw-${drawAnimate}` : ''}`}>
+                          <div className={`highlow-hand-card-inner ${flipped ? 'flipped' : ''}`}>
                             <div className="front">
                               <span style={{ color: `${(board.suit == 'hearts' || board.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
                                 {board.rank}
@@ -196,8 +253,14 @@ export const HighLow = () => {
                     </div>
                   </div>
                   <div className="highlow-history">
-                    {history?.map(e =>
-                      <div className="highlow-hand-card">
+                    {history?.map((e, i) =>
+                      <div className="highlow-hand-card" key={i}>
+                        {historyArrow[i] &&
+                          <div className={`arrow ${i} ${historyArrow[i]?.compResult ? 'true' : 'false'}`}>
+                            <Icon fill icon={historyArrow[i]?.icon} weight={700} />
+                          </div>
+                        }
+
                         <div className="highlow-hand-card-inner">
                           <div className="front">
                             <span style={{ color: `${(e.suit == 'hearts' || e.suit == 'diamonds') ? '#f44336' : '#000'}` }}>
@@ -218,16 +281,26 @@ export const HighLow = () => {
                   </div>
                 </div>
 
-                <Row align="middle" gutter={8}>
+                <Row align="middle" gutter={8} className={play ? '' : 'disabled'}>
                   <Col span={12}>
-                    <Btn block className="btn-vertical btn-high" onClick={() => onSetBet()}>
-                      {onGetButtonText('higher')}
+                    <Btn block className="btn-vertical btn-high"
+                      onClick={() => onSetBet(onGetButtonText('higher').text, onGetButtonText('higher').icon, 'higher')}>
+                      <>
+                        {onGetButtonText('higher').text.length == 2
+                          ? onGetButtonText('higher').text[0] + ' or ' + onGetButtonText('higher').text[1]
+                          : onGetButtonText('higher').text} <Icon fill icon={onGetButtonText('higher').icon} weight={700} />
+                      </>
                       <span>{numberFormat(onGetPercentage('higher'), 2)}%</span>
                     </Btn>
                   </Col>
                   <Col span={12}>
-                    <Btn block className="btn-vertical btn-low" onClick={() => onSetBet()}>
-                      {onGetButtonText('lower')}
+                    <Btn block className="btn-vertical btn-low"
+                      onClick={() => onSetBet(onGetButtonText('lower').text, onGetButtonText('lower').icon, 'lower')}>
+                      <>
+                        {onGetButtonText('lower').text.length == 2
+                          ? onGetButtonText('lower').text[0] + ' or ' + onGetButtonText('lower').text[1]
+                          : onGetButtonText('lower').text} <Icon fill icon={onGetButtonText('lower').icon} weight={700} />
+                      </>
                       <span>{numberFormat(onGetPercentage('lower'), 2)}%</span>
                     </Btn>
                   </Col>
@@ -251,7 +324,7 @@ export const HighLow = () => {
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType> label={`Total Profit (${numberFormat(1.00, 2)}x)`}>
+                      <Form.Item<FieldType> label={`Total Profit (${numberFormat(1.00, 2)}x)`} className="not-allowed">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
@@ -261,7 +334,7 @@ export const HighLow = () => {
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType> label={`Profit Higher (${numberFormat(3.15, 2)}x)`}>
+                      <Form.Item<FieldType> label={`Profit Higher (${numberFormat(3.15, 2)}x)`} className="not-allowed">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
@@ -271,7 +344,7 @@ export const HighLow = () => {
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType> label={`Profit Lower (${numberFormat(1.26, 2)}x)`}>
+                      <Form.Item<FieldType> label={`Profit Lower (${numberFormat(1.26, 2)}x)`} className="not-allowed">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
@@ -288,7 +361,7 @@ export const HighLow = () => {
                   <Col span={16}>
                     {
                       play
-                        ? <Btn block><Img src="/loading.gif" /></Btn>
+                        ? <Btn className="btn-cashout" block onClick={onCashOut}>CASH OUT</Btn>
                         : <Btn block onClick={onStartPlaying}>BET</Btn>
                     }
                   </Col>
