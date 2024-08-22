@@ -9,6 +9,7 @@ import { Slots } from "@screen/Games/Slots";
 import { VideoPoker } from "@screen/Games/VideoPoker";
 import { Baccarat } from "@screen/Games/Baccarat";
 import { HighLow } from "@screen/Games/HighLow";
+import { Plinko } from "@screen/Games/Plinko";
 
 export interface IRouteConfig {
   name: string;
@@ -78,6 +79,13 @@ export const routes: Array<IRouteConfig> = [
     path: "/wheel-of-fortune",
     component: (
       <WheelOfFortune />
+    ),
+  },
+  {
+    name: "plinko",
+    path: "/plinko",
+    component: (
+      <Plinko />
     ),
   },
   {

@@ -10,8 +10,9 @@ export const MINES_BET_MINIMUM = 0.00000100
 export const POKER_BET_MINIMUM = 0.00000001
 export const BACCARAT_BET_MINIMUM = 0.00000001
 export const HIGH_LOW_BET_MINIMUM = 0.00000100
-export const LIMBO_BET_MINIMUM = 0.00000100
 export const WHEEL_OF_FORTUNE_BET_MINIMUM = 0.00000100
+export const PLINKO_BET_MINIMUM = 0.00000100
+export const LIMBO_BET_MINIMUM = 0.00000100
 export const ULTIMATE_DICE_BET_MINIMUM = 0.00000001
 
 export const SLOTS_SETTINGS = {
@@ -323,6 +324,14 @@ export const WHEEL_OF_FORTUNE_SETTINGS = [
   { position: 330, multiplier: 0 },
   { position: 360, multiplier: 3 }
 ]
+
+export const PLINKO_SETTINGS = {
+  risk: [
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+  ]
+}
 
 export const LIMBO_SETTINGS = {
   xMax: 970.00,
