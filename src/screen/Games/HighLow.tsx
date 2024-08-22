@@ -3,7 +3,7 @@ import { Icon } from "@component/DesignSystem/Icon"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
-import { CARD_GAMES_SETTINGS, HIGH_LOW_BET_MINIMUM } from "@util/constant"
+import { CARD_GAMES_SETTINGS, HIGH_LOW_BET_MINIMUM, HIGH_LOW_SETTINGS } from "@util/constant"
 import { Card, Col, Form, Input, Row, Space } from "antd"
 import { useEffect, useState } from "react"
 
@@ -33,16 +33,25 @@ export const HighLow = () => {
   const [toggleAnimate, setToggleAnimate] = useState(false)
   const [drawAnimate, setDrawAnimate] = useState('')
   const [flipped, setFlipped] = useState(false)
+  const [multiplier, setMultiplier] = useState<{
+    total: number, high: number, low: number
+  }>()
+  const [deckCopy, setDeckCopy] = useState<CardType[]>([...CARD_GAMES_SETTINGS.deck])
 
   const onStartPlaying = () => {
     setPlay(true);
     setHistoryArrow([])
     history!.length > 0 && setHistory([board!])
+    board && setMultiplier({
+      total: 1,
+      high: HIGH_LOW_SETTINGS.multiplier[onConvertCardToValue(board?.rank) - 1],
+      low: HIGH_LOW_SETTINGS.multiplier[HIGH_LOW_SETTINGS.multiplier.length - onConvertCardToValue(board?.rank)]
+    })
   }
 
   const onDrawCard = () => {
-    let deckCopy = [...CARD_GAMES_SETTINGS.deck]
     const randomIndex = Math.floor(Math.random() * deckCopy.length)
+    setDeckCopy(deckCopy.filter((_, index) => index !== randomIndex));
     setBoard(deckCopy[randomIndex])
     setHistory(prev => [...(prev || []), deckCopy[randomIndex]])
     return deckCopy[randomIndex]
@@ -50,6 +59,11 @@ export const HighLow = () => {
 
   const onStopPlaying = () => {
     setPlay(false)
+    setMultiplier({
+      total: 0,
+      high: 0,
+      low: 0
+    })
   }
 
 
@@ -91,20 +105,44 @@ export const HighLow = () => {
     if (nextCard < currentCard) result = 'LOWER'
     if (nextCard === currentCard) result = 'EQUAL'
 
-    if (choice.length === 2) {
+    if (choice.length === 2) { // HIGHER/LOWER or EQUAL case
       if (choice.includes(result!)) {
         console.log('Correct!')
         compResult = true
+        console.log(result)
+
+        choice.includes('HIGHER') && setMultiplier({
+          total: multiplier?.high!,
+          high: multiplier?.high! * HIGH_LOW_SETTINGS.multiplier[nextCard - 1],
+          low: multiplier?.high! * HIGH_LOW_SETTINGS.multiplier[HIGH_LOW_SETTINGS.multiplier.length - nextCard]
+        })
+        choice.includes('LOWER') && setMultiplier({
+          total: multiplier?.low!,
+          high: multiplier?.low! * HIGH_LOW_SETTINGS.multiplier[nextCard - 1],
+          low: multiplier?.low! * HIGH_LOW_SETTINGS.multiplier[HIGH_LOW_SETTINGS.multiplier.length - nextCard]
+        })
       }
       else {
         console.log('Lose!')
         compResult = false
         onStopPlaying()
       }
-    } else {
+    } else { // HIGHER/LOWER/EQUAL case
       if (choice === result) {
         console.log('Correct!')
         compResult = true
+        console.log(result)
+
+        choice === ('HIGHER') && setMultiplier({
+          total: multiplier?.high!,
+          high: multiplier?.high! * HIGH_LOW_SETTINGS.multiplier[nextCard - 1],
+          low: multiplier?.high! * HIGH_LOW_SETTINGS.multiplier[HIGH_LOW_SETTINGS.multiplier.length - nextCard]
+        })
+        choice === ('LOWER') && setMultiplier({
+          total: multiplier?.low!,
+          high: multiplier?.low! * HIGH_LOW_SETTINGS.multiplier[nextCard - 1],
+          low: multiplier?.low! * HIGH_LOW_SETTINGS.multiplier[HIGH_LOW_SETTINGS.multiplier.length - nextCard]
+        })
       }
       else {
         console.log('Lose!')
@@ -178,8 +216,15 @@ export const HighLow = () => {
   };
 
   useEffect(() => {
+    form.setFieldsValue(formData)
+
     !board && onDrawCard()
-  },)
+    !multiplier && board && setMultiplier({
+      total: 1,
+      high: HIGH_LOW_SETTINGS.multiplier[onConvertCardToValue(board?.rank) - 1],
+      low: HIGH_LOW_SETTINGS.multiplier[HIGH_LOW_SETTINGS.multiplier.length - onConvertCardToValue(board?.rank)]
+    })
+  }, [form, formData, board])
 
   return (
     <Layout title="High Low">
@@ -324,31 +369,31 @@ export const HighLow = () => {
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType> label={`Total Profit (${numberFormat(1.00, 2)}x)`} className="not-allowed">
+                      <Form.Item<FieldType> label={`Total Profit (${numberFormat(multiplier?.total, 2)}x)`} className="not-allowed">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(formData.betAmount, 8)}
+                            value={numberFormat(formData.betAmount * multiplier?.total!, 8)}
                           />
                         </Space.Compact>
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType> label={`Profit Higher (${numberFormat(3.15, 2)}x)`} className="not-allowed">
+                      <Form.Item<FieldType> label={`Profit Higher (${numberFormat(multiplier?.high, 2)}x)`} className="not-allowed">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(formData.betAmount, 8)}
+                            value={numberFormat(formData.betAmount * multiplier?.high!, 8)}
                           />
                         </Space.Compact>
                       </Form.Item>
                     </Col>
                     <Col span={12}>
-                      <Form.Item<FieldType> label={`Profit Lower (${numberFormat(1.26, 2)}x)`} className="not-allowed">
+                      <Form.Item<FieldType> label={`Profit Lower (${numberFormat(multiplier?.low, 2)}x)`} className="not-allowed">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
                             prefix={<Img src="/coin_logo.svg" w={20} h={20} />}
-                            value={numberFormat(formData.betAmount, 8)}
+                            value={numberFormat(formData.betAmount * multiplier?.low!, 8)}
                           />
                         </Space.Compact>
                       </Form.Item>

@@ -268,6 +268,10 @@ export const CARD_GAMES_SETTINGS = {
   ],
 }
 
+export const HIGH_LOW_SETTINGS = {
+  multiplier: [1.05, 1.05, 1.15, 1.26, 1.40, 1.58, 1.80, 2.10, 2.52, 3.15, 4.20, 6.31, 12.61]
+}
+
 export const ROULETTE_SETTINGS = {
   chips: [
     {
