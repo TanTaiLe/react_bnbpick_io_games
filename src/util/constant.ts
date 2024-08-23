@@ -326,10 +326,23 @@ export const WHEEL_OF_FORTUNE_SETTINGS = [
 ]
 
 export const PLINKO_SETTINGS = {
+  rows: 10,
   risk: [
-    { value: 'low', label: 'Low' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
+    {
+      value: 'low',
+      label: 'Low',
+      multiplier: [0.5, 1, 1.1, 1.3, 2.4, 9]
+    },
+    {
+      value: 'medium',
+      label: 'Medium',
+      multiplier: [0.4, 0.6, 1.2, 2, 5, 36]
+    },
+    {
+      value: 'high',
+      label: 'High',
+      multiplier: [0.15, 0.4, 0.7, 3, 10, 75]
+    },
   ]
 }
 

@@ -1,5 +1,4 @@
 import { Btn } from "@component/DesignSystem/Btn"
-import { Icon } from "@component/DesignSystem/Icon"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
@@ -24,15 +23,19 @@ export const Plinko = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
+  const [position, setPosition] = useState({ x: 9.5, y: 0 });
+  const [multiplier, setMultiplier] = useState<number[]>([])
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const ballIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const onStartPlaying = async (): Promise<void> => {
+  const onStartPlaying = () => {
+    setPosition({ x: 9.5, y: 0 })
     setPlay(true);
 
     setTimeout(() => {
       onStopPlaying()
-    }, 500)
+    }, 3000)
   }
 
   const onStopPlaying = () => {
@@ -45,6 +48,7 @@ export const Plinko = () => {
       [name]: value
     }))
   }
+
 
 
   const onBetDouble = () => {
@@ -75,16 +79,32 @@ export const Plinko = () => {
   useEffect(() => {
     form.setFieldsValue(formData)
 
+    const { risk } = PLINKO_SETTINGS
+    let newMultiplier = risk.find(r => r.value === formData.risk)?.multiplier!
+    setMultiplier(newMultiplier)
+
+    if (play) {
+      ballIntervalRef.current = setInterval(() => {
+        setPosition(prev => ({
+          x: prev.x + (Math.random() < 0.5 ? -1 : 1),
+          y: prev.y + 1
+        }));
+      }, 500);
+    }
+
     if (autoPlay) {
       intervalRef.current = setInterval(() => {
         onStartPlaying()
         console.log('play')
-      }, 500)
+      }, 5000)
     }
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+      }
+      if (ballIntervalRef.current) {
+        clearInterval(ballIntervalRef.current)
       }
     };
   }, [autoPlay, form, formData, play])
@@ -103,7 +123,41 @@ export const Plinko = () => {
               <Space size="middle" direction="vertical" style={{ width: '100%' }}>
 
                 <div className="playground plinko">
-
+                  <div className="plinko-board">
+                    {Array.from({ length: PLINKO_SETTINGS.rows }, (_, rowIndex) => (
+                      <div className="plinko-row" key={rowIndex}>
+                        {Array.from({ length: rowIndex + 3 }, (_, i) => (
+                          <div className="plinko-peg" key={i}></div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  {
+                    <div className="plinko-ball"
+                      style={{
+                        left: `${position.x * 20}px`,
+                        top: `${position.y * 20}px`
+                      }}>
+                      <Img src='/plinko_ball.svg' w={20} h={20} />
+                    </div>
+                  }
+                  <div className="plinko-multiplier">
+                    {multiplier.map((e, i) => {
+                      const reverseIndex = multiplier.length - 1 - i;
+                      if (reverseIndex >= 0 && reverseIndex < multiplier.length) {
+                        return <div key={reverseIndex} className="plinko-multiplier-item">
+                          {multiplier[reverseIndex]}x
+                        </div>
+                      }
+                    })}
+                    {multiplier.map((e, i) => {
+                      if (i > 0 && i < multiplier.length) {
+                        return <div key={e} className="plinko-multiplier-item">
+                          {e}x
+                        </div>
+                      }
+                    })}
+                  </div>
                 </div>
 
                 <Row align="middle" gutter={16}>
@@ -145,12 +199,12 @@ export const Plinko = () => {
                       </Form.Item>
                     </Col>
                     <Col span={8}>
-                      <Form.Item label="Lines" name="lines" className={`${play && 'disabled'}`}>
+                      <Form.Item label="Risk" name="risk" className={`${play && 'disabled'}`}>
                         <Space.Compact style={{ width: '100%' }}>
                           <Select
                             defaultValue={defaultValues.risk}
                             style={{ width: 120 }}
-                            onChange={e => onChange('lines', e)}
+                            onChange={e => onChange('risk', e)}
                             options={PLINKO_SETTINGS.risk}
                           />
                         </Space.Compact>

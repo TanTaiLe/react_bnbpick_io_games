@@ -178,7 +178,7 @@ export const Roulette = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [betHistory])
+  }, [betHistory, autoPlay])
 
   return (
 
