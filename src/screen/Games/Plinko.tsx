@@ -4,6 +4,7 @@ import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
 import { PLINKO_BET_MINIMUM, PLINKO_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
+import { drop } from "lodash"
 import { useEffect, useRef, useState } from "react"
 
 interface FieldType {
@@ -23,19 +24,23 @@ export const Plinko = () => {
   const [formData, setFormData] = useState<FieldType>(defaultValues)
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
-  const [position, setPosition] = useState({ x: 9.5, y: 0 });
+  const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
   const [multiplier, setMultiplier] = useState<number[]>([])
-
+  const [dropRange, setDropRange] = useState<{
+    start: number,
+    end: number
+  }[]>()
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const ballIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const finalPosRef = useRef(position)
 
   const onStartPlaying = () => {
-    setPosition({ x: 9.5, y: 0 })
+    setPosition({ x: 12.5, y: -0.5 })
     setPlay(true);
 
     setTimeout(() => {
-      onStopPlaying()
-    }, 3000)
+      onCheckResult()
+    }, 1800)
   }
 
   const onStopPlaying = () => {
@@ -48,8 +53,6 @@ export const Plinko = () => {
       [name]: value
     }))
   }
-
-
 
   const onBetDouble = () => {
     let newValue = formData.betAmount && formData.betAmount * 2
@@ -76,12 +79,60 @@ export const Plinko = () => {
     setAutoPlay(false)
   }
 
+  const onUpdateMultiplier = () => {
+    const { risk } = PLINKO_SETTINGS
+    const multiplierOnRisk = risk.find(r => r.value === formData.risk)?.multiplier!
+    let newMultiplier: number[] = []
+
+    multiplierOnRisk.some((_, i) => {
+      const reverseIndex = multiplierOnRisk.length - 1 - i;
+      reverseIndex >= 0
+        && reverseIndex < multiplierOnRisk.length
+        && newMultiplier.push(multiplierOnRisk[reverseIndex])
+    })
+    multiplierOnRisk.some((e, i) => {
+      i > 0
+        && i < multiplierOnRisk.length
+        && newMultiplier.push(e)
+    })
+
+    setMultiplier(newMultiplier)
+  }
+
+  const onSetupDropRange = () => {
+    // const containerW = 388 // multiplier container width 
+    const spacingW = 28 // Spacing = 24 (real spacing) + 8/2 (peg width)
+    const pegW = 8 // Peg width
+    let baseDropRange: any[] = []
+    multiplier.some((_, i) => {
+      const start = i * (spacingW + pegW);
+      const end = start + spacingW;
+      baseDropRange.push({ start: start, end: end })
+    });
+
+    setDropRange(baseDropRange)
+    console.log(baseDropRange)
+  }
+
+  const onCheckResult = () => {
+    let dropPos = finalPosRef.current.x * 18 - 18
+    console.log('Final pos:', finalPosRef.current.x)
+
+
+    dropRange?.forEach((e, i) => {
+      if (dropPos >= e.start && dropPos <= e.end) {
+        console.log(`Drop at tile [${multiplier[i]}x]`, e, finalPosRef.current)
+      }
+    })
+
+    onStopPlaying()
+  }
+
   useEffect(() => {
     form.setFieldsValue(formData)
 
-    const { risk } = PLINKO_SETTINGS
-    let newMultiplier = risk.find(r => r.value === formData.risk)?.multiplier!
-    setMultiplier(newMultiplier)
+    onUpdateMultiplier()
+    finalPosRef.current = position
 
     if (play) {
       ballIntervalRef.current = setInterval(() => {
@@ -89,7 +140,7 @@ export const Plinko = () => {
           x: prev.x + (Math.random() < 0.5 ? -1 : 1),
           y: prev.y + 1
         }));
-      }, 500);
+      }, 150);
     }
 
     if (autoPlay) {
@@ -107,7 +158,13 @@ export const Plinko = () => {
         clearInterval(ballIntervalRef.current)
       }
     };
-  }, [autoPlay, form, formData, play])
+  }, [autoPlay, form, formData, play, position])
+
+  useEffect(() => {
+    !dropRange
+      && multiplier.length > 0
+      && onSetupDropRange()
+  }, [dropRange, multiplier])
   return (
     <Layout title="Plinko">
       <Row style={{ width: '100%' }} justify='center'>
@@ -133,30 +190,21 @@ export const Plinko = () => {
                     ))}
                   </div>
                   {
+                    play &&
                     <div className="plinko-ball"
                       style={{
-                        left: `${position.x * 20}px`,
-                        top: `${position.y * 20}px`
+                        left: `${position.x * 18}px`,
+                        top: `${position.y * 36}px`
                       }}>
                       <Img src='/plinko_ball.svg' w={20} h={20} />
                     </div>
                   }
                   <div className="plinko-multiplier">
-                    {multiplier.map((e, i) => {
-                      const reverseIndex = multiplier.length - 1 - i;
-                      if (reverseIndex >= 0 && reverseIndex < multiplier.length) {
-                        return <div key={reverseIndex} className="plinko-multiplier-item">
-                          {multiplier[reverseIndex]}x
-                        </div>
-                      }
-                    })}
-                    {multiplier.map((e, i) => {
-                      if (i > 0 && i < multiplier.length) {
-                        return <div key={e} className="plinko-multiplier-item">
-                          {e}x
-                        </div>
-                      }
-                    })}
+                    {multiplier.map((e, i) =>
+                      <div key={i} className="plinko-multiplier-item">
+                        {e}x
+                      </div>
+                    )}
                   </div>
                 </div>
 
