@@ -147,7 +147,7 @@ export const Plinko = () => {
       intervalRef.current = setInterval(() => {
         onStartPlaying()
         console.log('play')
-      }, 5000)
+      }, 200)
     }
 
     return () => {
@@ -165,6 +165,7 @@ export const Plinko = () => {
       && multiplier.length > 0
       && onSetupDropRange()
   }, [dropRange, multiplier])
+
   return (
     <Layout title="Plinko">
       <Row style={{ width: '100%' }} justify='center'>
