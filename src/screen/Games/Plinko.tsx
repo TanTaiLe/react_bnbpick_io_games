@@ -25,6 +25,7 @@ export const Plinko = () => {
   const [play, setPlay] = useState<boolean | undefined>()
   const [autoPlay, setAutoPlay] = useState<boolean | undefined>()
   const [position, setPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+  const [autoPlayPosition, setAutoPlayPosition] = useState<{ x: number, y: number }[]>([])
   const [multiplier, setMultiplier] = useState<number[]>([])
   const [dropRange, setDropRange] = useState<{
     start: number,
@@ -33,19 +34,35 @@ export const Plinko = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const ballIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const finalPosRef = useRef(position)
+  const autoPlayFinalPosRef = useRef(autoPlayPosition)
   const isMobile = useMediaQuery({ query: '(max-width: 600px)' })
 
   const onStartPlaying = () => {
+    if (autoPlay) {
+      intervalRef.current = setInterval(() => {
+        console.log('play')
 
-    isMobile
-      ? setPosition({ x: 8.5, y: -0.75 })
-      : setPosition({ x: 12.5, y: -0.5 })
+        isMobile
+          ? setAutoPlayPosition([...autoPlayPosition, { x: 8.5, y: -0.75 }])
+          : setAutoPlayPosition([...autoPlayPosition, { x: 12.5, y: -0.5 }])
 
-    setPlay(true);
+        setPlay(true);
 
-    setTimeout(() => {
-      onCheckResult()
-    }, isMobile ? 1500 : 1800)
+        setTimeout(() => {
+          onAutoPlayCheckResult()
+        }, isMobile ? 1500 : 1800)
+      }, 1000)
+    } else {
+      isMobile
+        ? setPosition({ x: 8.5, y: -0.75 })
+        : setPosition({ x: 12.5, y: -0.5 })
+
+      setPlay(true);
+
+      setTimeout(() => {
+        onCheckResult()
+      }, isMobile ? 1500 : 1800)
+    }
   }
 
   const onStopPlaying = () => {
@@ -145,7 +162,22 @@ export const Plinko = () => {
         console.log(`Drop at tile [#${i + 1} - ${multiplier[i]}x]`, e, finalPosRef.current)
       }
     })
+    onStopPlaying()
+  }
 
+  const onAutoPlayCheckResult = () => {
+    autoPlayFinalPosRef.current.forEach(e => {
+      let dropPos = isMobile
+        ? e.x * 18
+        : e.x * 18 - 54
+      console.log('Final pos:', e.x)
+
+      dropRange?.forEach((f, i) => {
+        if (dropPos >= f.start && dropPos <= f.end) {
+          console.log(`Drop at tile [#${i + 1} - ${multiplier[i]}x]`, f, e)
+        }
+      })
+    })
     onStopPlaying()
   }
 
@@ -154,6 +186,7 @@ export const Plinko = () => {
 
     onUpdateMultiplier()
     finalPosRef.current = position
+    autoPlayFinalPosRef.current = autoPlayPosition
 
     if (play) {
       ballIntervalRef.current = setInterval(() => {
@@ -162,14 +195,18 @@ export const Plinko = () => {
           y: prev.y + 1
         }));
       }, 150);
-      console.log(position.x)
     }
 
     if (autoPlay) {
-      intervalRef.current = setInterval(() => {
-        onStartPlaying()
-        console.log('play')
-      }, 200)
+      onStartPlaying()
+
+
+      // ballIntervalRef.current = setInterval(() => {
+      //   setPosition(prev => ({
+      //     x: prev.x + (Math.random() < 0.5 ? -1 : 1),
+      //     y: prev.y + 1
+      //   }));
+      // }, 150);
     }
 
     return () => {
@@ -213,7 +250,7 @@ export const Plinko = () => {
                     ))}
                   </div>
                   {
-                    play &&
+                    !autoPlay && play &&
                     <div className="plinko-ball"
                       style={{
                         left: `${position.x * 18}px`,
@@ -221,6 +258,17 @@ export const Plinko = () => {
                       }}>
                       <Img src='/plinko_ball.svg' w={isMobile ? 16 : 20} h={isMobile ? 16 : 20} />
                     </div>
+                  }
+                  {
+                    autoPlay && play && autoPlayPosition.map((e, i) =>
+                      <div className="plinko-ball" key={i}
+                        style={{
+                          left: `${e.x * 18}px`,
+                          top: `${e.y * 36}px`
+                        }}>
+                        <Img src='/plinko_ball.svg' w={isMobile ? 16 : 20} h={isMobile ? 16 : 20} />
+                      </div>
+                    )
                   }
                   <div className="plinko-multiplier">
                     {multiplier.map((e, i) =>
