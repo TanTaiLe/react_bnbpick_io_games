@@ -10,7 +10,11 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80px;
+  padding: 80px 12px;
+
+  @media only screen and (min-width: 601px) {
+    padding: 80px;
+  }
 
   h1 {
     font-weight: 700;
@@ -87,10 +91,13 @@ html {
     padding: 16px
   }
 }
-.form .form-group-radio .ant-form-item.disabled .ant-form-item-control-input-content, .form .form-group-radio .ant-form-item.disabled .ant-input-outlined {
+
+.form .form-group-radio .ant-form-item.disabled .ant-form-item-control-input-content,
+.form .form-group-radio .ant-form-item.disabled .ant-input-outlined {
 
   background-color: transparent !important;
 }
+
 .form {
   &-group {
     padding: 8px 16px 16px;
@@ -133,12 +140,13 @@ html {
     }
 
     &-radio {
-      
+
       .ant-form-item-control-input-content {
         background-color: transparent !important;
         border: none !important;
         padding: 4px 0 !important;
       }
+
       .ant-radio-wrapper {
         justify-content: flex-start;
       }
@@ -454,6 +462,7 @@ html {
 
     &.win {
       background-color: #8bc34a;
+
       &::after {
         border-top: 10px solid #8bc34a;
       }
@@ -461,6 +470,7 @@ html {
 
     &.loss {
       background-color: #ff9800;
+
       &::after {
         border-top: 10px solid #ff9800;
       }

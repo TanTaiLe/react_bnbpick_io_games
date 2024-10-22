@@ -758,10 +758,12 @@
           opacity: 0;
           transition-delay: 0.7s;
           transition-duration: 0.3s;
+
           &.true {
             color: #4caf50;
             opacity: 1;
           }
+
           &.false {
             color: #e91e63;
             opacity: 1;
@@ -800,6 +802,7 @@
         transform: translate(-300px, -150px) rotate(-45deg);
         transition-duration: .7s;
       }
+
       &.draw-lower {
         transform: translate(300px, -150px) rotate(45deg);
         transition-duration: .7s;
@@ -1145,80 +1148,127 @@
 }
 
 .plinko {
-  height: 400px;
+  height: 320px;
   width: 100%;
   margin: 0 auto;
   position: relative;
-  // overflow: hidden;
   margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media only screen and (min-width: 601px) {
+    height: 400px;
+  }
+
   &-board {
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    row-gap: 28px;
+    row-gap: 24px;
+
+    @media only screen and (min-width: 601px) {
+      row-gap: 28px;
+    }
   }
+
   &-ball {
     position: absolute;
     transition: all .15s linear;
   }
+
   &-row {
     display: flex;
     justify-content: center;
     width: 100%;
-    column-gap: 28px;
+    column-gap: 24px;
+
+    @media only screen and (min-width: 601px) {
+      column-gap: 28px;
+    }
   }
+
   &-peg {
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 4px;
     background-color: #000;
-    border-radius: 4px;
+    border-radius: 2px;
     flex-shrink: 0;
+
+    @media only screen and (min-width: 601px) {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+    }
   }
+
   &-multiplier {
     display: flex;
-    width: 388px;
+    width: unset;
     position: absolute;
     bottom: 36px;
-    left: 0;
-    right: 0;
     margin: 0 auto;
-    column-gap: 8px;
+    column-gap: 4px;
+
+    @media only screen and (min-width: 601px) {
+      width: 388px;
+      column-gap: 8px;
+    }
+
     &-item {
       position: relative;
       border-radius: 4px;
       text-align: center;
       animation-duration: .3s !important;
-      animation-timing-function: cubic-bezier(.18,.89,.32,1.28);
-      width: 30px;
-      height: 25px;
-      font-size: 10px;
+      animation-timing-function: cubic-bezier(.18, .89, .32, 1.28);
+      width: 24px;
+      height: 20px;
+      font-size: 8px;
       font-weight: 700;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      &:nth-child(1), &:nth-child(11) {
+      flex-shrink: 0;
+
+      @media only screen and (min-width: 601px) {
+        width: 28px;
+        height: 25px;
+        font-size: 10px;
+      }
+
+      &:nth-child(1),
+      &:nth-child(11) {
         background: #ff003f;
         box-shadow: 0 3px 0 0 #a60004;
       }
-      &:nth-child(2), &:nth-child(10) {
+
+      &:nth-child(2),
+      &:nth-child(10) {
         background: #ff2632;
         box-shadow: 0 3px 0 0 #a60000;
       }
-      &:nth-child(3),&:nth-child(9) {
+
+      &:nth-child(3),
+      &:nth-child(9) {
         background: #ff4d26;
         box-shadow: 0 3px 0 0 #a70000;
       }
-      &:nth-child(4),&:nth-child(8) {
+
+      &:nth-child(4),
+      &:nth-child(8) {
         background: #ff7319;
         box-shadow: 0 3px 0 0 #a82a00;
       }
-      &:nth-child(5),&:nth-child(7) {
+
+      &:nth-child(5),
+      &:nth-child(7) {
         background: #ff9a0d;
         box-shadow: 0 3px 0 0 #aa5500;
       }
+
       &:nth-child(6) {
         background: #ffc107;
         box-shadow: 0 3px 0 0 #ab7900;

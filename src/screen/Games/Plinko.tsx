@@ -4,7 +4,7 @@ import { Layout } from "@component/DesignSystem/Layout"
 import { numberFormat } from "@util/common"
 import { PLINKO_BET_MINIMUM, PLINKO_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
-import { drop } from "lodash"
+import { useMediaQuery } from 'react-responsive'
 import { useEffect, useRef, useState } from "react"
 
 interface FieldType {
@@ -33,14 +33,19 @@ export const Plinko = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const ballIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const finalPosRef = useRef(position)
+  const isMobile = useMediaQuery({ query: '(max-width: 600px)' })
 
   const onStartPlaying = () => {
-    setPosition({ x: 12.5, y: -0.5 })
+
+    isMobile
+      ? setPosition({ x: 8.5, y: -0.75 })
+      : setPosition({ x: 12.5, y: -0.5 })
+
     setPlay(true);
 
     setTimeout(() => {
       onCheckResult()
-    }, 1800)
+    }, isMobile ? 1500 : 1800)
   }
 
   const onStopPlaying = () => {
@@ -101,12 +106,27 @@ export const Plinko = () => {
 
   const onSetupDropRange = () => {
     // const containerW = 388 // multiplier container width 
-    const spacingW = 28 // Spacing = 24 (real spacing) + 8/2 (peg width)
-    const pegW = 8 // Peg width
+    const spacingW = isMobile ? 24 : 28 // Spacing = 24 (real spacing) + 8/2 (peg width)
+    const pegW = isMobile ? 4 : 8 // Peg width
     let baseDropRange: any[] = []
     multiplier.some((_, i) => {
-      const start = i * (spacingW + pegW);
-      const end = start + spacingW;
+      let start, end
+      if (i === 0) {
+        start = 0;
+        end = start + spacingW + pegW / 2;
+      }
+      else if (i === 1) {
+        start = i * (spacingW + pegW / 2);
+        end = start + spacingW + pegW;
+      }
+      else if (i === 10) {
+        start = i * (spacingW + pegW) - 4;
+        end = 388;
+      }
+      else {
+        start = i * (spacingW + pegW) - 4;
+        end = start + spacingW + pegW;
+      }
       baseDropRange.push({ start: start, end: end })
     });
 
@@ -115,13 +135,14 @@ export const Plinko = () => {
   }
 
   const onCheckResult = () => {
-    let dropPos = finalPosRef.current.x * 18 - 18
+    let dropPos = isMobile
+      ? finalPosRef.current.x * 18
+      : finalPosRef.current.x * 18 - 54
     console.log('Final pos:', finalPosRef.current.x)
-
 
     dropRange?.forEach((e, i) => {
       if (dropPos >= e.start && dropPos <= e.end) {
-        console.log(`Drop at tile [${multiplier[i]}x]`, e, finalPosRef.current)
+        console.log(`Drop at tile [#${i + 1} - ${multiplier[i]}x]`, e, finalPosRef.current)
       }
     })
 
@@ -141,6 +162,7 @@ export const Plinko = () => {
           y: prev.y + 1
         }));
       }, 150);
+      console.log(position.x)
     }
 
     if (autoPlay) {
@@ -197,7 +219,7 @@ export const Plinko = () => {
                         left: `${position.x * 18}px`,
                         top: `${position.y * 36}px`
                       }}>
-                      <Img src='/plinko_ball.svg' w={20} h={20} />
+                      <Img src='/plinko_ball.svg' w={isMobile ? 16 : 20} h={isMobile ? 16 : 20} />
                     </div>
                   }
                   <div className="plinko-multiplier">
@@ -232,7 +254,7 @@ export const Plinko = () => {
 
                 <div className={`form-group ${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}>
                   <Row gutter={16}>
-                    <Col span={16}>
+                    <Col sm={{ span: 16 }} xs={{ span: 24 }}>
                       <Form.Item<FieldType> label="Bet Amount" name="betAmount">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
@@ -247,7 +269,7 @@ export const Plinko = () => {
                         </Space.Compact>
                       </Form.Item>
                     </Col>
-                    <Col span={8}>
+                    <Col sm={{ span: 8 }} xs={{ span: 24 }}>
                       <Form.Item label="Risk" name="risk" className={`${play && 'disabled'}`}>
                         <Space.Compact style={{ width: '100%' }}>
                           <Select
