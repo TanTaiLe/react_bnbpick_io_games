@@ -1209,13 +1209,14 @@
     display: flex;
     width: unset;
     position: absolute;
-    bottom: 36px;
+    bottom: 65px;
     margin: 0 auto;
     column-gap: 4px;
+    background-color: #fff;
 
     @media only screen and (min-width: 601px) {
-      width: 388px;
-      column-gap: 8px;
+      width: 415px;
+      column-gap: 3.75px;
     }
 
     &-item {
@@ -1235,7 +1236,7 @@
       flex-shrink: 0;
 
       @media only screen and (min-width: 601px) {
-        width: 28px;
+        width: 34px;
         height: 25px;
         font-size: 10px;
       }

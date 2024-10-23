@@ -5,7 +5,15 @@ import { numberFormat } from "@util/common"
 import { PLINKO_BET_MINIMUM, PLINKO_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
 import { useEffect, useRef, useState } from "react"
-import Matter, { Engine, Render, Runner, Bodies, World, Events } from "matter-js";
+import Matter, { Engine, Render, Runner, Bodies, World, Events, Composite } from "matter-js";
+
+// Mở rộng kiểu Body để thêm thuộc tính multiplierValue
+declare module "matter-js" {
+  interface Body {
+    multiplierValue?: number;
+    hasCollided?: boolean
+  }
+}
 
 interface FieldType {
   betAmount: number
@@ -21,11 +29,20 @@ const defaultValues = {
 
 const worldWidth = 850;
 const startPins = 3;
-const pinLines = 10;
+const pinLines = PLINKO_SETTINGS.rows;
 const pinSize = 5;
 const pinGap = 56;
-const ballSize = 16;
-const ballElastity = 0.75;
+const ballSize = 18;
+const ballElastity = 0.7;
+
+const bottomLimit = 630; // Giới hạn đáy
+const multiplierWidth = 46; // Chiều rộng của mỗi ô multiplier
+const multiplierHeight = 32; // Chiều cao của mỗi ô multiplier
+const startX = 117; // Vị trí X bắt đầu của các ô multiplier
+const gap = 10; // Khoảng cách giữa các ô multiplier
+
+let lastBallDropTime = Date.now(); // Thời gian lần cuối bóng được thả
+const ballDropInterval = 1000; // Khoảng thời gian giữa các lần thả bóng
 
 export const Plinko = () => {
   const [form] = Form.useForm()
@@ -37,14 +54,22 @@ export const Plinko = () => {
   const scene = useRef<HTMLDivElement>(null)
   // create an engine
   const engine = useRef(Engine.create())
+  const [multiplier, setMultiplier] = useState<number[]>(PLINKO_SETTINGS.risk[0].multiplier)
 
   let balls = []; // Khởi tạo biến lưu trữ đối tượng ball
   let ballId = 0; // Biến đếm để tạo id duy nhất cho mỗi bóng
-  const bottomLimit = 630; // Giới hạn đáy
-
 
   useEffect(() => {
-    engine.current
+    form.setFieldsValue(formData)
+    const { risk } = PLINKO_SETTINGS
+    const multiplierOnRisk = risk.find(r => r.value === formData.risk)?.multiplier!
+    setMultiplier(multiplierOnRisk)
+  }, [form, formData])
+
+  useEffect(() => {
+    onUpdateMultipliers(multiplier)
+    onCreateMultipliers()
+    onCreateBoundaries()
 
     // create a renderer
     const render = Render.create({
@@ -64,7 +89,7 @@ export const Plinko = () => {
       for (let i = 0; i < linePins; i++) {
         const pin = Bodies.circle(
           worldWidth / 2 - lineWidth / 2 + i * pinGap,
-          100 + l * pinGap,
+          90 + l * pinGap,
           pinSize,
           {
             isStatic: true,
@@ -82,7 +107,6 @@ export const Plinko = () => {
     // run the engine
     Runner.run(runner, engine.current);
 
-
     return () => {
       // destroy Matter
       Render.stop(render)
@@ -92,17 +116,17 @@ export const Plinko = () => {
       render.canvas = null
       render.context = null
       render.textures = {}
-
-
     }
-  }, []);
+  }, [multiplier]);
 
 
   const onStartPlaying = () => {
     setPlay(true)
 
-    const newBall = Bodies.circle(worldWidth / 2, 0, ballSize, {
-      restitution: ballElastity,
+    const newBall = Bodies.circle(worldWidth / 2 - 27, 20, ballSize, {
+      restitution: ballElastity, // Độ đàn hồi
+      density: 0.01,    // Độ nặng
+      friction: 0.1,     // Ma sát
       render: {
         fillStyle: '#005A98'
       }
@@ -115,29 +139,110 @@ export const Plinko = () => {
 
     console.log('play')
     // Sau khi bóng được tạo, lắng nghe sự kiện để kiểm tra khi bóng chạm đáy
-    Events.on(engine.current, 'afterUpdate', checkBallPosition);
+    Events.on(engine.current, 'afterUpdate', onCheckBallPosition);
   }
 
-  const checkBallPosition = () => {
+  const onCheckBallPosition = () => {
 
     balls.forEach((ball, i) => {
-      if (ball.position.y >= bottomLimit) {
-        console.log(`Bóng ${ball.id + 1} đã chạm đáy!`);
 
-        // Thực hiện hành động khi bóng chạm đáy, ví dụ như dừng bóng
-        // Matter.Body.setStatic(ball, true); // Dừng bóng lại
-        onStopPlaying()
+      Events.on(engine.current, 'collisionStart', function (event) {
+        const pairs = event.pairs;
 
-        // Xóa bóng khỏi mảng sau khi nó chạm đáy để không kiểm tra lại
-        balls.splice(i, 1);
+        pairs.forEach(pair => {
+          const { bodyA, bodyB } = pair;
 
-        // Nếu không còn bóng nào, dừng lắng nghe sự kiện
-        if (balls.length === 0) {
-          Matter.Events.off(engine.current, 'afterUpdate', checkBallPosition);
-        }
-      }
+          // Kiểm tra xem một trong hai đối tượng có phải là multiplierBox không
+          if (bodyA.multiplierValue || bodyB.multiplierValue) {
+            const ballCap = bodyA.multiplierValue ? bodyB : bodyA; // Lấy bóng
+            const multiplierBoxCap = bodyA.multiplierValue ? bodyA : bodyB; // Lấy multiplier
+
+
+            // Nếu ball đã va chạm trước đó, bỏ qua
+            if (ballCap.hasCollided) return;
+
+            // Đánh dấu rằng ball đã va chạm
+            ballCap.hasCollided = true;
+
+            console.log(`Bóng đã chạm vào ô multiplier với giá trị: ${multiplierBoxCap.multiplierValue}`);
+
+            // Xử lý logic khi bóng chạm vào ô multiplier (ví dụ: tính điểm)
+            onStopPlaying()
+
+            // Xóa bóng khỏi mảng sau khi nó chạm đáy để không kiểm tra lại
+            balls.splice(i, 1);
+
+            // Nếu không còn bóng nào, dừng lắng nghe sự kiện
+            if (balls.length === 0) {
+              Matter.Events.off(engine.current, 'afterUpdate', onCheckBallPosition);
+            }
+          }
+        })
+      })
     })
   }
+
+  // Hàm tạo các ô multiplier
+  const onCreateMultipliers = () => {
+    multiplier.forEach((value, index) => {
+      // Tính toán vị trí X của mỗi ô dựa trên chỉ số index
+      const xPos = startX + index * (multiplierWidth + gap);
+
+      // Tạo một ô multiplier hình chữ nhật
+      const multiplierBox = Bodies.rectangle(
+        xPos,
+        bottomLimit,
+        multiplierWidth,
+        multiplierHeight,
+        {
+          isStatic: true, // Ô multiplier không di chuyển
+          isSensor: true, // Ô multiplier có thể đi xuyên
+        }
+      );
+
+      // Gán giá trị hệ số nhân vào đối tượng để có thể sử dụng sau này
+      multiplierBox.multiplierValue = value;
+
+      // Thêm ô multiplier vào thế giới của Matter.js
+      World.add(engine.current.world, multiplierBox);
+    });
+  }
+
+  // Hàm cập nhật giá trị cho các ô multiplier khi thay đổi độ khó
+  const onUpdateMultipliers = (newMultipliers) => {
+    // Duyệt qua tất cả các ô multiplier đã tạo
+    Composite.allBodies(engine.current.world).forEach(body => {
+      if (body.multiplierValue !== undefined) {
+        // Tìm chỉ số của ô multiplier dựa trên vị trí
+        const index = (body.position.x - startX) / (multiplierWidth + gap);
+
+        // Cập nhật giá trị multiplierValue mới từ mảng newMultipliers
+        body.multiplierValue = newMultipliers[index];
+      }
+    });
+  };
+
+
+  const onCreateBoundaries = () => {
+    // Thêm bức tường bên trái
+    const leftWall = Bodies.rectangle(65, bottomLimit / 2, 1, bottomLimit, {
+      isStatic: true,
+      render: {
+        fillStyle: 'transparent'
+      }
+    });
+
+    // Thêm bức tường bên phải
+    const rightWall = Bodies.rectangle(worldWidth - 120, bottomLimit / 2, 1, bottomLimit, {
+      isStatic: true,
+      render: {
+        fillStyle: 'transparent'
+      }
+    });
+
+    // Thêm các bức tường vào thế giới
+    World.add(engine.current.world, [leftWall, rightWall]);
+  };
 
   const onStopPlaying = () => {
     setPlay(false)
@@ -145,9 +250,17 @@ export const Plinko = () => {
 
   const onStartAutoBet = () => {
     setAutoPlay(true)
+    lastBallDropTime = Date.now(); // Đặt lại thời gian khi bắt đầu
+
     intervalRef.current = setInterval(() => {
-      onStartPlaying()
-    }, 1500)
+      const currentTime = Date.now();
+
+      // Kiểm tra nếu đủ thời gian đã trôi qua kể từ lần thả bóng cuối
+      if (currentTime - lastBallDropTime >= ballDropInterval) {
+        onStartPlaying()
+        lastBallDropTime = currentTime; // Cập nhật thời gian thả bóng
+      }
+    }, 100)
   }
 
   const onStopAutoBet = () => {
@@ -200,6 +313,14 @@ export const Plinko = () => {
                 <div className="playground plinko">
                   <div ref={scene!}></div>
                   {/* ... */}
+
+                  <div className="plinko-multiplier">
+                    {multiplier.map((e, i) =>
+                      <div key={i} className="plinko-multiplier-item">
+                        {e}x
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <Row align="middle" gutter={16}>

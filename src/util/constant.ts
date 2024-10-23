@@ -331,17 +331,17 @@ export const PLINKO_SETTINGS = {
     {
       value: 'low',
       label: 'Low',
-      multiplier: [0.5, 1, 1.1, 1.3, 2.4, 9]
+      multiplier: [9, 2.4, 1.3, 1.1, 1, 0.5, 1, 1.1, 1.3, 2.4, 9]
     },
     {
       value: 'medium',
       label: 'Medium',
-      multiplier: [0.4, 0.6, 1.2, 2, 5, 36]
+      multiplier: [36, 5, 2, 1.2, 0.6, 0.4, 0.6, 1.2, 2, 5, 36]
     },
     {
       value: 'high',
       label: 'High',
-      multiplier: [0.15, 0.4, 0.7, 3, 10, 75]
+      multiplier: [75, 10, 3, 0.7, 0.4, 0.15, 0.4, 0.7, 3, 10, 75]
     },
   ]
 }
