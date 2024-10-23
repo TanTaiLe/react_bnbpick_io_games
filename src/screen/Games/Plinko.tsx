@@ -46,11 +46,11 @@ export const Plinko = () => {
           ? setAutoPlayPosition([...autoPlayPosition, { x: 8.5, y: -0.75 }])
           : setAutoPlayPosition([...autoPlayPosition, { x: 12.5, y: -0.5 }])
 
-        setPlay(true);
+        // setPlay(true);
 
-        setTimeout(() => {
-          onAutoPlayCheckResult()
-        }, isMobile ? 1500 : 1800)
+        // setTimeout(() => {
+        //   onAutoPlayCheckResult()
+        // }, isMobile ? 1500 : 1800)
       }, 1000)
     } else {
       isMobile
@@ -199,15 +199,17 @@ export const Plinko = () => {
 
     if (autoPlay) {
       onStartPlaying()
+      // if (play) {
+        // autoPlayPosition.length != 0 &&
+        //   autoPlayPosition.forEach((_, i) => {
+        //     ballIntervalRef.current = setInterval(() => {
 
-
-      // ballIntervalRef.current = setInterval(() => {
-      //   setPosition(prev => ({
-      //     x: prev.x + (Math.random() < 0.5 ? -1 : 1),
-      //     y: prev.y + 1
-      //   }));
-      // }, 150);
+        //       setAutoPlayPosition(prev => []);
+        //     }, 150);
+        //   })
+      // }
     }
+    console.log(autoPlayPosition)
 
     return () => {
       if (intervalRef.current) {
@@ -217,7 +219,7 @@ export const Plinko = () => {
         clearInterval(ballIntervalRef.current)
       }
     };
-  }, [autoPlay, form, formData, play, position])
+  }, [autoPlay, form, formData, play, position, autoPlayPosition])
 
   useEffect(() => {
     !dropRange
@@ -260,7 +262,7 @@ export const Plinko = () => {
                     </div>
                   }
                   {
-                    autoPlay && play && autoPlayPosition.map((e, i) =>
+                    autoPlay && autoPlayPosition.length != 0 && autoPlayPosition.map((e, i) =>
                       <div className="plinko-ball" key={i}
                         style={{
                           left: `${e.x * 18}px`,

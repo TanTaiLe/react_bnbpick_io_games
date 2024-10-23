@@ -9,7 +9,8 @@ import { Slots } from "@screen/Games/Slots";
 import { VideoPoker } from "@screen/Games/VideoPoker";
 import { Baccarat } from "@screen/Games/Baccarat";
 import { HighLow } from "@screen/Games/HighLow";
-import { Plinko } from "@screen/Games/Plinko";
+// import { Plinko } from "@screen/Games/Plinko";
+import { Plinko } from "@screen/Games/PlinkoNew";
 
 export interface IRouteConfig {
   name: string;
