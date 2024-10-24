@@ -14,10 +14,10 @@ export const Layout: FC<Props> = ({ children, title }) => {
       <h1>{title}</h1>
       <Row style={{ width: '100%' }} justify='center' gutter={[24, 24]}>
         {children}
-        <Col span={22}>
+        <Col md={{ span: 22 }} xs={{ span: 24 }}>
           <GameInfo />
         </Col>
-        <Col span={22}>
+        <Col md={{ span: 22 }} xs={{ span: 24 }}>
           <BetHistory />
         </Col>
       </Row>

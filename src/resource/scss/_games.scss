@@ -157,8 +157,12 @@
 
       // display: block;
       img {
-        height: 150%;
+        height: 120%;
         width: auto;
+        
+      @media only screen and (min-width: 601px) {
+        height: 150%;
+      }
       }
 
       @for $i from 0 through 35 {

@@ -341,9 +341,18 @@ html {
 }
 
 .history {
+  width: 100% !important;
   .ant-tabs {
     &-nav-wrap {
       justify-content: center
+    }
+
+    &-content-holder {
+      width: 100%;
+      overflow-x: scroll;
+      @media only screen and (min-width: 601px) {
+        overflow-x: visible;
+      }
     }
 
     &-tab {
