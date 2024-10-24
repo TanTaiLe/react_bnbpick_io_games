@@ -197,6 +197,7 @@ export const Plinko = () => {
         {
           isStatic: true, // Ô multiplier không di chuyển
           isSensor: true, // Ô multiplier có thể đi xuyên
+          
         }
       );
 

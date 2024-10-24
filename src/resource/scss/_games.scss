@@ -1150,7 +1150,7 @@
 .plinko {
   height: 320px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0 auto 24px;
   position: relative;
   // margin-top: 24px;
   display: flex;
@@ -1158,8 +1158,36 @@
   align-items: center;
   overflow: hidden;
 
+  @media only screen and (min-width: 360px) {
+    height: 260px;
+  }
+
+  @media only screen and (min-width: 412px) {
+    height: 290px;
+  }
+
   @media only screen and (min-width: 601px) {
-    height: 500px;
+    height: 560px;
+  }
+
+  @media only screen and (min-width: 1024px) {
+    height: 640px;
+  }
+
+  @media only screen and (min-width: 1600px) {
+    height: 445px;
+  }
+
+  @media only screen and (min-width: 1600px) and (min-height: 900px) {
+    height: 415px;
+  }
+
+  @media only screen and (min-width: 1920px) {
+    height: 508px;
+  }
+
+  @media only screen and (min-width: 2560px) {
+    height: 640px;
   }
 
   &-board {
@@ -1209,14 +1237,49 @@
     display: flex;
     width: unset;
     position: absolute;
-    bottom: 65px;
+    bottom: 3px;
     margin: 0 auto;
     column-gap: 4px;
     background-color: #fff;
 
+    @media only screen and (min-width: 360px) {
+      width: 245px;
+      column-gap: 4px;
+    }
+
+    @media only screen and (min-width: 412px) {
+      width: 270px;
+      column-gap: 4px;
+    }
+
     @media only screen and (min-width: 601px) {
+      width: 535px;
+      column-gap: 4px;
+    }
+
+    @media only screen and (min-width: 1024px) {
+      width: 615px;
+      column-gap: 8px;
+    }
+
+    @media only screen and (min-width: 1600px) {
       width: 415px;
-      column-gap: 3.75px;
+      column-gap: 4px;
+    }
+
+    @media only screen and (min-width: 1600px) and (min-height: 900px) {
+      width: 390px;
+      column-gap: 4px;
+    }
+
+    @media only screen and (min-width: 1920px) {
+      width: 478px;
+      column-gap: 8px;
+    }
+
+    @media only screen and (min-width: 2560px) {
+      width: 615px;
+      column-gap: 8px;
     }
 
     &-item {
@@ -1235,10 +1298,47 @@
       align-items: center;
       flex-shrink: 0;
 
+      @media only screen and (min-width: 360px) {
+        width: 18.5px;
+        height: 15px;
+        font-size: 6px;
+      }
+
+      @media only screen and (min-width: 412px) {
+        width: 20.75px;
+        height: 15px;
+        font-size: 8px;
+      }
+
       @media only screen and (min-width: 601px) {
-        width: 34px;
-        height: 25px;
+        width: 44.75px;
+        height: 30px;
         font-size: 10px;
+      }
+
+      @media only screen and (min-width: 1024px) {
+        width: 48px;
+        font-size: 16px;
+      }
+
+      @media only screen and (min-width: 1600px) {
+        width: 33.75px;
+        font-size: 10px;
+      }
+
+      @media only screen and (min-width: 1600px) and (min-height: 900px) {
+        width: 31.5px;
+        font-size: 10px;
+      }
+
+      @media only screen and (min-width: 1920px) {
+        width: 36px;
+        font-size: 12px;
+      }
+
+      @media only screen and (min-width: 2560px) {
+        width: 48px;
+        font-size: 16px;
       }
 
       &:nth-child(1),
