@@ -159,10 +159,10 @@
       img {
         height: 120%;
         width: auto;
-        
-      @media only screen and (min-width: 601px) {
-        height: 150%;
-      }
+
+        @media only screen and (min-width: 601px) {
+          height: 150%;
+        }
       }
 
       @for $i from 0 through 35 {
@@ -912,6 +912,7 @@
 }
 
 .roulette {
+  padding: 32px 0;
   &-history {
     background-color: #000;
     width: 36px;
@@ -933,7 +934,12 @@
   }
 
   &-wheel {
-    transform: scale(0.9);
+    transform: scale(0.7);
+    margin: -70px -30px;
+    @media only screen and (min-width: 601px) {
+      transform: scale(0.9);
+      margin: 0;
+    }
 
     &-plate::after {
       border: 6px solid #ddd;
@@ -955,7 +961,10 @@
   }
 
   &-table {
-    margin: 80px 0;
+    margin: 24px 0;
+    @media only screen and (min-width: 601px) {
+      margin: 80px 0;
+    }
 
     &-container {
       transform: rotate(90deg);

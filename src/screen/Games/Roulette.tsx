@@ -8,6 +8,7 @@ import { Card, Checkbox, Col, Form, Input, Row, Space } from "antd"
 import { useEffect, useRef, useState } from "react"
 import { RouletteTable, RouletteWheel } from 'react-casino-roulette';
 import 'react-casino-roulette/dist/index.css';
+import { useMediaQuery } from "react-responsive"
 
 interface FieldType {
   betAmount: number
@@ -43,6 +44,7 @@ export const Roulette = () => {
   const [gameHistory, setGameHistory] = useState<string[]>([])
   const [resultBet, setResultBet] = useState<string>('-1');
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const isMobile = useMediaQuery({ query: '(max-width: 600px)' })
 
   const handleBet = (betData: any) => {
     const { id } = betData; //lấy id của ô
@@ -224,8 +226,8 @@ export const Roulette = () => {
                 </Row>
 
                 <div className="playground roulette">
-                  <Row align="middle" gutter={[0, 16]}>
-                    <Col span={12}>
+                  <Row align="middle" gutter={[0, 48]}>
+                    <Col md={{ span: 12 }} xs={{ span: 24 }}>
                       <div className="roulette-wheel">
                         <RouletteWheel
                           start={play}
@@ -233,7 +235,7 @@ export const Roulette = () => {
                         />
                       </div>
                     </Col>
-                    <Col span={12}>
+                    <Col md={{ span: 12 }} xs={{ span: 24 }}>
                       <div className={`roulette-table ${currentChip ? '' : 'not-allowed'}`}>
                         <RouletteTable bets={bets} onBet={handleBet} />
                       </div>
@@ -280,13 +282,13 @@ export const Roulette = () => {
                           style={{ gap: 0 }}
                           onClick={onUndo}>
                           <Icon icon="undo" size={20} />
-                          Undo
+                          {isMobile ? '' : 'Undo'}
                         </Btn>
                         <Btn
                           className="btn-text btn-text-red"
                           style={{ gap: 0 }}
                           onClick={onClear}><Icon icon="close" size={20} />
-                          Clear
+                          {isMobile ? '' : 'Clear'}
                         </Btn>
                       </Space>
                     </div>
