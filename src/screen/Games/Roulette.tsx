@@ -210,7 +210,7 @@ export const Roulette = () => {
                       </Form.Item>
                     </Col>
                     <Col span={24}>
-                      <Form.Item<FieldType> label="Game History" className="disabled">
+                      <Form.Item<FieldType> label="Game History" className="disabled" style={{ opacity: 1 }}>
                         <Space size="small" align="center">
                           {gameHistory.map((e, i) =>
                             <div className={`
