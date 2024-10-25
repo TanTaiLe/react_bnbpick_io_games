@@ -192,7 +192,7 @@ export const Slots = () => {
 
                 <div className={`form-group ${autoPlay ? 'disabled' : play ? 'disabled' : ''}`}>
                   <Row gutter={16}>
-                    <Col span={16}>
+                    <Col sm={{ span: 16 }} xs={{ span: 24 }}>
                       <Form.Item<FieldType> label="Bet Amount" name="betAmount">
                         <Space.Compact style={{ width: '100%' }}>
                           <Input
@@ -207,7 +207,7 @@ export const Slots = () => {
                         </Space.Compact>
                       </Form.Item>
                     </Col>
-                    <Col span={8}>
+                    <Col sm={{ span: 8 }} xs={{ span: 24 }}>
                       <Form.Item label="Lines" name="lines" className={`${play && 'disabled'}`}>
                         <Space.Compact style={{ width: '100%' }}>
                           <Select

@@ -260,6 +260,8 @@ html {
     }
 
     .ant-select {
+      width: 100% !important;
+      
       &-selector {
         padding: 0;
         border: none !important;
