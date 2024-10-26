@@ -1,11 +1,11 @@
 import { Btn } from "@component/DesignSystem/Btn"
 import { Img } from "@component/DesignSystem/Img"
 import { Layout } from "@component/DesignSystem/Layout"
-import { numberFormat } from "@util/common"
+import { getRandomInRange, numberFormat } from "@util/common"
 import { PLINKO_BET_MINIMUM, PLINKO_SETTINGS } from "@util/constant"
 import { Card, Checkbox, Col, Form, Input, Row, Select, Space } from "antd"
 import { useEffect, useRef, useState } from "react"
-import Matter, { Engine, Render, Runner, Bodies, World, Events, Composite } from "matter-js";
+import Matter, { Engine, Render, Runner, Bodies, World, Events, Composite, Body } from "matter-js";
 
 // Mở rộng kiểu Body để thêm thuộc tính multiplierValue
 declare module "matter-js" {
@@ -33,7 +33,7 @@ const pinLines = PLINKO_SETTINGS.rows;
 const pinSize = 5;
 const pinGap = 56;
 const ballSize = 18;
-const ballElastity = 0.7;
+const ballElastity = 0.8;
 
 const bottomLimit = 630; // Giới hạn đáy
 const multiplierWidth = 46; // Chiều rộng của mỗi ô multiplier
@@ -42,7 +42,7 @@ const startX = 117; // Vị trí X bắt đầu của các ô multiplier
 const gap = 10; // Khoảng cách giữa các ô multiplier
 
 let lastBallDropTime = Date.now(); // Thời gian lần cuối bóng được thả
-const ballDropInterval = 1000; // Khoảng thời gian giữa các lần thả bóng
+const ballDropInterval = 750; // Khoảng thời gian giữa các lần thả bóng
 
 export const Plinko = () => {
   const [form] = Form.useForm()
@@ -67,7 +67,7 @@ export const Plinko = () => {
   }, [form, formData])
 
   useEffect(() => {
-    onUpdateMultipliers(multiplier)
+    onUpdateMultipliers()
     onCreateMultipliers()
     onCreateBoundaries()
 
@@ -117,20 +117,35 @@ export const Plinko = () => {
       render.context = null
       render.textures = {}
     }
-  }, [multiplier]);
+  }, []);
 
 
   const onStartPlaying = () => {
     setPlay(true)
 
-    const newBall = Bodies.circle(worldWidth / 2 - 27, 20, ballSize, {
+    const newBall = Bodies.circle(worldWidth / 2 - getRandomInRange(27, 28), 20, ballSize, {
       restitution: ballElastity, // Độ đàn hồi
-      density: 0.01,    // Độ nặng
-      friction: 0.1,     // Ma sát
+      density: 0.2,     // Độ nặng
+      friction: 0.05,    // Ma sát
       render: {
         fillStyle: '#005A98'
       }
     });
+
+    // if (formData.risk === 'low') {
+    //   newBall.friction = 0.05;
+    //   newBall.frictionAir = 0.02;
+    //   newBall.restitution = 0.6;
+    // } else if (formData.risk === 'medium') {
+    //   newBall.friction = 0.05;
+    //   newBall.frictionAir = 0.015; // Giảm nhẹ ma sát không khí để tăng tốc độ
+    //   newBall.restitution = 0.65;
+    // } else if (formData.risk === 'hard') {
+    //   newBall.friction = 0.05;
+    //   newBall.frictionAir = 0.01;  // Giảm thêm ma sát không khí
+    //   newBall.restitution = 0.7;
+    // }
+
     newBall.id = ballId++; // Gán id cho bóng và tăng biến đếm
     World.add(engine.current.world, newBall);
     balls.push(newBall);
@@ -172,6 +187,7 @@ export const Plinko = () => {
             // Xóa bóng khỏi mảng sau khi nó chạm đáy để không kiểm tra lại
             balls.splice(i, 1);
 
+
             // Nếu không còn bóng nào, dừng lắng nghe sự kiện
             if (balls.length === 0) {
               Matter.Events.off(engine.current, 'afterUpdate', onCheckBallPosition);
@@ -197,7 +213,9 @@ export const Plinko = () => {
         {
           isStatic: true, // Ô multiplier không di chuyển
           isSensor: true, // Ô multiplier có thể đi xuyên
-          
+          render: {
+            fillStyle: 'transparent'
+          }
         }
       );
 
@@ -210,36 +228,37 @@ export const Plinko = () => {
   }
 
   // Hàm cập nhật giá trị cho các ô multiplier khi thay đổi độ khó
-  const onUpdateMultipliers = (newMultipliers) => {
+  const onUpdateMultipliers = () => {
     // Duyệt qua tất cả các ô multiplier đã tạo
     Composite.allBodies(engine.current.world).forEach(body => {
       if (body.multiplierValue !== undefined) {
         // Tìm chỉ số của ô multiplier dựa trên vị trí
         const index = (body.position.x - startX) / (multiplierWidth + gap);
 
-        // Cập nhật giá trị multiplierValue mới từ mảng newMultipliers
-        body.multiplierValue = newMultipliers[index];
+        // Cập nhật giá trị multiplierValue mới từ mảng multiplier
+        body.multiplierValue = multiplier[index];
       }
     });
   };
 
-
   const onCreateBoundaries = () => {
     // Thêm bức tường bên trái
-    const leftWall = Bodies.rectangle(65, bottomLimit / 2, 1, bottomLimit, {
+    const leftWall = Bodies.rectangle(225, bottomLimit / 2, 1, bottomLimit - 78, {
       isStatic: true,
       render: {
         fillStyle: 'transparent'
       }
     });
+    Body.rotate(leftWall, 0.465)
 
     // Thêm bức tường bên phải
-    const rightWall = Bodies.rectangle(worldWidth - 120, bottomLimit / 2, 1, bottomLimit, {
+    const rightWall = Bodies.rectangle(worldWidth - 280, bottomLimit / 2, 1, bottomLimit - 78, {
       isStatic: true,
       render: {
         fillStyle: 'transparent'
       }
     });
+    Body.rotate(rightWall, -0.465)
 
     // Thêm các bức tường vào thế giới
     World.add(engine.current.world, [leftWall, rightWall]);
@@ -363,7 +382,7 @@ export const Plinko = () => {
                       </Form.Item>
                     </Col>
                     <Col sm={{ span: 8 }} xs={{ span: 24 }}>
-                      <Form.Item label="Risk" name="risk" className={`${play && 'disabled'}`}>
+                      <Form.Item label="Risk" name="risk" className={`${autoPlay ? 'disabled' : play && 'disabled'}`}>
                         <Space.Compact style={{ width: '100%' }}>
                           <Select
                             defaultValue={defaultValues.risk}

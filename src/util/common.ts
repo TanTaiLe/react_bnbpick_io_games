@@ -13,3 +13,7 @@ export const numberFormat = (value: number | undefined, digits: number) => {
     maximumFractionDigits: digits
   })
 }
+
+export const getRandomInRange = (min: number, max: number) => {
+  return Math.random() * (max - min) + min;
+}
