@@ -55,6 +55,7 @@ export const Plinko = () => {
   // create an engine
   const engine = useRef(Engine.create())
   const [multiplier, setMultiplier] = useState<number[]>(PLINKO_SETTINGS.risk[0].multiplier)
+  const [pinSets, setPinSets] = useState<Matter.Body[]>([])
 
   let balls = []; // Khởi tạo biến lưu trữ đối tượng ball
   let ballId = 0; // Biến đếm để tạo id duy nhất cho mỗi bóng
@@ -98,6 +99,8 @@ export const Plinko = () => {
         pins.push(pin);
       }
     }
+    setPinSets(pins)
+
     World.add(engine.current.world, pins);
 
     Render.run(render);
@@ -130,36 +133,38 @@ export const Plinko = () => {
       render: {
         fillStyle: '#005A98'
       }
-    });
-
-    // if (formData.risk === 'low') {
-    //   newBall.friction = 0.05;
-    //   newBall.frictionAir = 0.02;
-    //   newBall.restitution = 0.6;
-    // } else if (formData.risk === 'medium') {
-    //   newBall.friction = 0.05;
-    //   newBall.frictionAir = 0.015; // Giảm nhẹ ma sát không khí để tăng tốc độ
-    //   newBall.restitution = 0.65;
-    // } else if (formData.risk === 'hard') {
-    //   newBall.friction = 0.05;
-    //   newBall.frictionAir = 0.01;  // Giảm thêm ma sát không khí
-    //   newBall.restitution = 0.7;
-    // }
+    })
 
     newBall.id = ballId++; // Gán id cho bóng và tăng biến đếm
     World.add(engine.current.world, newBall);
-    balls.push(newBall);
+    balls.push(newBall)
 
 
 
     console.log('play')
     // Sau khi bóng được tạo, lắng nghe sự kiện để kiểm tra khi bóng chạm đáy
-    Events.on(engine.current, 'afterUpdate', onCheckBallPosition);
+    Events.on(engine.current, 'afterUpdate', onCheckBallPosition)
   }
 
   const onCheckBallPosition = () => {
 
     balls.forEach((ball, i) => {
+
+      pinSets.forEach(pin => {
+        // Kiểm tra xem bóng có chạm vào pin hay không
+        const collisions = Matter.Query.collides(ball, [pin]);
+        if (collisions.length > 0) {
+          // Thay đổi viền pin sang màu xanh nhạt
+          pin.render.strokeStyle = '#a0d2eb'; // Màu viền xanh nhạt
+          pin.render.lineWidth = 20;           // Độ dày viền để làm rõ hiệu ứng
+
+          // Đặt thời gian để pin trở lại màu ban đầu
+          setTimeout(() => {
+            pin.render.strokeStyle = '#000000'; // Viền trở về màu mặc định
+            pin.render.lineWidth = 0;           // Độ dày viền trở về mặc định
+          }, 150); // Giữ màu trong 200ms, có thể điều chỉnh
+        }
+      });
 
       Events.on(engine.current, 'collisionStart', function (event) {
         const pairs = event.pairs;
