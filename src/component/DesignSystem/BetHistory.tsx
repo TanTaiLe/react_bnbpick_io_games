@@ -12,7 +12,6 @@ interface TableBetsProps {
   columns?: object[],
   dataSource?: object[],
 }
-
 interface MyBetsType {
   time?: string
   game?: ReactNode

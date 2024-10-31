@@ -1218,6 +1218,10 @@
     height: 415px;
   }
 
+  @media only screen and (min-width: 1688px) and (min-height: 2388px) {
+    height: 445px;
+  }
+
   @media only screen and (min-width: 1920px) {
     height: 508px;
   }
@@ -1325,9 +1329,15 @@
       width: 390px;
     }
 
+    @media only screen and (min-width: 1688px) and (min-height: 2388px) {
+      width: 410px;
+      left: 60px;
+    }
+
     @media only screen and (min-width: 1920px) {
       width: 478px;
       column-gap: 8px;
+      left: unset;
     }
 
     @media only screen and (min-width: 2560px) {
@@ -1405,6 +1415,10 @@
 
       @media only screen and (min-width: 1600px) and (min-height: 900px) {
         width: 31.5px;
+      }
+
+      @media only screen and (min-width: 1688px) and (min-height: 2388px) {
+        width: 34px;
       }
 
       @media only screen and (min-width: 1920px) {

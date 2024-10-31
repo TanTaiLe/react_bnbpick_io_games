@@ -59,13 +59,20 @@ export const Plinko = () => {
 
   let balls = []; // Khởi tạo biến lưu trữ đối tượng ball
   let ballId = 0; // Biến đếm để tạo id duy nhất cho mỗi bóng
+  const ballsPerScene = 5; // Số lượng banh giới hạn 1 lần
 
   useEffect(() => {
     form.setFieldsValue(formData)
     const { risk } = PLINKO_SETTINGS
     const multiplierOnRisk = risk.find(r => r.value === formData.risk)?.multiplier!
     setMultiplier(multiplierOnRisk)
-  }, [form, formData])
+
+    if (autoPlay && balls.length == ballsPerScene) {
+      console.log('ball nums: ', balls.length)
+      onStartPlaying();
+    }
+
+  }, [form, formData, autoPlay])
 
   useEffect(() => {
     onUpdateMultipliers()
@@ -120,7 +127,7 @@ export const Plinko = () => {
       render.context = null
       render.textures = {}
     }
-  }, []);
+  }, [])
 
 
   const onStartPlaying = () => {
@@ -136,10 +143,8 @@ export const Plinko = () => {
     })
 
     newBall.id = ballId++; // Gán id cho bóng và tăng biến đếm
-    World.add(engine.current.world, newBall);
     balls.push(newBall)
-
-
+    World.add(engine.current.world, newBall);
 
     console.log('play')
     // Sau khi bóng được tạo, lắng nghe sự kiện để kiểm tra khi bóng chạm đáy
@@ -176,7 +181,6 @@ export const Plinko = () => {
           if (bodyA.multiplierValue || bodyB.multiplierValue) {
             const ballCap = bodyA.multiplierValue ? bodyB : bodyA; // Lấy bóng
             const multiplierBoxCap = bodyA.multiplierValue ? bodyA : bodyB; // Lấy multiplier
-
 
             // Nếu ball đã va chạm trước đó, bỏ qua
             if (ballCap.hasCollided) return;
@@ -282,10 +286,12 @@ export const Plinko = () => {
 
       // Kiểm tra nếu đủ thời gian đã trôi qua kể từ lần thả bóng cuối
       if (currentTime - lastBallDropTime >= ballDropInterval) {
-        onStartPlaying()
-        lastBallDropTime = currentTime; // Cập nhật thời gian thả bóng
+        if (balls.length < ballsPerScene) {
+          onStartPlaying()
+          lastBallDropTime = currentTime; // Cập nhật thời gian thả bóng
+        }
       }
-    }, 100)
+    }, 300)
   }
 
   const onStopAutoBet = () => {
